@@ -7,7 +7,7 @@ import lejos.robotics.SampleProvider;
  */
 public class BlockDetector extends Thread {
 	//constants
-		//class variables
+	//class variables
 	//these are the different block profiles. They are initialized in the constructor
 	private double[] blueBlockReading;
 	private double[] darkBlueBlockReading;
@@ -21,7 +21,7 @@ public class BlockDetector extends Thread {
 	private boolean isReadingBlock;
 	private String blockType;
 	
-	//TODO: organize
+	//TODO: Daniele you have to organize this you're the worst
 	Odometer odo;
 	Navigation navi;
 	private double[] pos = new double [3];
