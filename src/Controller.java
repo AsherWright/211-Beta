@@ -1,5 +1,5 @@
 /*
- * Lab5.java
+ * Beta demo.java
  * Alessandro Commodari and Asher Wright
  * ECSE 211 DPM Lab 5 - Finding Objects
  * Group 53
