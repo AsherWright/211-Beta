@@ -39,7 +39,7 @@ public class Odometer implements TimerListener {
 	private double x, y, theta;
 	private double[] oldDH, dDH;
 	
-	// constructor
+	// This is a constructor for the odometer
 	public Odometer (EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, int INTERVAL, boolean autostart) {
 		
 		this.leftMotor = leftMotor;
