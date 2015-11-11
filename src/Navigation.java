@@ -8,6 +8,7 @@
  * 
  * Movement control class (turnTo, travelTo, flt, localize)
  */
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation {
@@ -17,11 +18,16 @@ public class Navigation {
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private double wheelRadius;
 	private double wheelBase;
-
-	public Navigation(Odometer odo, double wheelRadius, double wheelBase) {
+	private WallAvoider avoider;
+	private UltrasonicPoller frontPoller;
+	
+	
+	public Navigation(Odometer odo, WallAvoider avoider,  UltrasonicPoller frontPoller, double wheelRadius, double wheelBase) {
 		this.wheelRadius = wheelRadius;
 		this.wheelBase = wheelBase;
 		this.odometer = odo;
+		this.avoider = avoider;
+		this.frontPoller = frontPoller;
 
 		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
 		this.leftMotor = motors[0];
@@ -86,10 +92,6 @@ public class Navigation {
 			this.turnTo(minAng, false);
 			this.setSpeeds(FAST, FAST);
 			
-
-			
-			
-			
 		}
 		this.setSpeeds(0, 0);
 	}
@@ -110,7 +112,13 @@ public class Navigation {
 			this.setSpeeds(FAST, FAST);
 			
 			//if we see a block coming up, RUN wallFollower.avoidWall();
-			
+			if(frontPoller.getUsData() < 10){
+				Sound.beep();
+				Sound.beep();
+				this.setSpeeds(0, 0);
+				avoider.avoidWall();	
+				this.setSpeeds(FAST,FAST);
+			}
 			
 		}
 		this.setSpeeds(0, 0);

@@ -17,26 +17,20 @@ public class LCDInfo implements TimerListener{
 	public static final int LCD_REFRESH = 100;
 	private Odometer odo;
 	private Timer lcdTimer;
-	private TextLCD LCD = LocalEV3.get().getTextLCD();;
-	private SampleProvider usFrontSensor;
-	private float[] usFrontData;
-	private SampleProvider usSideSensor;
-	private float[] usSideData;
-	private EV3UltrasonicSensor usSideActualSensor;
+	private TextLCD LCD = LocalEV3.get().getTextLCD();
+	private UltrasonicPoller frontPoller;
+	private UltrasonicPoller sidePoller;
 	// arrays for displaying data
 	private double [] pos;
 	
-	public LCDInfo(Odometer odo, SampleProvider usFrontSensor, float[] usFrontData, EV3UltrasonicSensor usSideActualSensor, SampleProvider usSideSensor, float[] usSideData) {
+	public LCDInfo(Odometer odo, UltrasonicPoller frontPoller, UltrasonicPoller sidePoller, float[] usSideData) {
 		this.odo = odo;
 		this.lcdTimer = new Timer(LCD_REFRESH, this);
 		
 		// initialise the arrays for displaying data
 		pos = new double [3];
-		this.usFrontSensor = usFrontSensor;
-		this.usFrontData = usFrontData;
-		this.usSideSensor = usSideSensor;
-		this.usSideData = usSideData;
-		this.usSideActualSensor = usSideActualSensor;
+		this.frontPoller = frontPoller;
+		this.sidePoller = sidePoller;
 		
 		// start the timer
 		lcdTimer.start();
@@ -57,24 +51,8 @@ public class LCDInfo implements TimerListener{
 		LCD.drawString(String.valueOf(pos[0]), 3, 0);
 		LCD.drawString(String.valueOf(pos[1]), 3, 1);
 		LCD.drawString(String.valueOf(pos[2]), 3, 2);
-		LCD.drawString(String.valueOf(getFilteredFrontData()), 3, 3);
-		LCD.drawString(String.valueOf(getFilteredSideData()), 3, 4);
+		LCD.drawString(String.valueOf(frontPoller.getUsData()), 3, 3);
+		LCD.drawString(String.valueOf(sidePoller.getUsData()), 3, 4);
 	}
-	/*
-	 * Gets the data from the Ultrasonic sensor.
-	 */
-	private float getFilteredFrontData() {
-		usFrontSensor.fetchSample(usFrontData, 0);
-		float distance =  (float) (usFrontData[0]*100.0);
-				
-		return distance;
-	}
-	private float getFilteredSideData() {
-		float distance = 0;
-		if(usSideActualSensor.isEnabled()){
-			usSideSensor.fetchSample(usSideData, 0);
-			distance = (float) (usSideData[0]*100.0);
-		}
-		return distance;
-	}
+
 }

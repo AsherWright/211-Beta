@@ -34,14 +34,7 @@ public class USLocalizer {
 	 * The robot's odometer
 	 */
 	private Odometer odo;
-	/**
-	 * The robot's Ultrasonic sensor
-	 */
-	private SampleProvider usSensor;
-	/**
-	 * The float array that contains the ultrasonic data
-	 */
-	private float[] usData;
+
 	/**
 	 * The type of localization that the robot performs
 	 */
@@ -56,7 +49,7 @@ public class USLocalizer {
 	private float lastDistance;
 	//Motors (we will get these from the odometer)
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
-	
+	private UltrasonicPoller frontPoller;
 	/**
 	 * Constructor for the Localizer
 	 * @param odo The odometer being used by the robot
@@ -64,11 +57,10 @@ public class USLocalizer {
 	 * @param usData The float array containing the ultrasonic data of the sensor.
 	 * @param locType The type of localization. FALLING_EDGE Vs RISING_EDGE
 	 */
-	public USLocalizer(Odometer odo,  SampleProvider usSensor, float[] usData, LocalizationType locType) {
+	public USLocalizer(Odometer odo,  UltrasonicPoller frontPoller, LocalizationType locType) {
 		//get incoming values
 		this.odo = odo;
-		this.usSensor = usSensor;
-		this.usData = usData;
+		this.frontPoller = frontPoller;
 		this.locType = locType;
 		//get the motors from the odometer object.
 		EV3LargeRegulatedMotor[] motors = this.odo.getMotors();
@@ -95,14 +87,14 @@ public class USLocalizer {
 		if (locType == LocalizationType.FALLING_EDGE) {
 					
 			// rotate the robot until it sees no wall
-			while(getFilteredData() < WALL_DIST + WALL_GAP){
+			while(frontPoller.getUsData() < WALL_DIST + WALL_GAP){
 				leftMotor.forward();
 				rightMotor.backward();
 			}
 			//Sound.beep();
 			//System.out.println(getFilteredData());
 			// keep rotating until the robot sees a wall, then latch the angle
-			while(getFilteredData() > WALL_DIST){
+			while(frontPoller.getUsData()  > WALL_DIST){
 				leftMotor.forward();
 				rightMotor.backward();
 			}
@@ -111,14 +103,14 @@ public class USLocalizer {
 			angleA = odo.getAng();
 			
 			// switch direction and wait until it sees no wall
-			while(getFilteredData() < WALL_DIST + WALL_GAP){
+			while(frontPoller.getUsData()  < WALL_DIST + WALL_GAP){
 				leftMotor.backward();
 				rightMotor.forward();
 			}
 			//Sound.beep();
 			
 			// keep rotating until the robot sees a wall, then latch the angle
-			while(getFilteredData() > WALL_DIST){
+			while(frontPoller.getUsData()  > WALL_DIST){
 				leftMotor.backward();
 				rightMotor.forward();
 			}
@@ -154,12 +146,12 @@ public class USLocalizer {
 			 * will face toward the wall for most of it.
 			 */
 			// rotate the robot until it sees a wall
-			while(getFilteredData() > WALL_DIST - WALL_GAP){
+			while(frontPoller.getUsData()  > WALL_DIST - WALL_GAP){
 				leftMotor.backward();
 				rightMotor.forward();
 			}
 			// keep rotating until the robot no longer sees the wall, then latch the angle
-			while(getFilteredData() < WALL_DIST){
+			while(frontPoller.getUsData()  < WALL_DIST){
 				leftMotor.backward();
 				rightMotor.forward();
 			}
@@ -167,13 +159,13 @@ public class USLocalizer {
 			angleA = odo.getAng();
 			
 			//switch directions and rotate until the robot sees the wall.
-			while(getFilteredData() > WALL_DIST - WALL_GAP){
+			while(frontPoller.getUsData()  > WALL_DIST - WALL_GAP){
 				leftMotor.forward();
 				rightMotor.backward();
 			}
 
 			// rotate until the robot no longer sees the wall and latch the angle.
-			while(getFilteredData() < WALL_DIST){
+			while(frontPoller.getUsData()  < WALL_DIST){
 				leftMotor.forward();
 				rightMotor.backward();
 			}
@@ -226,30 +218,7 @@ public class USLocalizer {
 	private static int convertAngle(double radius, double width, double angle) {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
-	
-	/**
-	 * Gets the data from the ultrasonic sensor and returns the distance value
-	 * @return The distance currently being read by the ultrasonic sensor
-	 */
-	private float getFilteredData() {
-		usSensor.fetchSample(usData, 0);
-		float distance = (int)(usData[0]*100.0);
-		float result = 0;
-		if (distance > 50 && filterControl < FILTER_OUT) {
-			// bad value, do not set the distance var, however do increment the filter value
-			filterControl ++;
-			result = lastDistance;
-		} else if (distance > 50){
-			// true 255, therefore set distance to 255
-			result = 50; //clips it at 50
-		} else {
-			// distance went below 255, therefore reset everything.
-			filterControl = 0;
-			result = distance;
-		}
-		lastDistance = distance;
-		return result;
-	}
+
 
 
 
