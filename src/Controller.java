@@ -22,7 +22,7 @@ public class Controller {
 	// Right motor connected to output D
 	// Ultrasonic sensor port connected to input S1
 	// Color sensor port connected to input S2
-	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	//the two arm motors for capturing the block
 //	private static final EV3LargeRegulatedMotor armMotor1 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
@@ -87,10 +87,16 @@ public class Controller {
 		}else{ 
 			// perform the ultrasonic localization
 			//Rising edge was found to be the best in this case! So we use that one.
-			USLocalizer usl = new USLocalizer(odo, usValue, usData, USLocalizer.LocalizationType.FALLING_EDGE);
+			//USLocalizer usl = new USLocalizer(odo, usValue, usData, USLocalizer.LocalizationType.FALLING_EDGE);
 			
-			usl.doLocalization();
-			lsl.doLocalization();
+			//usl.doLocalization();
+			//lsl.doLocalization();
+			double[] pos = {0, 0,0};
+			boolean[] up = {true,true,true};
+			odo.setPosition(pos,up);
+			//navi.travelToAndAvoid(60, 60);
+			leftMotor.setSpeed(10);
+			leftMotor.forward();
 		}
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);

@@ -78,15 +78,44 @@ public class Navigation {
 	public void travelTo(double x, double y) {
 		double minAng;
 		while (Math.abs(x - odometer.getX()) > CM_ERR || Math.abs(y - odometer.getY()) > CM_ERR) {
+			
+			
 			minAng = (Math.atan2(y - odometer.getY(), x - odometer.getX())) * (180.0 / Math.PI);
 			if (minAng < 0)
 				minAng += 360.0;
 			this.turnTo(minAng, false);
 			this.setSpeeds(FAST, FAST);
+			
+
+			
+			
+			
 		}
 		this.setSpeeds(0, 0);
 	}
 
+	/*
+	 * TravelToAndAvoid function which takes as arguments the x and y position in cm Will travel to designated position, while
+	 * constantly updating it's heading. It also avoids blocks in the way
+	 */
+	public void travelToAndAvoid(double x, double y) {
+		double minAng;
+		while (Math.abs(x - odometer.getX()) > CM_ERR || Math.abs(y - odometer.getY()) > CM_ERR) {
+			
+			
+			minAng = (Math.atan2(y - odometer.getY(), x - odometer.getX())) * (180.0 / Math.PI);
+			if (minAng < 0)
+				minAng += 360.0;
+			this.turnTo(minAng, false);
+			this.setSpeeds(FAST, FAST);
+			
+			//if we see a block coming up, RUN wallFollower.avoidWall();
+			
+			
+		}
+		this.setSpeeds(0, 0);
+	}
+	
 	/*
 	 * TurnTo function which takes an angle and boolean as arguments The boolean controls whether or not to stop the
 	 * motors when the turn is completed
