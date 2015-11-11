@@ -14,26 +14,29 @@ public class BlockDetector extends Thread {
 	//the error that R,G, B can be off for it to still consider it a certain object.
 	private static final double DETECTIONTHRESHOLDERROR = 0.5;
 	private static final double WHEEL_RADIUS = 2.1;
+	private final int DETECTIONTHRESHOLD = 3;
+	private final double centerTolerance = 2; //TODO: test this value
 	//color sensor variables
 	private SampleProvider colorSensor;
 	private float[] colorData;
+	//ultrasonic sensor variables
+	private SampleProvider usSensor;
+	double USDistance;
+	private float[] usData;
 	//Reading properties
-	private boolean isReadingBlock;
+	private boolean isFlag;
 	private String blockType;
-	
-	//TODO: Daniele you have to organize this you're the worst
+	//odometer and navigator
 	Odometer odo;
 	Navigation navi;
+	//position variable, [x, y, theta]
 	private double[] pos = new double [3];
+	//The motors for moving the robot and for moving the arms to capture the flag
 	EV3LargeRegulatedMotor leftMotor;
 	EV3LargeRegulatedMotor rightMotor;
-	private SampleProvider usSensor;
-	private float[] usData;
-	private final int DETECTIONTHRESHOLD = 3;
-	private final double tolerance = 3;
 	EV3LargeRegulatedMotor verticalArmMotor;
 	EV3LargeRegulatedMotor horizontalArmMotor;
-	double USDistance;
+	
 
 	/**
 	 * Class constructor
@@ -63,7 +66,7 @@ public class BlockDetector extends Thread {
 		
 		//initialize variables
 		blockType = "";
-		isReadingBlock = false;
+		isFlag = false;
 		//initialize block profiles
 		blueBlockReading = new double[3];
 		darkBlueBlockReading = new double[3];
@@ -98,16 +101,16 @@ public class BlockDetector extends Thread {
 			//If our reading is within the allowed number to consider it a blue block, update what it sees.
 			if(totalNoObjectError < 0.25){
 				blockType = "";
-				isReadingBlock = false;
+				isFlag = false;
 			}else if(BlueBlockError[0] < DETECTIONTHRESHOLDERROR && BlueBlockError[1] < DETECTIONTHRESHOLDERROR &&  BlueBlockError[2] < DETECTIONTHRESHOLDERROR ){
 				blockType = "BLOCK";
-				isReadingBlock =true;
+				isFlag =true;
 			}else if(DarkBlueBlockError[0] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[1] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[2] < DETECTIONTHRESHOLDERROR){
 				blockType = "BLOCK";
-				isReadingBlock = true;
+				isFlag = true;
 			}else{
 				blockType = "NOT BLOCK";
-				isReadingBlock = false;
+				isFlag = false;
 			}
 			//now sleep so that we don't call this too often.
 			try {
@@ -166,7 +169,7 @@ public class BlockDetector extends Thread {
 			 */
 			double difference = rTheta - lTheta;
 			
-			if(Math.abs(difference) < tolerance)//within center tolerance
+			if(Math.abs(difference) < centerTolerance)//within center tolerance
 			{
 				USDistance = getFilteredUSData();
 				while(USDistance != DETECTIONTHRESHOLD) //get within reading range
@@ -201,7 +204,7 @@ public class BlockDetector extends Thread {
 	 */
 	public void isFlagDetected()
 	{
-		if(isReadingBlock) //capture flag
+		if(isFlag) //capture flag
 		{
 			pickUp();
 		}
@@ -283,7 +286,7 @@ public class BlockDetector extends Thread {
 	}
 	public boolean isReadingBlock(){
 		synchronized (this) {
-			return isReadingBlock;	
+			return isFlag;	
 		}
 	}
 
