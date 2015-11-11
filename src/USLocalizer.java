@@ -13,15 +13,15 @@ public class USLocalizer {
 	/**
 	 * The speed at which the robot rotates when performing the localization
 	 */
-	public static int ROTATION_SPEED = 60;
+	public static int ROTATION_SPEED = 175;
 	/**
 	 * The acceleration of the motors (lower acceleration = less slip)
 	 */
-	public static int ACCELERATION = 600;
+	public static int ACCELERATION = 800;
 	/**
 	 * The distance that the robot reads to consider it a wall
 	 */
-	private static int WALL_DIST = 30;
+	private static int WALL_DIST = 35;
 	/**
 	 * The buffer distance value to ensure the robot reads a wall accurately
 	 */
@@ -187,7 +187,7 @@ public class USLocalizer {
 			}
 			//calculate the average angle andd the zero point (zeropoint is x axis)
 			double averageAngle = (angleA + angleB)/2;
-			double ZeroPoint =  angleB - averageAngle + 45;
+			double ZeroPoint =  angleB - averageAngle - 45;
 
 			// angleA is clockwise from angleB, so assume the average of the
 			// angles to the right of angleB is 45 degrees past 'north'
@@ -200,7 +200,7 @@ public class USLocalizer {
 			
 			// update the odometer position to 0 0 0. The x and y will be wrong
 			// but that will be fixed by the LightLocalizer
-			odo.setPosition(new double [] {0.0, 0.0, 0}, new boolean [] {true, true, true});
+			odo.setPosition(new double [] {0.0, 0.0, 90}, new boolean [] {true, true, true});
 		}
 	}
 

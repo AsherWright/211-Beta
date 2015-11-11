@@ -89,6 +89,7 @@ public class LightLocalizer {
 				}
 				else if (numberOfGridLines == 4){
 					thetaXNegative = angle;
+					
 				}		
 			 }
 			

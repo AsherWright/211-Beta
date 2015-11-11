@@ -11,8 +11,8 @@
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation {
-	final static int FAST = 80, SLOW = 50, ACCELERATION = 600;
-	final static double DEG_ERR = 3, CM_ERR = 1.0;
+	final static int FAST = 120, SLOW = 150, ACCELERATION = 600;
+	final static double DEG_ERR = 2.0, CM_ERR = 0.2;
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private double wheelRadius;
@@ -154,8 +154,8 @@ public class Navigation {
 	//from Ming
 	public void rotate(int leftspeed, int rightspeed) {
 
-		leftMotor.setAcceleration(2000);
-		rightMotor.setAcceleration(2000);
+		leftMotor.setAcceleration(ACCELERATION);
+		rightMotor.setAcceleration(ACCELERATION);
 		leftMotor.setSpeed(Math.abs(leftspeed));
 		rightMotor.setSpeed(Math.abs(rightspeed));
 		if (leftspeed < 0)
