@@ -15,8 +15,12 @@ public class Navigation {
 	final static double DEG_ERR = 3, CM_ERR = 1.0;
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
+	private double wheelRadius;
+	private double wheelBase;
 
-	public Navigation(Odometer odo) {
+	public Navigation(Odometer odo, double wheelRadius, double wheelBase) {
+		this.wheelRadius = wheelRadius;
+		this.wheelBase = wheelBase;
 		this.odometer = odo;
 
 		EV3LargeRegulatedMotor[] motors = this.odometer.getMotors();
@@ -142,5 +146,27 @@ public class Navigation {
 		leftMotor.setSpeed(0);
 		rightMotor.setSpeed(0);
 		try {	Thread.sleep(100);	} catch (InterruptedException e) {}
+	}
+	/*
+	 * This method returns if the wheels are rotating
+	 */
+	public boolean isRotating(){
+		return rightMotor.isMoving() || leftMotor.isMoving();
+	}
+	/*
+	 * rotateForLocalization method is for rotating 360 degree, being used in light localization
+	 */
+	private static int convertDistance(double radius, double distance) {
+		return (int) ((180.0 * distance) / (Math.PI * radius));
+	}
+
+	private static int convertAngle(double radius, double width, double angle) {
+		return convertDistance(radius, Math.PI * width * angle / 360.0);
+	}
+	public void rotateForLightLocalization(){
+		leftMotor.setSpeed(SLOW);
+		rightMotor.setSpeed(SLOW);
+		leftMotor.rotate(-convertAngle(wheelRadius, wheelBase, 360.0), true);
+		rightMotor.rotate(convertAngle(wheelRadius, wheelBase, 360.0), true);
 	}
 }

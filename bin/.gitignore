@@ -1,4 +1,3 @@
-/.DS_Store
 /BlockDetector.class
 /Controller.class
 /LCDInfo.class
@@ -6,3 +5,4 @@
 /Odometer.class
 /USLocalizer$LocalizationType.class
 /USLocalizer.class
+/LightLocalizer.class
