@@ -31,9 +31,11 @@ public class ColorSensorPoller extends Thread {
 	}
 	public void setMode(int mode){
 		if(mode ==1){
+			csSensor.setCurrentMode("R");
 			csSample = csSensor.getRedMode();
 			csData = new float[csSample.sampleSize()];
 		}else if(mode ==2){
+			csSensor.setCurrentMode("RGB");
 			csSample = csSensor.getRGBMode();
 			csData = new float[csSample.sampleSize()];
 		}
