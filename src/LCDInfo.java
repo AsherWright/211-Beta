@@ -20,10 +20,11 @@ public class LCDInfo implements TimerListener{
 	private TextLCD LCD = LocalEV3.get().getTextLCD();
 	private UltrasonicPoller frontPoller;
 	private UltrasonicPoller sidePoller;
+	private ColorSensorPoller blockPoller;
 	// arrays for displaying data
 	private double [] pos;
 	
-	public LCDInfo(Odometer odo, UltrasonicPoller frontPoller, UltrasonicPoller sidePoller, float[] usSideData) {
+	public LCDInfo(Odometer odo, UltrasonicPoller frontPoller, UltrasonicPoller sidePoller,ColorSensorPoller blockPoller) {
 		this.odo = odo;
 		this.lcdTimer = new Timer(LCD_REFRESH, this);
 		
@@ -31,7 +32,7 @@ public class LCDInfo implements TimerListener{
 		pos = new double [3];
 		this.frontPoller = frontPoller;
 		this.sidePoller = sidePoller;
-		
+		this.blockPoller = blockPoller;
 		// start the timer
 		lcdTimer.start();
 	}
@@ -48,11 +49,13 @@ public class LCDInfo implements TimerListener{
 		LCD.drawString("H: ", 0, 2);
 		LCD.drawString("F: ", 0, 3);
 		LCD.drawString("S: ", 0, 4);
+		LCD.drawString("C: ", 0, 5);
 		LCD.drawString(String.valueOf(pos[0]), 3, 0);
 		LCD.drawString(String.valueOf(pos[1]), 3, 1);
 		LCD.drawString(String.valueOf(pos[2]), 3, 2);
 		LCD.drawString(String.valueOf(frontPoller.getUsData()), 3, 3);
 		LCD.drawString(String.valueOf(sidePoller.getUsData()), 3, 4);
+		LCD.drawString(String.valueOf(blockPoller.getR()) + ", " + String.valueOf(blockPoller.getG()) + ", " + String.valueOf(blockPoller.getB()), 3, 5);
 	}
 
 }

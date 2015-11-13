@@ -1,3 +1,8 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 
@@ -9,7 +14,7 @@ import lejos.robotics.SampleProvider;
  */
 public class USLocalizer {
 
-	public enum LocalizationType { FALLING_EDGE, RISING_EDGE };
+	public enum LocalizationType { FALLING_EDGE, RISING_EDGE, FULL_CIRCLE};
 	/**
 	 * The speed at which the robot rotates when performing the localization
 	 */
@@ -47,6 +52,8 @@ public class USLocalizer {
 	 * The value of the last distance the robot has read
 	 */
 	private float lastDistance;
+	
+	private Navigation navi;
 	//Motors (we will get these from the odometer)
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private UltrasonicPoller frontPoller;
@@ -57,9 +64,10 @@ public class USLocalizer {
 	 * @param usData The float array containing the ultrasonic data of the sensor.
 	 * @param locType The type of localization. FALLING_EDGE Vs RISING_EDGE
 	 */
-	public USLocalizer(Odometer odo,  UltrasonicPoller frontPoller, LocalizationType locType) {
+	public USLocalizer(Odometer odo, Navigation navi, UltrasonicPoller frontPoller, LocalizationType locType) {
 		//get incoming values
 		this.odo = odo;
+		this.navi = navi;
 		this.frontPoller = frontPoller;
 		this.locType = locType;
 		//get the motors from the odometer object.
@@ -138,7 +146,7 @@ public class USLocalizer {
 			// update the odometer position to 0 0 0 (that's how we are facing. Position (x and y) will
 			//be wrong but that will be fixed by the LightLocalizer
 			odo.setPosition(new double [] {0.0, 0.0, 0}, new boolean [] {true, true, true});
-		} else {
+		} else if(locType == LocalizationType.RISING_EDGE) {
 			/*
 			 * The robot should turn until it sees the wall, then look for the
 			 * "rising edges:" the points where it no longer sees the wall.
@@ -193,6 +201,118 @@ public class USLocalizer {
 			// update the odometer position to 0 0 0. The x and y will be wrong
 			// but that will be fixed by the LightLocalizer
 			odo.setPosition(new double [] {0.0, 0.0, 90}, new boolean [] {true, true, true});
+		}else{ //neither falling or rising, do 360 spin
+			double currAngle = odo.getAng();
+			//limits the amount of points we can take. This needs to be chosen experimentally.
+			int upperPointAmount = 200; 
+			int pointIndex = 0;
+			double[] angles = new double[upperPointAmount];
+			double[] distances = new double[upperPointAmount];
+			
+			leftMotor.setSpeed(ROTATION_SPEED);
+			rightMotor.setSpeed(ROTATION_SPEED);
+			
+			leftMotor.backward();
+			rightMotor.forward();
+			
+			//spin until we are bigger than 359 degrees (full circle almost)
+			while(odo.getAng() < 359){
+				if(pointIndex < angles.length){
+					angles[pointIndex] = odo.getAng();
+					distances[pointIndex] = (double) frontPoller.getUsData();
+				}else{
+					Sound.beep();
+					break;
+				}
+				//Now we sleep. If it takes 10s to go around, pinging at 50ms will mean 200 datapoints.
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			leftMotor.stop(true);
+			rightMotor.stop(true);
+			for(int i = 0; i < angles.length; i++){
+				System.out.println(angles[i] + ", " + distances[i]);
+			}
+			//now we must analyze the data we just got
+//			//Method 1: Get two minimums that are at least X theta apart.
+//			//Method 2: Remove all large values and then analyze data...
+//			double firstWallDist = 100;
+//			int firstWallIndex = 0;
+//			//go through the array
+//			for(int i = 0; i < angles.length; i++){
+//				//this means we've reached the empty part of our array, so leave.
+//				if(distances[i] == 0){
+//					break;
+//				}else{
+//					if(firstWallDist > distances[i]){
+//						firstWallDist = distances[i];
+//						firstWallIndex = i;
+//					}
+//				}
+//			}
+//			//we now have our minimum value. This corresponds to ONE of the walls...
+//			//to get the other wall, we will do the same thing, but ignore all values 
+//			//that are + or - 10% from the last min...
+//			int lowerIgnore = firstWallIndex - angles.length/10;
+//			int upperIgnore = firstWallIndex + angles.length/10;
+//			double otherWallDist = 100;
+//			int otherWallIndex = 0;
+//			int endIndex = angles.length-1;
+//			for(int i = 0; i < angles.length; i++){
+//				//this means we've reached the empty part of our array, so leave.
+//				if(distances[i] == 0){
+//					endIndex = i;
+//					break;
+//				}else{
+//					//only check if outside of last wall region.
+//					if(i > upperIgnore || i < lowerIgnore){
+//						if(otherWallDist > distances[i]){
+//							otherWallDist = distances[i];
+//							otherWallIndex = i;
+//						}
+//					}
+//				}
+//			}
+//			
+//			double angleToTurnTo = 0;
+//			if(otherWallIndex > firstWallIndex){
+//				//check to see if we are wrapping around the array.
+//				if(otherWallIndex - firstWallIndex > endIndex - otherWallIndex + firstWallIndex){
+//					//no wrapping, so just go to the firstWallIndex
+//					angleToTurnTo = angles[firstWallIndex];
+//				}else{
+//					angleToTurnTo = angles[otherWallIndex];
+//				}
+//			}else{
+//				//check to see if we are wrapping around the array.
+//				if(firstWallIndex - otherWallIndex > endIndex - firstWallIndex + otherWallIndex){
+//					//no wrapping, so just go to the firstWallIndex
+//					angleToTurnTo = angles[otherWallIndex];
+//				}else{
+//					angleToTurnTo = angles[firstWallIndex];
+//				}
+//			}
+//			System.out.println("My wall is at angle: " + angleToTurnTo);
+//			navi.turnTo(angleToTurnTo,true);
+//			Sound.beep();
+//			try {
+//				Thread.sleep(2000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			//we are now facing +180 degrees (along negative x axis).
+//			//we want to face 45 degrees, so subtract 135.
+//			angleToTurnTo -=135;
+//
+//			navi.turnTo(angleToTurnTo, true);
+//			odo.setTheta(45);
+//			navi.travelTo(30-firstWallDist/2, 30-firstWallDist/2);
+//			//done US localization.
 		}
 	}
 

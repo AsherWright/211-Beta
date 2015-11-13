@@ -15,8 +15,6 @@ public class LightLocalizer {
 	long correctionStart, correctionEnd;
 	private Navigation navigation;
 	private Odometer odo;
-	private SampleProvider colorSensor;
-	private float[] colorData;	
 	private double brightness;		
 	private int numberOfGridLines = 0;
 	private boolean isBlackLine = false;
@@ -33,6 +31,7 @@ public class LightLocalizer {
 	 */
 	private double deltaThetaX;   
 	private double x, y, theta;   
+	private ColorSensorPoller blockPoller;
 	
 	/**
 	 * Constructor for the light localizer
@@ -41,11 +40,10 @@ public class LightLocalizer {
 	 * @param colorData - The float array containing the color data of the sensor
 	 * @param navigation - The navigation class being used by the robot
 	 */
-	public LightLocalizer(Odometer odo, SampleProvider colorSensor, float[] colorData, Navigation navigation, double del) {
+	public LightLocalizer(Odometer odo, ColorSensorPoller blockPoller, Navigation navigation, double del) {
 		this.navigation = navigation;
 		this.odo = odo;
-		this.colorSensor = colorSensor;
-		this.colorData = colorData;
+		this.blockPoller = blockPoller;
 		this.del = del;
 	}
 	
@@ -58,11 +56,11 @@ public class LightLocalizer {
 		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
 		navigation.rotateForLightLocalization();
 		double angle = 0;
+		blockPoller.setMode(1);
 		
 		while (navigation.isRotating() == true){
 			correctionStart = System.currentTimeMillis();
-			colorSensor.fetchSample(colorData, 0);
-			brightness = colorData[0];
+			brightness = blockPoller.getBrightness();
 			if (brightness < brightnessThreshold)
 			{
 				//get angle from odometer

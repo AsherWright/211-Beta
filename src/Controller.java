@@ -29,7 +29,7 @@ public class Controller {
 //	private static final EV3LargeRegulatedMotor armMotor2 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	//sensor ports
 
-	private static final Port colorPort = LocalEV3.get().getPort("S3");		
+
 	//robot dimension constants
 	public static final double ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR = 10.6;
 	public static final double WHEEL_RADIUS = 2.09;
@@ -44,15 +44,8 @@ public class Controller {
 		// 4. Create a buffer for the sensor data
 		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
 		UltrasonicPoller sidePoller = new UltrasonicPoller("S1");
-		//Setup color sensor
-		// 1. Create a port object attached to a physical port (done above)
-		// 2. Create a sensor instance and attach to port
-		// 3. Create a sample provider instance for the above and initialize operating mode
-		// 4. Create a buffer for the sensor data
-  		SensorModes colorSensor = new EV3ColorSensor(colorPort);
-	    SampleProvider colorValue = colorSensor.getMode("Red");  		// colorValue provides samples from this instance
-		float[] colorData = new float[colorValue.sampleSize()];			// colorData is the buffer in which data are returned
-	
+		ColorSensorPoller blockPoller = new ColorSensorPoller("S3");
+		
 		// start the block detector thread, which will be constantly checking with the light sensor
 		//to see if there is a block.
 //		BlockDetector blockDetector = new BlockDetector(colorValue, colorData);
@@ -64,12 +57,12 @@ public class Controller {
 		WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
 		
 		//set up the display and navigator
-		LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, colorData);
+		LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 		
 		//set up the light localization
-		LightLocalizer lsl = new LightLocalizer(odo, colorValue, colorData, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-		USLocalizer usl = new USLocalizer(odo, frontPoller, USLocalizer.LocalizationType.RISING_EDGE);
+		LightLocalizer lsl = new LightLocalizer(odo, blockPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
+		USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 		
 		/*
 		 * We wait for a press. If it is a left button, we're just doing the detection
