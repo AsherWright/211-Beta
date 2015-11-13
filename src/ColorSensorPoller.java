@@ -1,10 +1,7 @@
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.hardware.sensor.SensorModes;
 import lejos.robotics.SampleProvider;
-
 
 public class ColorSensorPoller extends Thread {
 	private Port csPort;
@@ -13,11 +10,11 @@ public class ColorSensorPoller extends Thread {
 	Port colorPort;
 	float[] csData;		// usData is the buffer in which data are returned
 	private Object lock;
-	private double r,g,b;
+	
 	
 	public ColorSensorPoller(String port){
-		colorPort = LocalEV3.get().getPort(port);		
-  		csSensor = new EV3ColorSensor(colorPort);
+		csPort = LocalEV3.get().getPort(port);		
+  		csSensor = new EV3ColorSensor(csPort);
   		csSample = csSensor.getRGBMode();	// colorValue provides samples from this instance
 		csData = new float[csSample.sampleSize()];			// colorData is the buffer in which data are returned
 		lock = new Object();

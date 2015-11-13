@@ -44,7 +44,7 @@ public class Controller {
 		// 4. Create a buffer for the sensor data
 		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
 		UltrasonicPoller sidePoller = new UltrasonicPoller("S1");
-		ColorSensorPoller blockPoller = new ColorSensorPoller("S3");
+		ColorSensorPoller blockPoller = new ColorSensorPoller("S2");
 		
 		// start the block detector thread, which will be constantly checking with the light sensor
 		//to see if there is a block.
