@@ -12,13 +12,14 @@ public class UltrasonicPoller extends Thread{
 	SampleProvider usDistance;	// usDistance provides samples from this instance
 	float[] usData;		// usData is the buffer in which data are returned
 	private Object lock;
-	
+	private int pollPeriod;
 	public UltrasonicPoller(String portName) {
 		usPort = LocalEV3.get().getPort(portName);
 		usSensor =  new EV3UltrasonicSensor(usPort);
 		usDistance = usSensor.getMode("Distance");
 		usData =  new float[usDistance.sampleSize()];
 		lock = new Object();
+		pollPeriod = 50;
 		try {
 			Thread.sleep(500);
 		} catch (InterruptedException e) {
@@ -52,8 +53,14 @@ public class UltrasonicPoller extends Thread{
 				usDistance.fetchSample(usData,0);							// acquire data
 				}
 			}	
-			try { Thread.sleep(50); } catch(Exception e){}		// Poor man's timed sampling
+			try { Thread.sleep(pollPeriod); } catch(Exception e){}		// Poor man's timed sampling
 		}
+	}
+	public void setPollRate(int pollPeriod){
+		synchronized (lock){
+			this.pollPeriod = pollPeriod;
+		}
+
 	}
 
 }
