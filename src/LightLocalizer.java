@@ -9,7 +9,10 @@ import lejos.robotics.SampleProvider;
 public class LightLocalizer {
 	//constants
 	private double del;         //distance from the color sensor to the centre of robot.
-	private static final long CORRECTION_PERIOD = 20;
+	/**
+	 * This constant controls the period(millisecond) in which lightLocalizer requires data from ColorSensorPoller
+	 */
+	private static final long DATA_PERIOD = 20;
 	private double brightnessThreshold = 0.40;
 	//variables
 	long correctionStart, correctionEnd;
@@ -50,6 +53,7 @@ public class LightLocalizer {
 	/**
 	 * Uses the color sensor to perform a "localization", where it figures out its initial starting angle.
 	 * After localization, robot will travel to (0,0) point and rotate to X positive
+	 * Inside doLocalization() exits a time control, so that function only requires data once from color sensor every CORRECTION_PERIOD.
 	 */
 	public void doLocalization() {
 		
@@ -92,9 +96,9 @@ public class LightLocalizer {
 			 }
 			
 			correctionEnd = System.currentTimeMillis();
-			if (correctionEnd - correctionStart < CORRECTION_PERIOD) {
+			if (correctionEnd - correctionStart < DATA_PERIOD) {
 				try {
-					Thread.sleep(CORRECTION_PERIOD - (correctionEnd - correctionStart));
+					Thread.sleep(DATA_PERIOD - (correctionEnd - correctionStart));
 				} catch (InterruptedException e) {}
 			}
 		}

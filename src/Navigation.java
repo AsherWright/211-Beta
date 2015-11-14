@@ -190,9 +190,7 @@ public class Navigation {
 	public boolean isRotating(){
 		return rightMotor.isMoving() || leftMotor.isMoving();
 	}
-	/*
-	 * rotateForLocalization method is for rotating 360 degree, being used in light localization
-	 */
+	
 	private static int convertDistance(double radius, double distance) {
 		return (int) ((180.0 * distance) / (Math.PI * radius));
 	}
@@ -200,6 +198,9 @@ public class Navigation {
 	private static int convertAngle(double radius, double width, double angle) {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
+	/*
+	 * rotateForLocalization method is for rotating 360 degree, being used in light localization
+	 */
 	public void rotateForLightLocalization(){
 		leftMotor.setSpeed(SLOW);
 		rightMotor.setSpeed(SLOW);

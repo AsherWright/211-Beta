@@ -27,7 +27,8 @@ public class ColorSensorPoller extends Thread {
 		this.start();
 	}
 	public void setMode(int mode){
-		if(mode ==1){
+		synchronized(lock){
+			if(mode ==1){
 			csSensor.setCurrentMode("R");
 			csSample = csSensor.getRedMode();
 			csData = new float[csSample.sampleSize()];
@@ -36,29 +37,44 @@ public class ColorSensorPoller extends Thread {
 			csSample = csSensor.getRGBMode();
 			csData = new float[csSample.sampleSize()];
 		}
+	}	
 	}
+	/**
+	 * From the reference of EV3 web, color sensor sample rate is 1kHz, therefore the minimum time between each data is 1ms.
+	 * We fetchSample every 10ms. 
+	 */
 	public void run() {
 		
 		while (true) {
 			synchronized(lock){
-				csSample.fetchSample(csData, 0);							// acquire data
-			}	
-			try { Thread.sleep(50); } catch(Exception e){}		// Poor man's timed sampling
+				csSample.fetchSample(csData, 0);                    // acquire data
+				try { Thread.sleep(10); } catch(Exception e){}		// Poor man's timed sampling							
+			}				
 		}
 	}
 	public float[] getColorData(){
-		return csData;
+		synchronized(lock){
+			return csData;
+		}		
 	}
 	public double getR(){
-		return csData[0];
+		synchronized(lock){
+			return csData[0];
+		}		
 	}
 	public double getG(){
-		return csData[1];
+		synchronized(lock){
+			return csData[1];
+		}		
 	}
 	public double getB(){
-		return csData[2];
+		synchronized(lock){
+			return csData[2];
+		}		
 	}
 	public double getBrightness(){
-		return csData[0];
+		synchronized (lock) {
+			return csData[0];
+		}		
 	}
 }
