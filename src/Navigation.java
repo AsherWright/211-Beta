@@ -116,7 +116,8 @@ public class Navigation {
 				Sound.beep();
 				Sound.beep();
 				this.setSpeeds(0, 0);
-				avoider.avoidWall();	
+
+				avoider.avoidWall(odometer.getX()+10.0*Math.cos(odometer.getAng()), odometer.getY()+10.0*Math.sin(odometer.getAng()),x, y);	
 				this.setSpeeds(FAST,FAST);
 			}
 			

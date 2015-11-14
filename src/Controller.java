@@ -85,7 +85,7 @@ public class Controller {
 			//double[] pos = {0, 0,0};
 			//boolean[] up = {true,true,true};
 			//odo.setPosition(pos,up);
-//			navi.travelToAndAvoid(60.8, 60.8);
+//			navi.travelToAndAvoid(120, 120);
 			//leftMotor.setSpeed(10);
 			//leftMotor.forward();
 		}

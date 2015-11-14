@@ -37,7 +37,7 @@ public class WallAvoider {
 		this.frontPoller = frontPoller;
 		this.sidePoller = sidePoller;
 	}
-	public void avoidWall(){
+	public void avoidWall(double blockX, double blockY, double endX, double endY){
 		
 		while(true){
 	
@@ -95,10 +95,15 @@ public class WallAvoider {
 				}
 			}
 			
-			double xDiff = odo.getX() - 60;
-			double yDiff = odo.getY() - 60;
-			
-			if(Math.sqrt(Math.pow(xDiff,2) + Math.pow(yDiff,2)) < 20){
+			//The end condition is if we are close to the end than the block is (+ a buffer amount)
+			double xRobotDiff = odo.getX() - endX;
+			double yRobotDiff = odo.getY() - endY;
+			double xBlockDiff = blockX - endX;
+			double yBlockDiff = blockY - endY;
+			double robotDist = Math.sqrt(Math.pow(xRobotDiff,2) + Math.pow(yRobotDiff,2));
+			double blockDist = Math.sqrt(Math.pow(xBlockDiff,2) + Math.pow(yBlockDiff,2));
+			//end condition
+			if(robotDist < blockDist-15){
 				Sound.beep();
 				break;
 			}
