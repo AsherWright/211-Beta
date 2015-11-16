@@ -48,8 +48,8 @@ public class ColorSensorPoller extends Thread {
 		while (true) {
 			synchronized(lock){
 				csSample.fetchSample(csData, 0);                    // acquire data
-				try { Thread.sleep(10); } catch(Exception e){}		// Poor man's timed sampling							
-			}				
+			}	
+			try { Thread.sleep(20); } catch(Exception e){}		// Poor man's timed sampling
 		}
 	}
 	public float[] getColorData(){
