@@ -10,7 +10,7 @@ public class ColorSensorPoller extends Thread {
 	Port colorPort;
 	float[] csData;		// usData is the buffer in which data are returned
 	private Object lock;
-	
+	int pollRate;
 	
 	public ColorSensorPoller(String port){
 		csPort = LocalEV3.get().getPort(port);		
@@ -24,6 +24,7 @@ public class ColorSensorPoller extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		pollRate = 30;
 		this.start();
 	}
 	public void setMode(int mode){
@@ -49,7 +50,7 @@ public class ColorSensorPoller extends Thread {
 			synchronized(lock){
 				csSample.fetchSample(csData, 0);                    // acquire data
 			}	
-			try { Thread.sleep(20); } catch(Exception e){}		// Poor man's timed sampling
+			try { Thread.sleep(pollRate); } catch(Exception e){}		// Poor man's timed sampling
 		}
 	}
 	public float[] getColorData(){
@@ -77,5 +78,10 @@ public class ColorSensorPoller extends Thread {
 			return csData[0];
 			
 		}		
+	}
+	public void setPollRate(int pollRate){
+		synchronized (lock) {
+			this.pollRate = pollRate;
+		}
 	}
 }

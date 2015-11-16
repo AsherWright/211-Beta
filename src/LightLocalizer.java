@@ -60,7 +60,9 @@ public class LightLocalizer {
 		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
 		navigation.rotateForLightLocalization();
 		double angle = 0;
+		//setting the color sensor properties.
 		groundPoller.setMode(1);
+		groundPoller.setPollRate(20);
 		
 		while (navigation.isRotating() == true){
 			correctionStart = System.currentTimeMillis();
