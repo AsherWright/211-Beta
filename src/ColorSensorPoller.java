@@ -29,7 +29,7 @@ public class ColorSensorPoller extends Thread {
 	public void setMode(int mode){
 		synchronized(lock){
 			if(mode ==1){
-			csSensor.setCurrentMode("R");
+			csSensor.setCurrentMode(1); //1 = red
 			csSample = csSensor.getRedMode();
 			csData = new float[csSample.sampleSize()];
 		}else if(mode ==2){
@@ -75,6 +75,7 @@ public class ColorSensorPoller extends Thread {
 	public double getBrightness(){
 		synchronized (lock) {
 			return csData[0];
+			
 		}		
 	}
 }
