@@ -12,15 +12,17 @@ import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation {
-	final static int FAST = 120, SLOW = 150, ACCELERATION = 600;
-	final static double DEG_ERR = 2.0, CM_ERR = 0.2;
+	final static int FAST = 120, SLOW = 90, ACCELERATION = 600;
+	
+
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private double wheelRadius;
 	private double wheelBase;
 	private WallAvoider avoider;
 	private UltrasonicPoller frontPoller;
-	
+	private double degreeError;
+	private double cmError;
 	
 	public Navigation(Odometer odo, WallAvoider avoider,  UltrasonicPoller frontPoller, double wheelRadius, double wheelBase) {
 		this.wheelRadius = wheelRadius;
@@ -36,6 +38,14 @@ public class Navigation {
 		// set acceleration
 		this.leftMotor.setAcceleration(ACCELERATION);
 		this.rightMotor.setAcceleration(ACCELERATION);
+		degreeError = 2.0;
+		cmError = 0.2;
+	}
+	public void setCmError(double cmErr){
+		cmError = cmErr;
+	}
+	public void setDegreeError(double deg){
+		degreeError = deg;
 	}
 
 	/*
@@ -52,6 +62,11 @@ public class Navigation {
 			this.rightMotor.backward();
 		else
 			this.rightMotor.forward();
+		
+		if(lSpd == 0 && rSpd == 0){
+			this.leftMotor.stop(true);
+			this.rightMotor.stop(true);
+		}
 	}
 
 	public void setSpeeds(int lSpd, int rSpd) {
@@ -65,6 +80,11 @@ public class Navigation {
 			this.rightMotor.backward();
 		else
 			this.rightMotor.forward();
+		
+		if(lSpd == 0 && rSpd == 0){
+			this.leftMotor.stop(true);
+			this.rightMotor.stop(true);
+		}
 	}
 
 	/*
@@ -83,7 +103,7 @@ public class Navigation {
 	 */
 	public void travelTo(double x, double y) {
 		double minAng;
-		while (Math.abs(x - odometer.getX()) > CM_ERR || Math.abs(y - odometer.getY()) > CM_ERR) {
+		while (Math.abs(x - odometer.getX()) > cmError || Math.abs(y - odometer.getY()) > cmError) {
 			
 			
 			minAng = (Math.atan2(y - odometer.getY(), x - odometer.getX())) * (180.0 / Math.PI);
@@ -102,7 +122,7 @@ public class Navigation {
 	 */
 	public void travelToAndAvoid(double x, double y) {
 		double minAng;
-		while (Math.abs(x - odometer.getX()) > CM_ERR || Math.abs(y - odometer.getY()) > CM_ERR) {
+		while (Math.abs(x - odometer.getX()) > cmError || Math.abs(y - odometer.getY()) > cmError) {
 			
 			
 			minAng = (Math.atan2(y - odometer.getY(), x - odometer.getX())) * (180.0 / Math.PI);
@@ -133,7 +153,7 @@ public class Navigation {
 
 		double error = angle - this.odometer.getAng();
 
-		while (Math.abs(error) > DEG_ERR) {
+		while (Math.abs(error) > degreeError) {
 
 			error = angle - this.odometer.getAng();
 

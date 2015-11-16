@@ -61,7 +61,6 @@ public class LightLocalizer {
 		navigation.rotateForLightLocalization();
 		double angle = 0;
 		//setting the color sensor properties.
-		groundPoller.setMode(1);
 		groundPoller.setPollRate(20);
 		
 		while (navigation.isRotating() == true){

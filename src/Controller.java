@@ -47,6 +47,7 @@ public class Controller {
 		UltrasonicPoller sidePoller = new UltrasonicPoller("S1");
 		ColorSensorPoller blockPoller = new ColorSensorPoller("S2");
 		ColorSensorPoller groundPoller = new ColorSensorPoller("S3");
+		groundPoller.setMode(1);
 		// start the block detector thread, which will be constantly checking with the light sensor
 		//to see if there is a block.
 //		BlockDetector blockDetector = new BlockDetector(colorValue, colorData);
@@ -79,13 +80,19 @@ public class Controller {
 			//Rising edge was found to be the best in this case! So we use that one.
 			//disable the side sensor for localization so that it doens't interfere
 //			sidePoller.disableSensor();
+			navi.setCmError(0.4);
+			navi.setDegreeError(4.0);
 			usl.doLocalization();
+			
+			navi.setCmError(0.2);
+			navi.setDegreeError(2.0);
 			lsl.doLocalization();
+			
 //			sidePoller.enableSensor();
 			//double[] pos = {0, 0,0};
 			//boolean[] up = {true,true,true};
 			//odo.setPosition(pos,up);
-//			navi.travelToAndAvoid(120, 120);
+			navi.travelToAndAvoid(150, 150);
 			//leftMotor.setSpeed(10);
 			//leftMotor.forward();
 		}

@@ -326,8 +326,8 @@ public class USLocalizer {
 //				e.printStackTrace();
 //			}
 			//we are now facing +180 degrees (along negative x axis).
-			//we want to face 45 degrees, so subtract 135.
-			angleToTurnTo -=135;
+			//we want to face 45 degrees, so subtract 135 + 10 since we are rotating clockwise and have offset.
+			angleToTurnTo -=145;
 			if(angleToTurnTo < 0){
 				angleToTurnTo +=360;
 			}
