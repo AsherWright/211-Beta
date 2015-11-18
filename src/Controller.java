@@ -36,8 +36,8 @@ public class Controller {
 	public static final double TRACK = 15.15; 
 	
 	public static void main(String[] args)  {
-		int zoneX = 120;
-		int zoneY = 120;
+		double zoneX = 4*30.4;
+		double zoneY = 6*30.4;
 		//Setup ultrasonic sensor
 		// 1. Create a port object attached to a physical port (done above)
 		// 2. Create a sensor instance and attach to port
@@ -62,10 +62,9 @@ public class Controller {
 		LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller);
 //		LCDInfo lcd = new LCDInfo(odo,frontPoller,null, null);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
-		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, leftMotor,
-                rightMotor,frontPoller, verticalArmMotor, horizontalArmMotor);
+		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
 		blockDetector.start();	
-		SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector);
+		SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
 
 		//set up the light localization
 		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
@@ -88,13 +87,17 @@ public class Controller {
 			
 			navi.setCmError(0.2);
 			navi.setDegreeError(2.0);
+			navi.setSlowSpeed(120);
 			lsl.doLocalization();
 			sidePoller.enableSensor();
-			
-			navi.travelToAndAvoid(zoneX - 10, zoneY - 10);
-			navi.turnTo(270, true);
+			navi.setSlowSpeed(90);
+			navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
+			navi.travelTo(zoneX-10, zoneY);
+			navi.turnTo(250, true);
+			odo.setTheta(270);
 			//the block searcher should go here
 			searcher.run();
+			navi.travelToAndAvoid(0, 0);
 		}
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);

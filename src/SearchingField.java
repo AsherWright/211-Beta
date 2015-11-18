@@ -17,11 +17,12 @@ public class SearchingField extends Thread {
 	private boolean isFlag; //determines if flag is found
 	double b = 6; //TODO: test distance
 	double a = 3;
-
+	double x;
+	double y;
 	
 	//constructor 
 	public SearchingField( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
-			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector)
+			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector, double endX, double endY)
 	{
         this.odo = odo;
         this.navi= navi;
@@ -30,7 +31,8 @@ public class SearchingField extends Thread {
         this.detector= detector;
         this.frontPoller = frontPoller;
         this.sidePoller = sidePoller;
-        
+        this.x = endX;
+        this.y = endY;
 	}
 	/**
 	 * 
@@ -46,7 +48,7 @@ public class SearchingField extends Thread {
 		leftMotor.setSpeed(100);
 
 		//travel side to upper right corner
-		while(odo.getY() < (3*30.4+a+b))
+		while(odo.getY() >y - (2*30.4+a+b))
 		{	
 			if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
 			{
@@ -70,7 +72,7 @@ public class SearchingField extends Thread {
 		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
 			
 			//travel side to upper left corner
-			while(odo.getX() < (b+2*30.5)) 
+			while(odo.getX() < x+ (b+2*30.5)) 
 			{
 				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
 				{
@@ -91,7 +93,7 @@ public class SearchingField extends Thread {
 				//turn 90 degree ccw
 				rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
 				leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-			while (odo.getY() < (3*30.4+b)) //object in second 1x3 area
+			while (odo.getY() < y) //object in second 1x3 area
 			{
 				if(sidePoller.getUsData()< (b+30.4))
 				{

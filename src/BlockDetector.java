@@ -45,14 +45,14 @@ public class BlockDetector extends Thread {
      * @param verticalArmMotor EV3 Motor for up/down movement of arm
      * @param horizontalArmMotor EV3 Motor for open/close movement of arm
      */
-    public BlockDetector(ColorSensorPoller blockPoller, Navigation navi, Odometer odo, EV3LargeRegulatedMotor leftMotor,
-                         EV3LargeRegulatedMotor rightMotor,UltrasonicPoller frontPoller, EV3LargeRegulatedMotor verticalArmMotor, EV3LargeRegulatedMotor horizontalArmMotor) {
+    public BlockDetector(ColorSensorPoller blockPoller, Navigation navi, Odometer odo,UltrasonicPoller frontPoller, EV3LargeRegulatedMotor verticalArmMotor, EV3LargeRegulatedMotor horizontalArmMotor) {
         //get incoming values for variables
         this.blockPoller = blockPoller;
         this.odo = odo;
         this.navi= navi;
-        this.leftMotor = leftMotor;
-        this.rightMotor = rightMotor;
+		EV3LargeRegulatedMotor[] motors = odo.getMotors();
+		this.leftMotor = motors[0];
+		this.rightMotor = motors[1];
         this.frontPoller = frontPoller;
         this.verticalArmMotor = verticalArmMotor;
         this.horizontalArmMotor = horizontalArmMotor;
@@ -148,12 +148,11 @@ public class BlockDetector extends Thread {
             Sound.buzz();
             Sound.buzz();
             
-            USDistance = getFilteredUSData();
-            while(USDistance > DETECTIONRANGE) //get within 4cm
+            
+            while(getFilteredUSData() > DETECTIONRANGE) //get within 4cm
             {
                 rightMotor.forward();
                 leftMotor.forward();
-                USDistance = getFilteredUSData();
             }
             rightMotor.stop(true);
             leftMotor.stop(true);
@@ -168,10 +167,17 @@ public class BlockDetector extends Thread {
         else //block at angle 
         {
             Sound.buzz();
-            
+            while(getFilteredUSData() > DETECTIONRANGE) //get within 4cm
+            {
+                rightMotor.forward();
+                leftMotor.forward();
+     
+            }
+            rightMotor.stop(true);
+            leftMotor.stop(true);
             //drive into the block to straighten it out
-            rightMotor.rotate(convertDistance(WHEEL_RADIUS,17),true); 
-            leftMotor.rotate(convertDistance(WHEEL_RADIUS,17),false);
+            rightMotor.rotate(convertDistance(WHEEL_RADIUS,7),true); 
+            leftMotor.rotate(convertDistance(WHEEL_RADIUS,7),false);
       
             isFlagDetected();
         }
@@ -211,8 +217,8 @@ public class BlockDetector extends Thread {
     public void pickUp()
     {
         //back up
-    	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-13), true);
-    	leftMotor.rotate(convertDistance(WHEEL_RADIUS,-13), false);
+    	rightMotor.rotate(-convertDistance(WHEEL_RADIUS,13), true);
+    	leftMotor.rotate(-convertDistance(WHEEL_RADIUS,13), false);
           
         //turn around
         rightMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,165),true);
@@ -232,10 +238,10 @@ public class BlockDetector extends Thread {
         }
         
         //back up
-        rightMotor.setSpeed(100);
-        leftMotor.setSpeed(100);
-        rightMotor.rotate(convertDistance(WHEEL_RADIUS,-10),true);//arms dont hit at 15cm, perf dist: -8
-        leftMotor.rotate(convertDistance(WHEEL_RADIUS,-10),false);
+        rightMotor.setSpeed(30);
+        leftMotor.setSpeed(30);
+        rightMotor.rotate(-convertDistance(WHEEL_RADIUS,10),true);//arms dont hit at 15cm, perf dist: -8
+        leftMotor.rotate(-convertDistance(WHEEL_RADIUS,10),false);
             
         //close arms
         horizontalArmMotor.rotate(-130, false);
@@ -243,6 +249,9 @@ public class BlockDetector extends Thread {
         
         //lift up arms
         verticalArmMotor.rotate(180,false);
+        leftMotor.setSpeed(100);
+        rightMotor.setSpeed(100);
+        
     }
     /**
      * This method uses color sensor to identify if block is color of flag
