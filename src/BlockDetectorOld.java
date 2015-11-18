@@ -3,9 +3,9 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 /**
  * @author danielebercovici
- * @version 1.1
+ * @version 1.0
  */
-public class BlockDetector extends Thread {
+public class BlockDetectorOld extends Thread {
     //constants
     //class variables
     //these are the different block profiles. They are initialized in the constructor
@@ -21,7 +21,6 @@ public class BlockDetector extends Thread {
     private UltrasonicPoller frontPoller;
     //Reading properties
     private String blockType;
-    private boolean isFlag; //indicates if flag was found
     //odometer and navigator
     Odometer odo;
     Navigation navi;
@@ -36,7 +35,8 @@ public class BlockDetector extends Thread {
     
     /**
      * Class constructor
-     * @param colorSensorPoller sample and data provider for colored sensor
+     * @param colorSensor sample provider for colored sensor
+     * @param colorData sample data for colored sensor
      * @param navi Navigator class Object
      * @param odo Odometer class Object
      * @param leftMotor EV3 Motor on the left
@@ -45,7 +45,7 @@ public class BlockDetector extends Thread {
      * @param verticalArmMotor EV3 Motor for up/down movement of arm
      * @param horizontalArmMotor EV3 Motor for open/close movement of arm
      */
-    public BlockDetector(ColorSensorPoller blockPoller, Navigation navi, Odometer odo, EV3LargeRegulatedMotor leftMotor,
+    public BlockDetectorOld(ColorSensorPoller blockPoller, Navigation navi, Odometer odo, EV3LargeRegulatedMotor leftMotor,
                          EV3LargeRegulatedMotor rightMotor,UltrasonicPoller frontPoller, EV3LargeRegulatedMotor verticalArmMotor, EV3LargeRegulatedMotor horizontalArmMotor) {
         //get incoming values for variables
         this.blockPoller = blockPoller;
@@ -67,15 +67,17 @@ public class BlockDetector extends Thread {
         blueBlockReading[2] = 1.15;
         darkBlueBlockReading[0] = 0.2;
         darkBlueBlockReading[1] = 0.5;
-        darkBlueBlockReading[2] = 0.7;   
+        darkBlueBlockReading[2] = 0.7;
+        
+        
     }
     
     /**
-     * Method runs Block Detection setting light sensor mode to color ID
+     * Method that Checks if Block is the right color, set global variable isReadingBlock true if right block and false otherwise.
      */
     public void run(){
         blockPoller.setMode(2);
-       // investigateBlock();
+        investigateBlock();
     }
     /**
      * Method that gets close to block in order to get accurate readings for the light sensor, calls isFlagDetected method
@@ -143,13 +145,16 @@ public class BlockDetector extends Thread {
             difference = 360-difference;
         }
         
-        if(difference <= 88 && difference >= 65)//within center of block
+       //for testing
+        System.out.println("difference:"+difference);
+        
+        if(difference <= 88 && difference >= 65)//within center range
         {
             Sound.buzz();
             Sound.buzz();
             
             USDistance = getFilteredUSData();
-            while(USDistance > DETECTIONRANGE) //get within 4cm
+            while(USDistance > DETECTIONRANGE) //get within light sensor range
             {
                 rightMotor.forward();
                 leftMotor.forward();
@@ -158,20 +163,23 @@ public class BlockDetector extends Thread {
             rightMotor.stop(true);
             leftMotor.stop(true);
             
-            //get within light sensor range (cant use ultrasonic because only detects till 4cm)
+            //get within light sensor range
             rightMotor.rotate(convertDistance(WHEEL_RADIUS,5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,5), false);
             
             isFlagDetected();
         }
         
-        else //block at angle 
+        else //too far to right or left 
         {
             Sound.buzz();
             
             //drive into the block to straighten it out
             rightMotor.rotate(convertDistance(WHEEL_RADIUS,17),true); 
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,17),false);
+            
+//            rightMotor.rotate(convertDistance(WHEEL_RADIUS,-DETECTIONRANGE),true);
+//            leftMotor.rotate(convertDistance(WHEEL_RADIUS,-DETECTIONRANGE),false);
       
             isFlagDetected();
         }
@@ -179,12 +187,14 @@ public class BlockDetector extends Thread {
     }
     
     /**
-     * Method determines whether to capture flag by checking value of isFlag calling pickUp method is true or returning robot to initial position otherwise
+     * Method determines whether to capture flag by checking value of isReadingBlock calling pickUp method is true or returning robot to initial position otherwise
      */
     public void isFlagDetected()
     {
-    	//check if flag or just other block
-        isFlag = investigateFlag();
+//        //get within light sensor range
+//        rightMotor.rotate(convertDistance(WHEEL_RADIUS,3), true);
+//        leftMotor.rotate(convertDistance(WHEEL_RADIUS,3), false);
+        boolean isFlag = isFlag();
         rightMotor.rotate(convertDistance(WHEEL_RADIUS,-3), true);
         leftMotor.rotate(convertDistance(WHEEL_RADIUS,-3), false);
         
@@ -194,13 +204,14 @@ public class BlockDetector extends Thread {
         }
         else //not flag, return to initial position
         {
+        	
         	rightMotor.setSpeed(100);
         	leftMotor.setSpeed(100);
-        	//back up a bit 
+        	//back up a bit
         	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
             navi.travelTo(pos[0], pos[1]);
-            //navi.turnTo(pos[2], true);
+            navi.turnTo(pos[2], true);
             Sound.beep();
         }
     }
@@ -211,9 +222,18 @@ public class BlockDetector extends Thread {
     public void pickUp()
     {
         //back up
+//        while(USDistance <= 15)//arms dont hit at 21cm. perfect dist: 13cm
+//        {
+//            rightMotor.backward();
+//            leftMotor.backward();
+//            USDistance = getFilteredUSData();
+//        }
+//        rightMotor.stop(false);
+//        leftMotor.stop(false);
     	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-13), true);
     	leftMotor.rotate(convertDistance(WHEEL_RADIUS,-13), false);
-          
+        
+        
         //turn around
         rightMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,165),true);
         leftMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,-165),false);
@@ -236,7 +256,8 @@ public class BlockDetector extends Thread {
         leftMotor.setSpeed(100);
         rightMotor.rotate(convertDistance(WHEEL_RADIUS,-10),true);//arms dont hit at 15cm, perf dist: -8
         leftMotor.rotate(convertDistance(WHEEL_RADIUS,-10),false);
-            
+        
+        
         //close arms
         horizontalArmMotor.rotate(-130, false);
         Sound.beep();
@@ -244,13 +265,9 @@ public class BlockDetector extends Thread {
         //lift up arms
         verticalArmMotor.rotate(180,false);
     }
-    /**
-     * This method uses color sensor to identify if block is color of flag
-     * @return boolean value, true if flag color, false otherwise
-     */
-    public boolean investigateFlag()
+    public boolean isFlag()
     {
-        isFlag = false;
+        boolean isFlag = false;
         //gets the data from the color sensor.
         float colorData[] = blockPoller.getColorData();
         //checks the reading and compares it to each profile.
@@ -280,7 +297,6 @@ public class BlockDetector extends Thread {
 
         return isFlag;
     }
-    
     /**
      * This method converts a distance to an angle in degrees
      * @param radius the wheel radius
@@ -325,9 +341,5 @@ public class BlockDetector extends Thread {
         }
         
     }
-    public Boolean isFlag(){
-        synchronized (this) {
-            return isFlag;	
-        }
-    }
+    
 }
