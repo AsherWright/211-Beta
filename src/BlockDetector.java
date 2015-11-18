@@ -21,6 +21,7 @@ public class BlockDetector extends Thread {
     private UltrasonicPoller frontPoller;
     //Reading properties
     private String blockType;
+    private boolean isFlag; //indicates if flag was found
     //odometer and navigator
     Odometer odo;
     Navigation navi;
@@ -35,8 +36,7 @@ public class BlockDetector extends Thread {
     
     /**
      * Class constructor
-     * @param colorSensor sample provider for colored sensor
-     * @param colorData sample data for colored sensor
+     * @param colorSensorPoller sample and data provider for colored sensor
      * @param navi Navigator class Object
      * @param odo Odometer class Object
      * @param leftMotor EV3 Motor on the left
@@ -71,11 +71,11 @@ public class BlockDetector extends Thread {
     }
     
     /**
-     * Method that Checks if Block is the right color, set global variable isReadingBlock true if right block and false otherwise.
+     * Method runs Block Detection setting light sensor mode to color ID
      */
     public void run(){
         blockPoller.setMode(2);
-        investigateBlock();
+       // investigateBlock();
     }
     /**
      * Method that gets close to block in order to get accurate readings for the light sensor, calls isFlagDetected method
@@ -179,12 +179,12 @@ public class BlockDetector extends Thread {
     }
     
     /**
-     * Method determines whether to capture flag by checking value of isReadingBlock calling pickUp method is true or returning robot to initial position otherwise
+     * Method determines whether to capture flag by checking value of isFlag calling pickUp method is true or returning robot to initial position otherwise
      */
     public void isFlagDetected()
     {
     	//check if flag or just other block
-        boolean isFlag = isFlag();
+        isFlag = investigateFlag();
         rightMotor.rotate(convertDistance(WHEEL_RADIUS,-3), true);
         leftMotor.rotate(convertDistance(WHEEL_RADIUS,-3), false);
         
@@ -194,14 +194,13 @@ public class BlockDetector extends Thread {
         }
         else //not flag, return to initial position
         {
-        	
         	rightMotor.setSpeed(100);
         	leftMotor.setSpeed(100);
-        	//back up a bit to avoid hitting wires
+        	//back up a bit 
         	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
             navi.travelTo(pos[0], pos[1]);
-            navi.turnTo(pos[2], true);
+            //navi.turnTo(pos[2], true);
             Sound.beep();
         }
     }
@@ -249,9 +248,9 @@ public class BlockDetector extends Thread {
      * This method uses color sensor to identify if block is color of flag
      * @return boolean value, true if flag color, false otherwise
      */
-    public boolean isFlag()
+    public boolean investigateFlag()
     {
-        boolean isFlag = false;
+        isFlag = false;
         //gets the data from the color sensor.
         float colorData[] = blockPoller.getColorData();
         //checks the reading and compares it to each profile.
@@ -326,5 +325,9 @@ public class BlockDetector extends Thread {
         }
         
     }
-    
+    public Boolean isFlag(){
+        synchronized (this) {
+            return isFlag;	
+        }
+    }
 }
