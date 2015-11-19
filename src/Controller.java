@@ -8,7 +8,6 @@
  */
 
 import java.io.File;
-
 import java.io.IOException;
 
 import lejos.hardware.Button;
@@ -23,7 +22,7 @@ public class Controller {
 	//variables for WiFi module 
 	// *** INSTRUCTIONS ***
 	// SERVER_IP: the IP address of the computer running the server application
-	private static final String SERVER_IP = "192.168.43.147";
+	private static final String SERVER_IP = "192.168.43.118";
 	private static final int TEAM_NUMBER = 14;	
 	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 	//
@@ -36,9 +35,6 @@ public class Controller {
 	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	//the two arm motors for capturing the block
-
-	private static final EV3LargeRegulatedMotor armMotor1 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
-	private static final EV3LargeRegulatedMotor armMotor2 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 
 	private static final EV3LargeRegulatedMotor verticalArmMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
 	private static final EV3LargeRegulatedMotor horizontalArmMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
@@ -72,7 +68,6 @@ public class Controller {
 			conn.printTransmission();
 		}
 		
-		Button.waitForAnyPress();
 		LCD.clear();
 				
 		//*******************WiFi module ends**********************//
@@ -120,8 +115,8 @@ public class Controller {
 
 		//set up the localization
 
-		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
+//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
+		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
 		USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 		
 		/*
@@ -153,27 +148,27 @@ public class Controller {
 			navi.setDegreeError(2.0);
 
 			lsl.doLocalization();
-			
+			/*
 //			sidePoller.enableSensor();
 			//double[] pos = {0, 0,0};
 			//boolean[] up = {true,true,true};
 			//odo.setPosition(pos,up);
-			navi.travelToAndAvoid(150, 150);
+			//navi.travelToAndAvoid(150, 150);
 			//leftMotor.setSpeed(10);
 			//leftMotor.forward();
 
-			navi.setSlowSpeed(120);
-			lsl.doLocalization();
-			sidePoller.enableSensor();
-			navi.setSlowSpeed(90);
-			navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
-			navi.travelTo(zoneX-10, zoneY);
-			navi.turnTo(250, true);
-			odo.setTheta(270);
+			//navi.setSlowSpeed(120);
+			//lsl.doLocalization();
+			//sidePoller.enableSensor();
+			//navi.setSlowSpeed(90);
+			//navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
+			//navi.travelTo(zoneX-10, zoneY);
+			//navi.turnTo(250, true);
+			//odo.setTheta(270);
 			//the block searcher should go here
-			searcher.run();
-			navi.travelToAndAvoid(0, 0);
-
+			//searcher.run();
+			//navi.travelToAndAvoid(0, 0);
+*/
 		}else{
 			Sound.beep();
 			File shakeItOff = new File("ShakeItOff.wav");

@@ -124,26 +124,29 @@ public class LightLocalizer {
 		}else{
 			theta = 360.0 - (deltaThetaY/2 - theta);
 		}
-		
-		//Calculate the actual coordinates according to starting corner
-		if(startingCorner.getId() == 2){
-			x = x + startingCorner.getX();
-			y = y + startingCorner.getY();
-			theta = theta + 90.0;
-		}else if(startingCorner.getId() == 3){
-			x = x + startingCorner.getX();
-			y = y + startingCorner.getY();
-			theta = theta + 180.0;
-		}else if(startingCorner.getId() == 4){
-			x = x + startingCorner.getX();
-			y = y + startingCorner.getY();
-			theta = theta + 270.0;
-		}
-				
-		//update the odometer position
+						
+		//update the odometer position and send it to (0,0)
 		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});
 		
 		travelToOrigin();
+		
+		//Calculate the actual coordinates according to starting corner
+		if(startingCorner.getId() == 2){
+					x = odo.getX() + startingCorner.getX();
+					y = odo.getY() + startingCorner.getY();
+					theta = theta + 90.0;
+				}else if(startingCorner.getId() == 3){
+					x = odo.getX() + startingCorner.getX();
+					y = odo.getY() + startingCorner.getY();
+					theta = theta + 180.0;
+				}else if(startingCorner.getId() == 4){
+					x = odo.getX() + startingCorner.getX();
+					y = odo.getY() + startingCorner.getY();
+					theta = theta + 270.0;
+				}
+				odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});
+		
+				navigation.stopMotor();
 	}
 	
 	/**
