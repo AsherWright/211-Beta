@@ -6,7 +6,10 @@
  * This class sets up the classes for Finding the objects, and calls them. It also initializes the sensors
  * and the motors.
  */
+import java.io.File;
+
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.Port;
@@ -59,13 +62,14 @@ public class Controller {
 		WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
 //		WallAvoider avoider = new WallAvoider(odo, frontPoller, null);
 		//set up the display and navigator
-		LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller);
+
 //		LCDInfo lcd = new LCDInfo(odo,frontPoller,null, null);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
 		blockDetector.start();	
 		SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
-
+		
+		//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 		//set up the light localization
 		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
 //		LightLocalizer lsl = new LightLocalizer(odo, null, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
@@ -77,8 +81,16 @@ public class Controller {
 		 */
 		int buttonPressed = Button.waitForAnyPress();
 		if(buttonPressed == Button.ID_LEFT){
+			sidePoller.disableSensor();
+			navi.setCmError(0.4);
+			navi.setDegreeError(4.0);
+			usl.doLocalization();
 			
-		}else{ 
+			navi.setCmError(0.2);
+			navi.setDegreeError(2.0);
+			navi.setSlowSpeed(120);
+			lsl.doLocalization();
+		}else if(buttonPressed == Button.ID_RIGHT){ 
 			//disable the side sensor for localization so that it doens't interfere
 			sidePoller.disableSensor();
 			navi.setCmError(0.4);
@@ -98,6 +110,12 @@ public class Controller {
 			//the block searcher should go here
 			searcher.run();
 			navi.travelToAndAvoid(0, 0);
+
+		}else{
+			Sound.beep();
+			File shakeItOff = new File("ShakeItOff.wav");
+			System.out.println(Sound.playSample(shakeItOff, 100));
+			Sound.beep();
 		}
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);

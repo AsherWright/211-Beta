@@ -11,6 +11,10 @@ public class BlockDetector extends Thread {
     //these are the different block profiles. They are initialized in the constructor
     private double[] blueBlockReading;
     private double[] darkBlueBlockReading;
+    private double[] redBlockReading;
+    private double[] yellowBlockReading;
+    private double[] whiteBlockReading;
+    
     //the error that R,G, B can be off for it to still consider it a certain object.
     private static final double DETECTIONTHRESHOLDERROR = 0.5;
     private static final double WHEEL_RADIUS = 2.1;
@@ -62,12 +66,24 @@ public class BlockDetector extends Thread {
         //initialize block profiles
         blueBlockReading = new double[3];
         darkBlueBlockReading = new double[3];
+        redBlockReading = new double[3];
+        yellowBlockReading = new double[3];
+        whiteBlockReading = new double[3];
         blueBlockReading[0] = 0.95;
         blueBlockReading[1] = 1.4;
         blueBlockReading[2] = 1.15;
         darkBlueBlockReading[0] = 0.2;
         darkBlueBlockReading[1] = 0.5;
         darkBlueBlockReading[2] = 0.7;   
+        redBlockReading[0] = 0.9;
+        redBlockReading[1] = 0.15;
+        redBlockReading[2] = 0.13;  
+        yellowBlockReading[0] = 1.5;
+        yellowBlockReading[1] = 1.1;
+        yellowBlockReading[2] = 0.1;
+        whiteBlockReading[0] = 1.6;
+        whiteBlockReading[1] = 1.8;
+        whiteBlockReading[2] = 1.3;
     }
     
     /**
@@ -75,7 +91,16 @@ public class BlockDetector extends Thread {
      */
     public void run(){
         blockPoller.setMode(2);
-       // investigateBlock();
+//        while(true){
+//        	investigateFlag();
+//        	try {
+//				Thread.sleep(50);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//        }
+        
     }
     /**
      * Method that gets close to block in order to get accurate readings for the light sensor, calls isFlagDetected method
@@ -266,24 +291,39 @@ public class BlockDetector extends Thread {
         double[] BlueBlockError = new double[3];
         double totalNoObjectError = 0;
         double[] DarkBlueBlockError  = new double[3];
+        double[] redBlockError = new double[3];
+        double[] yellowBlockError = new double[3];
+        double[] whiteBlockError = new double[3];
+        
         //go through R,G,B
         for(int i = 0; i < 3; i++){
             BlueBlockError[i] = Math.abs(colorData[i]*10 - blueBlockReading[i]);
             totalNoObjectError += Math.abs(colorData[i]*10);
             DarkBlueBlockError[i] = Math.abs(colorData[i]*10 - darkBlueBlockReading[i]);
+            redBlockError[i] = Math.abs(colorData[i]*10-redBlockReading[i]);
+            whiteBlockError[i] = Math.abs(colorData[i]*10-whiteBlockReading[i]);
+            yellowBlockError[i] = Math.abs(colorData[i]*10-yellowBlockReading[i]);
+            
         }
         //If our reading is within the allowed number to consider it a blue block, update what it sees.
         if(totalNoObjectError < 0.25){
             blockType = "";
             isFlag = false;
+        }else if(whiteBlockError[0] < DETECTIONTHRESHOLDERROR && whiteBlockError[1] < DETECTIONTHRESHOLDERROR && whiteBlockError[2] < DETECTIONTHRESHOLDERROR){
+            blockType = "WHITE BLOCK";
+            isFlag = false;
         }else if(BlueBlockError[0] < DETECTIONTHRESHOLDERROR && BlueBlockError[1] < DETECTIONTHRESHOLDERROR &&  BlueBlockError[2] < DETECTIONTHRESHOLDERROR ){
-            blockType = "BLOCK";
+            blockType = "BLUE BLOCK";
             isFlag =true;
         }else if(DarkBlueBlockError[0] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[1] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[2] < DETECTIONTHRESHOLDERROR){
-            blockType = "BLOCK";
+            blockType = "DARK BLUE BLOCK";
             isFlag = true;
-        }else{
-            blockType = "NOT BLOCK";
+        }else if(redBlockError[0] < DETECTIONTHRESHOLDERROR && redBlockError[1] < DETECTIONTHRESHOLDERROR && redBlockError[2] < DETECTIONTHRESHOLDERROR){
+            blockType = "RED BLOCK";
+            isFlag = false;
+        
+        }else if(yellowBlockError[0] < DETECTIONTHRESHOLDERROR && yellowBlockError[1] < DETECTIONTHRESHOLDERROR && yellowBlockError[2] < DETECTIONTHRESHOLDERROR){
+            blockType = "YELLOW BLOCK";
             isFlag = false;
         }
 
