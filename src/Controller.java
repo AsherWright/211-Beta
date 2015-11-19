@@ -32,10 +32,10 @@ public class Controller {
 	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	//the two arm motors for capturing the block
-	private static final EV3LargeRegulatedMotor armMotor1 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
-	private static final EV3LargeRegulatedMotor armMotor2 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+	private static final EV3LargeRegulatedMotor verticalArmMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
+	private static final EV3LargeRegulatedMotor horizontalArmMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
 	//sensor ports
-
+	
 
 	//robot dimension constants
 	public static final double ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR = 10.6;
@@ -68,6 +68,9 @@ public class Controller {
 				
 		//*******************WiFi module ends**********************//
 		
+		double zoneX = 4*30.4;
+		double zoneY = 6*30.4;
+
 		//Setup ultrasonic sensor
 		// 1. Create a port object attached to a physical port (done above)
 		// 2. Create a sensor instance and attach to port
@@ -81,8 +84,7 @@ public class Controller {
 		groundPoller.setMode(1);
 		// start the block detector thread, which will be constantly checking with the light sensor
 		//to see if there is a block.
-//		BlockDetector blockDetector = new BlockDetector(colorValue, colorData);
-//		blockDetector.start();	
+
 //		
 		// setup the odometer
 		Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
@@ -94,6 +96,12 @@ public class Controller {
 //		LCDInfo lcd = new LCDInfo(odo,frontPoller,null, null);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 		
+		//set up the localization
+
+		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
+		blockDetector.start();	
+		SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
+
 		//set up the localization
 		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
 //		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
@@ -107,25 +115,25 @@ public class Controller {
 		if(buttonPressed == Button.ID_LEFT){
 			
 		}else{ 
-			// perform the ultrasonic localization
-			//Rising edge was found to be the best in this case! So we use that one.
 			//disable the side sensor for localization so that it doens't interfere
-//			sidePoller.disableSensor();
+			sidePoller.disableSensor();
 			navi.setCmError(0.4);
 			navi.setDegreeError(4.0);
 			usl.doLocalization();
 			
 			navi.setCmError(0.2);
 			navi.setDegreeError(2.0);
+			navi.setSlowSpeed(120);
 			lsl.doLocalization();
-			
-//			sidePoller.enableSensor();
-			//double[] pos = {0, 0,0};
-			//boolean[] up = {true,true,true};
-			//odo.setPosition(pos,up);
-			navi.travelToAndAvoid(150, 150);
-			//leftMotor.setSpeed(10);
-			//leftMotor.forward();
+			sidePoller.enableSensor();
+			navi.setSlowSpeed(90);
+			navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
+			navi.travelTo(zoneX-10, zoneY);
+			navi.turnTo(250, true);
+			odo.setTheta(270);
+			//the block searcher should go here
+			searcher.run();
+			navi.travelToAndAvoid(0, 0);
 		}
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
