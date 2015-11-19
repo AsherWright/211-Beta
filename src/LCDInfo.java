@@ -54,8 +54,8 @@ public class LCDInfo implements TimerListener{
 		LCD.drawString(String.valueOf(pos[1]), 3, 1);
 		LCD.drawString(String.valueOf(pos[2]), 3, 2);
 		LCD.drawString(String.valueOf(frontPoller.getUsData()), 3, 3);
-		LCD.drawString(String.valueOf(sidePoller.getUsData()), 3, 4);
-		LCD.drawString(String.valueOf(blockPoller.getR()) + ", " + String.valueOf(blockPoller.getG()) + ", " + String.valueOf(blockPoller.getB()), 3, 5);
+//		LCD.drawString(String.valueOf(sidePoller.getUsData()), 3, 4);
+//		LCD.drawString(String.valueOf(blockPoller.getR()) + ", " + String.valueOf(blockPoller.getG()) + ", " + String.valueOf(blockPoller.getB()), 3, 5);
 	}
 
 }

@@ -9,7 +9,10 @@ import lejos.robotics.SampleProvider;
 public class LightLocalizer {
 	//constants
 	private double del;         //distance from the color sensor to the centre of robot.
-	private static final long CORRECTION_PERIOD = 20;
+	/**
+	 * This constant controls the period(millisecond) in which lightLocalizer requires data from ColorSensorPoller
+	 */
+	private static final long DATA_PERIOD = 20;
 	private double brightnessThreshold = 0.40;
 	//variables
 	long correctionStart, correctionEnd;
@@ -31,7 +34,7 @@ public class LightLocalizer {
 	 */
 	private double deltaThetaX;   
 	private double x, y, theta;   
-	private ColorSensorPoller blockPoller;
+	private ColorSensorPoller groundPoller;
 	
 	/**
 	 * Constructor for the light localizer
@@ -40,27 +43,29 @@ public class LightLocalizer {
 	 * @param colorData - The float array containing the color data of the sensor
 	 * @param navigation - The navigation class being used by the robot
 	 */
-	public LightLocalizer(Odometer odo, ColorSensorPoller blockPoller, Navigation navigation, double del) {
+	public LightLocalizer(Odometer odo, ColorSensorPoller groundPoller, Navigation navigation, double del) {
 		this.navigation = navigation;
 		this.odo = odo;
-		this.blockPoller = blockPoller;
+		this.groundPoller = groundPoller;
 		this.del = del;
 	}
 	
 	/**
 	 * Uses the color sensor to perform a "localization", where it figures out its initial starting angle.
 	 * After localization, robot will travel to (0,0) point and rotate to X positive
+	 * Inside doLocalization() exits a time control, so that function only requires data once from color sensor every CORRECTION_PERIOD.
 	 */
 	public void doLocalization() {
 		
 		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
 		navigation.rotateForLightLocalization();
 		double angle = 0;
-		blockPoller.setMode(1);
+		//setting the color sensor properties.
+		groundPoller.setPollRate(20);
 		
 		while (navigation.isRotating() == true){
 			correctionStart = System.currentTimeMillis();
-			brightness = blockPoller.getBrightness();
+			brightness = groundPoller.getBrightness();
 			if (brightness < brightnessThreshold)
 			{
 				//get angle from odometer
@@ -92,9 +97,9 @@ public class LightLocalizer {
 			 }
 			
 			correctionEnd = System.currentTimeMillis();
-			if (correctionEnd - correctionStart < CORRECTION_PERIOD) {
+			if (correctionEnd - correctionStart < DATA_PERIOD) {
 				try {
-					Thread.sleep(CORRECTION_PERIOD - (correctionEnd - correctionStart));
+					Thread.sleep(DATA_PERIOD - (correctionEnd - correctionStart));
 				} catch (InterruptedException e) {}
 			}
 		}

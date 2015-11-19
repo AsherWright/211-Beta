@@ -18,7 +18,7 @@ public class USLocalizer {
 	/**
 	 * The speed at which the robot rotates when performing the localization
 	 */
-	public static int ROTATION_SPEED = 175;
+	public static int ROTATION_SPEED = 160;
 	/**
 	 * The acceleration of the motors (lower acceleration = less slip)
 	 */
@@ -202,9 +202,9 @@ public class USLocalizer {
 			// but that will be fixed by the LightLocalizer
 			odo.setPosition(new double [] {0.0, 0.0, 90}, new boolean [] {true, true, true});
 		}else{ //neither falling or rising, do 360 spin
-			double currAngle = odo.getAng();
+			
 			//limits the amount of points we can take. This needs to be chosen experimentally.
-			int upperPointAmount = 200; 
+			int upperPointAmount = 250; 
 			int pointIndex = 0;
 			double[] angles = new double[upperPointAmount];
 			double[] distances = new double[upperPointAmount];
@@ -214,15 +214,25 @@ public class USLocalizer {
 			
 			leftMotor.backward();
 			rightMotor.forward();
-			
+			frontPoller.setPollRate(25);
+			boolean stopTurning = false;
+			boolean passedHalfTurn = false;
 			//spin until we are bigger than 359 degrees (full circle almost)
-			while(odo.getAng() < 359){
+			while(!stopTurning){
+				double angle = odo.getAng();
 				if(pointIndex < angles.length){
-					angles[pointIndex] = odo.getAng();
+					angles[pointIndex] = angle;
 					distances[pointIndex] = (double) frontPoller.getUsData();
+					pointIndex++;
 				}else{
 					Sound.beep();
 					break;
+				}
+				if(angle > 180 && angle < 300){
+					passedHalfTurn = true;
+				}
+				if(passedHalfTurn && (angle> 358 || (angle > 0 && angle< 100))){
+					stopTurning = true;
 				}
 				//Now we sleep. If it takes 10s to go around, pinging at 50ms will mean 200 datapoints.
 				try {
@@ -234,85 +244,97 @@ public class USLocalizer {
 			}
 			leftMotor.stop(true);
 			rightMotor.stop(true);
-			for(int i = 0; i < angles.length; i++){
-				System.out.println(angles[i] + ", " + distances[i]);
-			}
+//			for(int i = 0; i < angles.length; i++){
+//				System.out.println(angles[i] + ", " + distances[i]);
+//			}
 			//now we must analyze the data we just got
-//			//Method 1: Get two minimums that are at least X theta apart.
-//			//Method 2: Remove all large values and then analyze data...
-//			double firstWallDist = 100;
-//			int firstWallIndex = 0;
-//			//go through the array
-//			for(int i = 0; i < angles.length; i++){
-//				//this means we've reached the empty part of our array, so leave.
-//				if(distances[i] == 0){
-//					break;
-//				}else{
-//					if(firstWallDist > distances[i]){
-//						firstWallDist = distances[i];
-//						firstWallIndex = i;
-//					}
-//				}
-//			}
-//			//we now have our minimum value. This corresponds to ONE of the walls...
-//			//to get the other wall, we will do the same thing, but ignore all values 
-//			//that are + or - 10% from the last min...
-//			int lowerIgnore = firstWallIndex - angles.length/10;
-//			int upperIgnore = firstWallIndex + angles.length/10;
-//			double otherWallDist = 100;
-//			int otherWallIndex = 0;
-//			int endIndex = angles.length-1;
-//			for(int i = 0; i < angles.length; i++){
-//				//this means we've reached the empty part of our array, so leave.
-//				if(distances[i] == 0){
-//					endIndex = i;
-//					break;
-//				}else{
-//					//only check if outside of last wall region.
-//					if(i > upperIgnore || i < lowerIgnore){
-//						if(otherWallDist > distances[i]){
-//							otherWallDist = distances[i];
-//							otherWallIndex = i;
-//						}
-//					}
-//				}
-//			}
-//			
-//			double angleToTurnTo = 0;
-//			if(otherWallIndex > firstWallIndex){
-//				//check to see if we are wrapping around the array.
-//				if(otherWallIndex - firstWallIndex > endIndex - otherWallIndex + firstWallIndex){
-//					//no wrapping, so just go to the firstWallIndex
-//					angleToTurnTo = angles[firstWallIndex];
-//				}else{
-//					angleToTurnTo = angles[otherWallIndex];
-//				}
-//			}else{
-//				//check to see if we are wrapping around the array.
-//				if(firstWallIndex - otherWallIndex > endIndex - firstWallIndex + otherWallIndex){
-//					//no wrapping, so just go to the firstWallIndex
-//					angleToTurnTo = angles[otherWallIndex];
-//				}else{
-//					angleToTurnTo = angles[firstWallIndex];
-//				}
-//			}
-//			System.out.println("My wall is at angle: " + angleToTurnTo);
-//			navi.turnTo(angleToTurnTo,true);
-//			Sound.beep();
+			//Method 1: Get two minimums that are at least X theta apart.
+			//Method 2: Remove all large values and then analyze data...
+			double firstWallDist = 1000;
+			int firstWallIndex = 0;
+			//go through the array. We start at 4 so that we ignore first values (sometimes 0)
+			for(int i = 4; i < angles.length; i++){
+				//this means we've reached the empty part of our array, so leave.
+				if(distances[i] == 0){
+					break;
+				}else{
+					if(firstWallDist > distances[i]){
+						firstWallDist = distances[i];
+						firstWallIndex = i;
+					}
+				}
+			}
+			//we now have our minimum value. This corresponds to ONE of the walls...
+			//to get the other wall, we will do the same thing, but ignore all values 
+			//that are + or - 10% from the last min...
+			int lowerIgnore = firstWallIndex - angles.length/10;
+			int upperIgnore = firstWallIndex + angles.length/10;
+			double otherWallDist = 1000;
+			int otherWallIndex = 0;
+			int endIndex = angles.length-1;
+			for(int i = 0; i < angles.length; i++){
+				//this means we've reached the empty part of our array, so leave.
+				if(distances[i] == 0){
+					endIndex = i;
+					break;
+				}else{
+					//only check if outside of last wall region.
+					if(i > upperIgnore || i < lowerIgnore){
+						if(otherWallDist > distances[i]){
+							otherWallDist = distances[i];
+							otherWallIndex = i;
+						}
+					}
+				}
+			}
+			firstWallIndex += upperPointAmount/25;
+			otherWallIndex += otherWallIndex/25;
+			if(firstWallIndex >= endIndex){
+				firstWallIndex = firstWallIndex-endIndex;
+			}
+			if(otherWallIndex >= endIndex){
+				otherWallIndex = otherWallIndex -endIndex;
+			}
+
+			//System.out.println("min dist wall: " + firstWallIndex);
+			//System.out.println("second wall: " + otherWallIndex);
+			double angleToTurnTo = 0;
+			if(otherWallIndex > firstWallIndex){
+				//check to see if we are wrapping around the array.
+				if(otherWallIndex - firstWallIndex > endIndex - otherWallIndex + firstWallIndex){
+					//no wrapping, so just go to the firstWallIndex
+					angleToTurnTo = angles[otherWallIndex];
+				}else{
+					angleToTurnTo = angles[firstWallIndex];
+				}
+			}else{
+				//check to see if we are wrapping around the array.
+				if(firstWallIndex - otherWallIndex > endIndex - firstWallIndex + otherWallIndex){
+					//no wrapping, so just go to the firstWallIndex
+					angleToTurnTo = angles[firstWallIndex];
+				}else{
+					angleToTurnTo = angles[otherWallIndex];
+				}
+			}
+			//System.out.println("My wall is at angle: " + angleToTurnTo);
+			//navi.turnTo(angleToTurnTo,true);
+			//Sound.beep();
 //			try {
 //				Thread.sleep(2000);
 //			} catch (InterruptedException e) {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
-//			//we are now facing +180 degrees (along negative x axis).
-//			//we want to face 45 degrees, so subtract 135.
-//			angleToTurnTo -=135;
-//
-//			navi.turnTo(angleToTurnTo, true);
-//			odo.setTheta(45);
-//			navi.travelTo(30-firstWallDist/2, 30-firstWallDist/2);
-//			//done US localization.
+			//we are now facing +180 degrees (along negative x axis).
+			//we want to face 45 degrees, so subtract 135 + 10 since we are rotating clockwise and have offset.
+			angleToTurnTo -=145;
+			if(angleToTurnTo < 0){
+				angleToTurnTo +=360;
+			}
+			navi.turnTo(angleToTurnTo, true);
+			odo.setTheta(45);
+			navi.travelTo(Math.max(30.4-10-firstWallDist,0), Math.max(30.4-10-firstWallDist,0));
+			//done US localization.
 		}
 	}
 
