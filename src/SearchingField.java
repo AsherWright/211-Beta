@@ -15,6 +15,7 @@ public class SearchingField extends Thread {
 	
 	private double[] pos = new double [3];
 	private boolean isFlag; //determines if flag is found
+<<<<<<< HEAD
 	private static final double WHEEL_RADIUS = 2.1;
     private static final double BANDWIDTH = 16.2;
 	double b = 6; //TODO: test distance
@@ -24,6 +25,16 @@ public class SearchingField extends Thread {
 	//constructor 
 	public SearchingField( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
 			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector)
+=======
+	double b = 6; //TODO: test distance
+	double a = 3;
+	double x;
+	double y;
+	
+	//constructor 
+	public SearchingField( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
+			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector, double endX, double endY)
+>>>>>>> origin/master
 	{
         this.odo = odo;
         this.navi= navi;
@@ -32,7 +43,12 @@ public class SearchingField extends Thread {
         this.detector= detector;
         this.frontPoller = frontPoller;
         this.sidePoller = sidePoller;
+<<<<<<< HEAD
         
+=======
+        this.x = endX;
+        this.y = endY;
+>>>>>>> origin/master
 	}
 	/**
 	 * 
@@ -48,7 +64,11 @@ public class SearchingField extends Thread {
 		leftMotor.setSpeed(100);
 
 		//travel side to upper right corner
+<<<<<<< HEAD
 		while(odo.getY() < (3*30.4+a+b))
+=======
+		while(odo.getY() >y - (2*30.4+a+b))
+>>>>>>> origin/master
 		{	
 			if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
 			{
@@ -68,11 +88,19 @@ public class SearchingField extends Thread {
 		if(!isFlag)//didnt find flag in first side
 		{
 		//turn 90 degrees ccw
+<<<<<<< HEAD
 		rightMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,85), true);
 		leftMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,-85), false);
 			
 			//travel side to upper left corner
 			while(odo.getX() < (b+2*30.5)) 
+=======
+		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+			
+			//travel side to upper left corner
+			while(odo.getX() < x+ (b+2*30.5)) 
+>>>>>>> origin/master
 			{
 				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
 				{
@@ -91,9 +119,15 @@ public class SearchingField extends Thread {
 			if (!isFlag)
 			{
 				//turn 90 degree ccw
+<<<<<<< HEAD
 				rightMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,85), true);
 				leftMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,-85), false);
 			while (odo.getY() < (3*30.4+b)) //object in second 1x3 area
+=======
+				rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+				leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+			while (odo.getY() < y) //object in second 1x3 area
+>>>>>>> origin/master
 			{
 				if(sidePoller.getUsData()< (b+30.4))
 				{
@@ -120,15 +154,25 @@ public class SearchingField extends Thread {
 	{
 		Sound.beep();
 		//move forward 7cm to approximately get to the middle of block 
+<<<<<<< HEAD
 		rightMotor.rotate(convertDistance(WHEEL_RADIUS,7), true);
 		leftMotor.rotate(convertDistance(WHEEL_RADIUS,7), false);
+=======
+		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,7), true);
+		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,7), false);
+>>>>>>> origin/master
 
 		//record initial position
 		odo.getPosition(pos);
 		
 		//turn 90 degrees ccw
+<<<<<<< HEAD
 		rightMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,85), true);
 		leftMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,-85), false);
+=======
+		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+>>>>>>> origin/master
 		
 		
 		//turn off side sensor and turn on front sensor
@@ -163,8 +207,13 @@ public class SearchingField extends Thread {
 				rightMotor.forward();
 				leftMotor.forward();
 			}
+<<<<<<< HEAD
 		rightMotor.rotate(convertDistance(WHEEL_RADIUS,8), true);
 		leftMotor.rotate(convertDistance(WHEEL_RADIUS,8), false);
+=======
+		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), true);
+		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), false);
+>>>>>>> origin/master
 		Sound.beep();
 		Sound.beep();
 		

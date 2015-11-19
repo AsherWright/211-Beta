@@ -12,9 +12,16 @@ import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation {
+<<<<<<< HEAD
 	final static int FAST = 120, SLOW = 90, ACCELERATION = 600;
 	
 
+=======
+	final static int ACCELERATION = 600;
+	
+	private int fast;
+	private int slow;
+>>>>>>> origin/master
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private double wheelRadius;
@@ -40,6 +47,17 @@ public class Navigation {
 		this.rightMotor.setAcceleration(ACCELERATION);
 		degreeError = 2.0;
 		cmError = 0.2;
+<<<<<<< HEAD
+=======
+		fast = 120;
+		slow = 90;
+	}
+	public void setFastSpeed(int speed){
+		this.fast = speed;
+	}
+	public void setSlowSpeed(int speed){
+		this.slow = speed;
+>>>>>>> origin/master
 	}
 	public void setCmError(double cmErr){
 		cmError = cmErr;
@@ -110,7 +128,7 @@ public class Navigation {
 			if (minAng < 0)
 				minAng += 360.0;
 			this.turnTo(minAng, false);
-			this.setSpeeds(FAST, FAST);
+			this.setSpeeds(fast, fast);
 			
 		}
 		this.setSpeeds(0, 0);
@@ -129,16 +147,20 @@ public class Navigation {
 			if (minAng < 0)
 				minAng += 360.0;
 			this.turnTo(minAng, false);
-			this.setSpeeds(FAST, FAST);
+			this.setSpeeds(fast, fast);
 			
 			//if we see a block coming up, RUN wallFollower.avoidWall();
-			if(frontPoller.getUsData() < 10){
+			if(frontPoller.getUsData() < 13){
 				Sound.beep();
 				Sound.beep();
 				this.setSpeeds(0, 0);
 
 				avoider.avoidWall(odometer.getX()+10.0*Math.cos(odometer.getAng()), odometer.getY()+10.0*Math.sin(odometer.getAng()),x, y);	
+<<<<<<< HEAD
 				this.setSpeeds(FAST,FAST);
+=======
+				this.setSpeeds(fast,fast);
+>>>>>>> origin/master
 			}
 			
 		}
@@ -158,13 +180,13 @@ public class Navigation {
 			error = angle - this.odometer.getAng();
 
 			if (error < -180.0) {
-				this.setSpeeds(-SLOW, SLOW);
+				this.setSpeeds(-slow, slow);
 			} else if (error < 0.0) {
-				this.setSpeeds(SLOW, -SLOW);
+				this.setSpeeds(slow, -slow);
 			} else if (error > 180.0) {
-				this.setSpeeds(SLOW, -SLOW);
+				this.setSpeeds(slow, -slow);
 			} else {
-				this.setSpeeds(-SLOW, SLOW);
+				this.setSpeeds(-slow, slow);
 			}
 		}
 
@@ -223,8 +245,8 @@ public class Navigation {
 	 * rotateForLocalization method is for rotating 360 degree, being used in light localization
 	 */
 	public void rotateForLightLocalization(){
-		leftMotor.setSpeed(SLOW);
-		rightMotor.setSpeed(SLOW);
+		leftMotor.setSpeed(slow);
+		rightMotor.setSpeed(slow);
 		leftMotor.rotate(-convertAngle(wheelRadius, wheelBase, 360.0), true);
 		rightMotor.rotate(convertAngle(wheelRadius, wheelBase, 360.0), true);
 	}

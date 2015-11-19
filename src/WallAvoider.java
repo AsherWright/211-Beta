@@ -9,11 +9,11 @@ public class WallAvoider {
 	private EV3LargeRegulatedMotor leftMotor;
 	private EV3LargeRegulatedMotor rightMotor;
 	
-	private int bandCenter = 15;
+	private int bandCenter = 13;
 	private int bandwidth = 5;
 	//motorStraight is the default speed of the motors (deg/s). 
 	//Filter out is the amount of maxdistance measurements we take before we consider them real.
-	private final int motorStraight = 150;
+	private final int motorStraight = 90;
 	//PROPCONSTINSIDETURN is the Propogation constant if the robot is making an INSIDE turn.
 	public static final double PROPCONSTINSIDETURN = 10.0; //proportionality constant 8,3
 	//PROPCONSTOUTSIDETURN is the propogation constant if the robot is making an OUTSIDE turn.
@@ -25,7 +25,11 @@ public class WallAvoider {
 	
 	//max correction is the max speed we allow the system to correct to! Unlike the original code
 	//, we don't allow ANY speeds greater than this. This is the REAL max. 
+<<<<<<< HEAD
 	public static final int MAXCORRECTION = 60; //was 80
+=======
+	public static final int MAXCORRECTION = 50; //was 80
+>>>>>>> origin/master
 
 	
 	
