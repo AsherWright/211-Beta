@@ -12,16 +12,11 @@ import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation {
-<<<<<<< HEAD
-	final static int FAST = 120, SLOW = 90, ACCELERATION = 600;
-	
 
-=======
 	final static int ACCELERATION = 600;
 	
 	private int fast;
 	private int slow;
->>>>>>> origin/master
 	private Odometer odometer;
 	private EV3LargeRegulatedMotor leftMotor, rightMotor;
 	private double wheelRadius;
@@ -47,8 +42,6 @@ public class Navigation {
 		this.rightMotor.setAcceleration(ACCELERATION);
 		degreeError = 2.0;
 		cmError = 0.2;
-<<<<<<< HEAD
-=======
 		fast = 120;
 		slow = 90;
 	}
@@ -57,7 +50,6 @@ public class Navigation {
 	}
 	public void setSlowSpeed(int speed){
 		this.slow = speed;
->>>>>>> origin/master
 	}
 	public void setCmError(double cmErr){
 		cmError = cmErr;
@@ -156,11 +148,9 @@ public class Navigation {
 				this.setSpeeds(0, 0);
 
 				avoider.avoidWall(odometer.getX()+10.0*Math.cos(odometer.getAng()), odometer.getY()+10.0*Math.sin(odometer.getAng()),x, y);	
-<<<<<<< HEAD
-				this.setSpeeds(FAST,FAST);
-=======
+				
 				this.setSpeeds(fast,fast);
->>>>>>> origin/master
+
 			}
 			
 		}

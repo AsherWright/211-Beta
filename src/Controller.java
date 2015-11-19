@@ -6,11 +6,10 @@
  * This class sets up the classes for Finding the objects, and calls them. It also initializes the sensors
  * and the motors.
  */
-<<<<<<< HEAD
+
 import java.io.File;
-=======
+
 import java.io.IOException;
->>>>>>> origin/master
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
@@ -37,13 +36,13 @@ public class Controller {
 	private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 	private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("C"));
 	//the two arm motors for capturing the block
-<<<<<<< HEAD
+
 	private static final EV3LargeRegulatedMotor armMotor1 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
 	private static final EV3LargeRegulatedMotor armMotor2 = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-=======
+
 	private static final EV3LargeRegulatedMotor verticalArmMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("B"));
 	private static final EV3LargeRegulatedMotor horizontalArmMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
->>>>>>> origin/master
+
 	//sensor ports
 	
 
@@ -102,11 +101,8 @@ public class Controller {
 		WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
 //		WallAvoider avoider = new WallAvoider(odo, frontPoller, null);
 		//set up the display and navigator
-<<<<<<< HEAD
-		LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller);
-=======
 
->>>>>>> origin/master
+
 //		LCDInfo lcd = new LCDInfo(odo,frontPoller,null, null);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 		
@@ -115,21 +111,17 @@ public class Controller {
 		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
 		blockDetector.start();	
 		SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
-<<<<<<< HEAD
+
+		LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 		
 		//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 		//set up the light localization
-<<<<<<< HEAD
-		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-//		LightLocalizer lsl = new LightLocalizer(odo, null, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-=======
-=======
+
 
 		//set up the localization
->>>>>>> origin/master
+
 		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
 //		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
->>>>>>> origin/master
 		USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 		
 		/*
@@ -149,18 +141,17 @@ public class Controller {
 			lsl.doLocalization();
 		}else if(buttonPressed == Button.ID_RIGHT){ 
 			//disable the side sensor for localization so that it doens't interfere
-<<<<<<< HEAD
+
 //			sidePoller.disableSensor();
-=======
+
 			sidePoller.disableSensor();
->>>>>>> origin/master
 			navi.setCmError(0.4);
 			navi.setDegreeError(4.0);
 			usl.doLocalization();
 			
 			navi.setCmError(0.2);
 			navi.setDegreeError(2.0);
-<<<<<<< HEAD
+
 			lsl.doLocalization();
 			
 //			sidePoller.enableSensor();
@@ -170,7 +161,7 @@ public class Controller {
 			navi.travelToAndAvoid(150, 150);
 			//leftMotor.setSpeed(10);
 			//leftMotor.forward();
-=======
+
 			navi.setSlowSpeed(120);
 			lsl.doLocalization();
 			sidePoller.enableSensor();
@@ -188,12 +179,11 @@ public class Controller {
 			File shakeItOff = new File("ShakeItOff.wav");
 			System.out.println(Sound.playSample(shakeItOff, 100));
 			Sound.beep();
->>>>>>> origin/master
+
 		}
 
 		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 		System.exit(0);	
 		
 	}
-
 }

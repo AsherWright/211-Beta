@@ -25,11 +25,9 @@ public class WallAvoider {
 	
 	//max correction is the max speed we allow the system to correct to! Unlike the original code
 	//, we don't allow ANY speeds greater than this. This is the REAL max. 
-<<<<<<< HEAD
-	public static final int MAXCORRECTION = 60; //was 80
-=======
+
 	public static final int MAXCORRECTION = 50; //was 80
->>>>>>> origin/master
+
 
 	
 	

@@ -75,8 +75,7 @@ public class BlockDetector extends Thread {
         darkBlueBlockReading[0] = 0.2;
         darkBlueBlockReading[1] = 0.5;
         darkBlueBlockReading[2] = 0.7;   
-<<<<<<< HEAD
-=======
+
         redBlockReading[0] = 0.9;
         redBlockReading[1] = 0.15;
         redBlockReading[2] = 0.13;  
@@ -86,7 +85,7 @@ public class BlockDetector extends Thread {
         whiteBlockReading[0] = 1.6;
         whiteBlockReading[1] = 1.8;
         whiteBlockReading[2] = 1.3;
->>>>>>> origin/master
+
     }
     
     /**
@@ -94,20 +93,7 @@ public class BlockDetector extends Thread {
      */
     public void run(){
         blockPoller.setMode(2);
-<<<<<<< HEAD
-       // investigateBlock();
-=======
-//        while(true){
-//        	investigateFlag();
-//        	try {
-//				Thread.sleep(50);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//        }
-        
->>>>>>> origin/master
+
     }
     /**
      * Method that gets close to block in order to get accurate readings for the light sensor, calls isFlagDetected method
@@ -179,14 +165,8 @@ public class BlockDetector extends Thread {
         {
             Sound.buzz();
             Sound.buzz();
-            
-<<<<<<< HEAD
-            USDistance = getFilteredUSData();
-            while(USDistance > DETECTIONRANGE) //get within 4cm
-=======
-            
+                
             while(getFilteredUSData() > DETECTIONRANGE) //get within 4cm
->>>>>>> origin/master
             {
                 rightMotor.forward();
                 leftMotor.forward();
@@ -213,13 +193,9 @@ public class BlockDetector extends Thread {
             rightMotor.stop(true);
             leftMotor.stop(true);
             //drive into the block to straighten it out
-<<<<<<< HEAD
-            rightMotor.rotate(convertDistance(WHEEL_RADIUS,17),true); 
-            leftMotor.rotate(convertDistance(WHEEL_RADIUS,17),false);
-=======
+
             rightMotor.rotate(convertDistance(WHEEL_RADIUS,7),true); 
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,7),false);
->>>>>>> origin/master
       
             isFlagDetected();
         }
@@ -259,13 +235,8 @@ public class BlockDetector extends Thread {
     public void pickUp()
     {
         //back up
-<<<<<<< HEAD
-    	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-13), true);
-    	leftMotor.rotate(convertDistance(WHEEL_RADIUS,-13), false);
-=======
     	rightMotor.rotate(-convertDistance(WHEEL_RADIUS,13), true);
     	leftMotor.rotate(-convertDistance(WHEEL_RADIUS,13), false);
->>>>>>> origin/master
           
         //turn around
         rightMotor.rotate(convertAngle(WHEEL_RADIUS,BANDWIDTH,165),true);
@@ -285,17 +256,10 @@ public class BlockDetector extends Thread {
         }
         
         //back up
-<<<<<<< HEAD
-        rightMotor.setSpeed(100);
-        leftMotor.setSpeed(100);
-        rightMotor.rotate(convertDistance(WHEEL_RADIUS,-10),true);//arms dont hit at 15cm, perf dist: -8
-        leftMotor.rotate(convertDistance(WHEEL_RADIUS,-10),false);
-=======
         rightMotor.setSpeed(30);
         leftMotor.setSpeed(30);
         rightMotor.rotate(-convertDistance(WHEEL_RADIUS,10),true);//arms dont hit at 15cm, perf dist: -8
         leftMotor.rotate(-convertDistance(WHEEL_RADIUS,10),false);
->>>>>>> origin/master
             
         //close arms
         horizontalArmMotor.rotate(-130, false);
