@@ -6,19 +6,28 @@
  * This class sets up the classes for Finding the objects, and calls them. It also initializes the sensors
  * and the motors.
  */
+<<<<<<< HEAD
 import java.io.File;
+=======
+import java.io.IOException;
+>>>>>>> origin/master
 
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.hardware.port.Port;
-import lejos.hardware.sensor.EV3ColorSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.hardware.sensor.SensorModes;
-import lejos.robotics.SampleProvider;
+import wifi.Transmission;
+import wifi.WifiConnection;
 
 public class Controller {
+	//variables for WiFi module 
+	// *** INSTRUCTIONS ***
+	// SERVER_IP: the IP address of the computer running the server application
+	private static final String SERVER_IP = "192.168.43.147";
+	private static final int TEAM_NUMBER = 14;	
+	private static TextLCD LCD = LocalEV3.get().getTextLCD();
+	//
 
 	// Static Resources:
 	// Left motor connected to output A
@@ -39,8 +48,34 @@ public class Controller {
 	public static final double TRACK = 15.15; 
 	
 	public static void main(String[] args)  {
+		
+		//WiFi module
+		//Set up WiFi connection, require data from server, parse data and disconnect from server.
+		WifiConnection conn = null;
+				
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+		} catch (IOException e) {
+			LCD.drawString("Connection failed", 0, 1);
+		}		
+		//Data received from the server is saved in "t". 
+		//Pass the data saved in t to the relevant class
+		Transmission t = conn.getTransmission();
+		//Display the data in t
+		if (t == null) {
+			LCD.drawString("Failed to read transmission", 0, 5);
+		} else {
+			conn.printTransmission();
+		}
+		
+		Button.waitForAnyPress();
+		LCD.clear();
+				
+		//*******************WiFi module ends**********************//
+		
 		double zoneX = 4*30.4;
 		double zoneY = 6*30.4;
+
 		//Setup ultrasonic sensor
 		// 1. Create a port object attached to a physical port (done above)
 		// 2. Create a sensor instance and attach to port
@@ -65,14 +100,22 @@ public class Controller {
 
 //		LCDInfo lcd = new LCDInfo(odo,frontPoller,null, null);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
+		
+		//set up the localization
+
 		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
 		blockDetector.start();	
 		SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
+<<<<<<< HEAD
 		
 		//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 		//set up the light localization
+=======
+
+		//set up the localization
+>>>>>>> origin/master
 		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-//		LightLocalizer lsl = new LightLocalizer(odo, null, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
+//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
 		USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 		
 		/*
