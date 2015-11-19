@@ -18,9 +18,8 @@ import wifi.WifiConnection;
 public class Controller {
 	//variables for WiFi module 
 	// *** INSTRUCTIONS ***
-	// There are two variables to set manually on the EV3 client:
-	// 1. SERVER_IP: the IP address of the computer running the server application
-	private static final String SERVER_IP = "192.168.10.108";
+	// SERVER_IP: the IP address of the computer running the server application
+	private static final String SERVER_IP = "192.168.43.147";
 	private static final int TEAM_NUMBER = 14;	
 	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 	//
@@ -44,21 +43,18 @@ public class Controller {
 	public static final double TRACK = 15.15; 
 	
 	public static void main(String[] args)  {
-		/*
-		 * FOLLOWING CODE NEED TO RUN TEST, DO NOT DELETE
-		 * 
+		
 		//WiFi module
 		//Set up WiFi connection, require data from server, parse data and disconnect from server.
 		WifiConnection conn = null;
-		
-		//while(true){
-			try {
-				conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-			} catch (IOException e) {
-				LCD.drawString("Connection failed", 0, 1);
-			}
-		//}
-		//Data received from the server is saved in "t".  
+				
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+		} catch (IOException e) {
+			LCD.drawString("Connection failed", 0, 1);
+		}		
+		//Data received from the server is saved in "t". 
+		//Pass the data saved in t to the relevant class
 		Transmission t = conn.getTransmission();
 		//Display the data in t
 		if (t == null) {
@@ -69,9 +65,7 @@ public class Controller {
 		
 		Button.waitForAnyPress();
 		LCD.clear();
-		*
-		*/
-		
+				
 		//*******************WiFi module ends**********************//
 		
 		//Setup ultrasonic sensor
@@ -100,9 +94,9 @@ public class Controller {
 //		LCDInfo lcd = new LCDInfo(odo,frontPoller,null, null);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 		
-		//set up the light localization
+		//set up the localization
 		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-//		LightLocalizer lsl = new LightLocalizer(odo, null, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
+//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
 		USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 		
 		/*

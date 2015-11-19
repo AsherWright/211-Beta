@@ -1,11 +1,12 @@
 import lejos.hardware.Sound;
-import lejos.robotics.SampleProvider;
 /**
  * This class implements a light sensor localization.
  * @author Yan Ren
  * @version 1.0
  *
  */
+import wifi.StartCorner;
+
 public class LightLocalizer {
 	//constants
 	private double del;         //distance from the color sensor to the centre of robot.
@@ -15,6 +16,7 @@ public class LightLocalizer {
 	private static final long DATA_PERIOD = 20;
 	private double brightnessThreshold = 0.40;
 	//variables
+	private StartCorner startingCorner = StartCorner.NULL;
 	long correctionStart, correctionEnd;
 	private Navigation navigation;
 	private Odometer odo;
@@ -49,7 +51,13 @@ public class LightLocalizer {
 		this.groundPoller = groundPoller;
 		this.del = del;
 	}
-	
+	public LightLocalizer(Odometer odo, ColorSensorPoller groundPoller, Navigation navigation, double del, StartCorner startingCorner) {
+		this.navigation = navigation;
+		this.odo = odo;
+		this.groundPoller = groundPoller;
+		this.del = del;
+		this.startingCorner = startingCorner;
+	}
 	/**
 	 * Uses the color sensor to perform a "localization", where it figures out its initial starting angle.
 	 * After localization, robot will travel to (0,0) point and rotate to X positive
@@ -115,6 +123,21 @@ public class LightLocalizer {
 			theta = theta - deltaThetaY/2;
 		}else{
 			theta = 360.0 - (deltaThetaY/2 - theta);
+		}
+		
+		//Calculate the actual coordinates according to starting corner
+		if(startingCorner.getId() == 2){
+			x = x + startingCorner.getX();
+			y = y + startingCorner.getY();
+			theta = theta + 90.0;
+		}else if(startingCorner.getId() == 3){
+			x = x + startingCorner.getX();
+			y = y + startingCorner.getY();
+			theta = theta + 180.0;
+		}else if(startingCorner.getId() == 4){
+			x = x + startingCorner.getX();
+			y = y + startingCorner.getY();
+			theta = theta + 270.0;
 		}
 				
 		//update the odometer position
