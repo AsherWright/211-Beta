@@ -69,6 +69,9 @@ public class Controller {
 			} catch (IOException e) {
 			LCD.drawString("Connection failed", 0, 1);
 		}		
+		if(conn == null){
+			LCD.drawString("Unable to find Server", 0, 5);
+		}else{
 		//Data received from the server is saved in "t". 
 		//Pass the data saved in t to the relevant class
 		Transmission t = conn.getTransmission();
@@ -78,88 +81,88 @@ public class Controller {
 		} else {
 			conn.printTransmission();
 		}
-		LCD.clear();
-		//*******************WiFi module ends**********************//
-
-		// setup the odometer
-		Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
-		//setup the wall avoider
-		WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
-//		WallAvoider avoider = new WallAvoider(odo, frontPoller, null);
-		//set up the display and navigator
-		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
-		
-		//set up the localization
-
-		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
-		blockDetector.start();	
-		SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
-
-		LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
-		
-		//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
-		//set up the light localization
-
-
-		//set up the localization
-//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
-		USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
-		
-		/*
-		 * We wait for a press. If it is a left button, we're just doing the detection
-		 * otherwise we do the block stuff.
-		 */
-		int buttonPressed = Button.waitForAnyPress();
-		if(buttonPressed == Button.ID_LEFT){
-			sidePoller.disableSensor();
-			navi.setCmError(0.4);
-			navi.setDegreeError(4.0);
-			usl.doLocalization();
+			LCD.clear();
+			//*******************WiFi module ends**********************//
+	
+			// setup the odometer
+			Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
+			//setup the wall avoider
+			WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
+	//		WallAvoider avoider = new WallAvoider(odo, frontPoller, null);
+			//set up the display and navigator
+			Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 			
-			navi.setCmError(0.2);
-			navi.setDegreeError(2.0);
-			lsl.doLocalization();
-		}else if(buttonPressed == Button.ID_RIGHT){ 
-			//disable the side sensor for localization so that it doens't interfere
-
-			sidePoller.disableSensor();
-			navi.setCmError(0.4);
-			navi.setDegreeError(4.0);
-			usl.doLocalization();
+			//set up the localization
+	
+			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
+			blockDetector.start();	
+			SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
+	
+			LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 			
-			navi.setCmError(0.2);
-			navi.setDegreeError(2.0);
-			lsl.doLocalization();
+			//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
+			//set up the light localization
+	
+	
+			//set up the localization
+	//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
+			LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
+			USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 			
-//			sidePoller.enableSensor();
-			//double[] pos = {0, 0,0};
-			//boolean[] up = {true,true,true};
-			//odo.setPosition(pos,up);
-			//navi.travelToAndAvoid(150, 150);
-			//leftMotor.setSpeed(10);
-			//leftMotor.forward();
-
-			//sidePoller.enableSensor();
-			//navi.setSlowSpeed(90);
-			//navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
-			//navi.travelTo(zoneX-10, zoneY);
-			//navi.turnTo(250, true);
-			//odo.setTheta(270);
-			//the block searcher should go here
-			//searcher.run();
-			//navi.travelToAndAvoid(0, 0);
-
-		}else{
-			Sound.beep();
-			File shakeItOff = new File("ShakeItOff.wav");
-			System.out.println(Sound.playSample(shakeItOff, 100));
-			Sound.beep();
-
+			/*
+			 * We wait for a press. If it is a left button, we're just doing the detection
+			 * otherwise we do the block stuff.
+			 */
+			int buttonPressed = Button.waitForAnyPress();
+			if(buttonPressed == Button.ID_LEFT){
+				sidePoller.disableSensor();
+				navi.setCmError(0.4);
+				navi.setDegreeError(4.0);
+				usl.doLocalization();
+				
+				navi.setCmError(0.2);
+				navi.setDegreeError(2.0);
+				lsl.doLocalization();
+			}else if(buttonPressed == Button.ID_RIGHT){ 
+				//disable the side sensor for localization so that it doens't interfere
+	
+				sidePoller.disableSensor();
+				navi.setCmError(0.4);
+				navi.setDegreeError(4.0);
+				usl.doLocalization();
+				
+				navi.setCmError(0.2);
+				navi.setDegreeError(2.0);
+				lsl.doLocalization();
+				
+	//			sidePoller.enableSensor();
+				//double[] pos = {0, 0,0};
+				//boolean[] up = {true,true,true};
+				//odo.setPosition(pos,up);
+				//navi.travelToAndAvoid(150, 150);
+				//leftMotor.setSpeed(10);
+				//leftMotor.forward();
+	
+				//sidePoller.enableSensor();
+				//navi.setSlowSpeed(90);
+				//navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
+				//navi.travelTo(zoneX-10, zoneY);
+				//navi.turnTo(250, true);
+				//odo.setTheta(270);
+				//the block searcher should go here
+				//searcher.run();
+				//navi.travelToAndAvoid(0, 0);
+	
+			}else{
+				Sound.beep();
+				File shakeItOff = new File("ShakeItOff.wav");
+				System.out.println(Sound.playSample(shakeItOff, 100));
+				Sound.beep();
+	
+			}
+	
+			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
+			System.exit(0);	
 		}
-
-		while (Button.waitForAnyPress() != Button.ID_ESCAPE);
-		System.exit(0);	
-		
 	}
 }
