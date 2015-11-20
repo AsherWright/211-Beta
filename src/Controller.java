@@ -48,14 +48,25 @@ public class Controller {
 	public static final double TRACK = 15.15; 
 	
 	public static void main(String[] args)  {
-		
-		//WiFi module
-		//Set up WiFi connection, require data from server, parse data and disconnect from server.
-		WifiConnection conn = null;
 				
+		double zoneX = 4*30.4;
+		double zoneY = 6*30.4;
+
+//		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
+		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
+		UltrasonicPoller sidePoller = new UltrasonicPoller("S1");
+		ColorSensorPoller blockPoller = new ColorSensorPoller("S2");
+		ColorSensorPoller groundPoller = new ColorSensorPoller("S3");
+		groundPoller.setMode(1);
+		// start the block detector thread, which will be constantly checking with the light sensor
+		//to see if there is a block.
+		
+		//************************WiFi module********************************//
+	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
+		WifiConnection conn = null;
 		try {
 			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-		} catch (IOException e) {
+			} catch (IOException e) {
 			LCD.drawString("Connection failed", 0, 1);
 		}		
 		//Data received from the server is saved in "t". 
@@ -67,38 +78,15 @@ public class Controller {
 		} else {
 			conn.printTransmission();
 		}
-		
 		LCD.clear();
-				
 		//*******************WiFi module ends**********************//
-		
-		double zoneX = 4*30.4;
-		double zoneY = 6*30.4;
 
-		//Setup ultrasonic sensor
-		// 1. Create a port object attached to a physical port (done above)
-		// 2. Create a sensor instance and attach to port
-		// 3. Create a sample provider instance for the above and initialize operating mode
-		// 4. Create a buffer for the sensor data
-//		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
-		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
-		UltrasonicPoller sidePoller = new UltrasonicPoller("S1");
-		ColorSensorPoller blockPoller = new ColorSensorPoller("S2");
-		ColorSensorPoller groundPoller = new ColorSensorPoller("S3");
-		groundPoller.setMode(1);
-		// start the block detector thread, which will be constantly checking with the light sensor
-		//to see if there is a block.
-
-//		
 		// setup the odometer
 		Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
 		//setup the wall avoider
 		WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
 //		WallAvoider avoider = new WallAvoider(odo, frontPoller, null);
 		//set up the display and navigator
-
-
-//		LCDInfo lcd = new LCDInfo(odo,frontPoller,null, null);
 		Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 		
 		//set up the localization
@@ -114,7 +102,6 @@ public class Controller {
 
 
 		//set up the localization
-
 //		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
 		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
 		USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
@@ -132,12 +119,9 @@ public class Controller {
 			
 			navi.setCmError(0.2);
 			navi.setDegreeError(2.0);
-			navi.setSlowSpeed(120);
 			lsl.doLocalization();
 		}else if(buttonPressed == Button.ID_RIGHT){ 
 			//disable the side sensor for localization so that it doens't interfere
-
-//			sidePoller.disableSensor();
 
 			sidePoller.disableSensor();
 			navi.setCmError(0.4);
@@ -146,9 +130,8 @@ public class Controller {
 			
 			navi.setCmError(0.2);
 			navi.setDegreeError(2.0);
-
 			lsl.doLocalization();
-			/*
+			
 //			sidePoller.enableSensor();
 			//double[] pos = {0, 0,0};
 			//boolean[] up = {true,true,true};
@@ -157,8 +140,6 @@ public class Controller {
 			//leftMotor.setSpeed(10);
 			//leftMotor.forward();
 
-			//navi.setSlowSpeed(120);
-			//lsl.doLocalization();
 			//sidePoller.enableSensor();
 			//navi.setSlowSpeed(90);
 			//navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
@@ -168,7 +149,7 @@ public class Controller {
 			//the block searcher should go here
 			//searcher.run();
 			//navi.travelToAndAvoid(0, 0);
-*/
+
 		}else{
 			Sound.beep();
 			File shakeItOff = new File("ShakeItOff.wav");

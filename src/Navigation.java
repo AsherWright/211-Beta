@@ -13,7 +13,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class Navigation {
 
-	final static int ACCELERATION = 600;
+	final static int ACCELERATION = 1000;
+	final int ROTATION_SPEED_FOR_LIGHTLOCALIZATION = 120;
 	
 	private int fast;
 	private int slow;
@@ -235,8 +236,8 @@ public class Navigation {
 	 * rotateForLocalization method is for rotating 360 degree, being used in light localization
 	 */
 	public void rotateForLightLocalization(){
-		leftMotor.setSpeed(slow);
-		rightMotor.setSpeed(slow);
+		leftMotor.setSpeed(ROTATION_SPEED_FOR_LIGHTLOCALIZATION);
+		rightMotor.setSpeed(ROTATION_SPEED_FOR_LIGHTLOCALIZATION);
 		leftMotor.rotate(-convertAngle(wheelRadius, wheelBase, 360.0), true);
 		rightMotor.rotate(convertAngle(wheelRadius, wheelBase, 360.0), true);
 	}
