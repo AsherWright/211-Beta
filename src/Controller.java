@@ -22,7 +22,7 @@ public class Controller {
 	//variables for WiFi module 
 	// *** INSTRUCTIONS ***
 	// SERVER_IP: the IP address of the computer running the server application
-	private static final String SERVER_IP = "192.168.43.118";
+	private static final String SERVER_IP = "192.168.10.116"; //YAN or Rahul: "192.168.43.118";
 	private static final int TEAM_NUMBER = 14;	
 	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 	//
@@ -125,32 +125,36 @@ public class Controller {
 				lsl.doLocalization();
 			}else if(buttonPressed == Button.ID_RIGHT){ 
 				//disable the side sensor for localization so that it doens't interfere
-	
 				sidePoller.disableSensor();
+				//set the errors on the navigation to be large for US localization
 				navi.setCmError(0.4);
 				navi.setDegreeError(4.0);
+				//perform ultrasonic localization
 				usl.doLocalization();
 				
+				//we want small errors for the light sensor localization
 				navi.setCmError(0.2);
 				navi.setDegreeError(2.0);
+				//perofrm lightsensor localization
 				lsl.doLocalization();
 				
-	//			sidePoller.enableSensor();
-				//double[] pos = {0, 0,0};
-				//boolean[] up = {true,true,true};
-				//odo.setPosition(pos,up);
-				//navi.travelToAndAvoid(150, 150);
-				//leftMotor.setSpeed(10);
-				//leftMotor.forward();
-	
-				//sidePoller.enableSensor();
-				//navi.setSlowSpeed(90);
-				//navi.travelToAndAvoid(zoneX - 10, zoneY-2*30.4);
-				//navi.travelTo(zoneX-10, zoneY);
-				//navi.turnTo(250, true);
-				//odo.setTheta(270);
-				//the block searcher should go here
-				//searcher.run();
+
+				//enable the side poller for navigating
+				sidePoller.enableSensor();
+				//speed up the robot for this part
+				navi.setSlowSpeed(90);
+				navi.setFastSpeed(140);
+				//travel to the flag's zone
+				navi.travelToAndAvoid(t.opponentHomeZoneBL_X - 10, t.opponentHomeZoneBL_Y-10);
+				navi.travelTo(t.opponentHomeZoneBL_X-10, t.opponentHomeZoneTR_Y-10);
+				//turn to 270 degrees (250 because of slippage - should be fixed)
+				navi.turnTo(250, true);
+				//now set theta (should be fixed)
+				odo.setTheta(270);
+				
+				//now search for blocks in the area
+				searcher.run();
+				//travel home (not needed for Beta)
 				//navi.travelToAndAvoid(0, 0);
 	
 			}else{
