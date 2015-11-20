@@ -95,7 +95,8 @@ public class Controller {
 			
 			//set up the localization
 	
-			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor);
+//			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, t.flagType);
+			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 1);
 			blockDetector.start();	
 			SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
 	
@@ -129,6 +130,7 @@ public class Controller {
 				
 				navi.setCmError(0.2);
 				navi.setDegreeError(2.0);
+				
 				lsl.doLocalization();
 			}else if(buttonPressed == Button.ID_RIGHT){ 
 				//disable the side sensor for localization so that it doens't interfere

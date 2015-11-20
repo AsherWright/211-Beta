@@ -26,6 +26,7 @@ public class BlockDetector extends Thread {
     //Reading properties
     private String blockType;
     private boolean isFlag; //indicates if flag was found
+    private int flagType;
     //odometer and navigator
     Odometer odo;
     Navigation navi;
@@ -49,7 +50,7 @@ public class BlockDetector extends Thread {
      * @param verticalArmMotor EV3 Motor for up/down movement of arm
      * @param horizontalArmMotor EV3 Motor for open/close movement of arm
      */
-    public BlockDetector(ColorSensorPoller blockPoller, Navigation navi, Odometer odo,UltrasonicPoller frontPoller, EV3LargeRegulatedMotor verticalArmMotor, EV3LargeRegulatedMotor horizontalArmMotor) {
+    public BlockDetector(ColorSensorPoller blockPoller, Navigation navi, Odometer odo,UltrasonicPoller frontPoller, EV3LargeRegulatedMotor verticalArmMotor, EV3LargeRegulatedMotor horizontalArmMotor, int flagType) {
         //get incoming values for variables
         this.blockPoller = blockPoller;
         this.odo = odo;
@@ -85,6 +86,7 @@ public class BlockDetector extends Thread {
         whiteBlockReading[0] = 1.6;
         whiteBlockReading[1] = 1.8;
         whiteBlockReading[2] = 1.3;
+        this.flagType = flagType;
 
     }
     
@@ -304,20 +306,40 @@ public class BlockDetector extends Thread {
             isFlag = false;
         }else if(whiteBlockError[0] < DETECTIONTHRESHOLDERROR && whiteBlockError[1] < DETECTIONTHRESHOLDERROR && whiteBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "WHITE BLOCK";
-            isFlag = false;
+            if(flagType == 4){
+                isFlag = false;
+            }else{
+            	isFlag = true;
+            }
         }else if(BlueBlockError[0] < DETECTIONTHRESHOLDERROR && BlueBlockError[1] < DETECTIONTHRESHOLDERROR &&  BlueBlockError[2] < DETECTIONTHRESHOLDERROR ){
             blockType = "BLUE BLOCK";
-            isFlag =true;
+            if(flagType == 1){
+                isFlag = false;
+            }else{
+            	isFlag = true;
+            }
         }else if(DarkBlueBlockError[0] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[1] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "DARK BLUE BLOCK";
-            isFlag = true;
+            if(flagType == 5){
+                isFlag = false;
+            }else{
+            	isFlag = true;
+            }
         }else if(redBlockError[0] < DETECTIONTHRESHOLDERROR && redBlockError[1] < DETECTIONTHRESHOLDERROR && redBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "RED BLOCK";
-            isFlag = false;
+            if(flagType == 2){
+                isFlag = false;
+            }else{
+            	isFlag = true;
+            }
         
         }else if(yellowBlockError[0] < DETECTIONTHRESHOLDERROR && yellowBlockError[1] < DETECTIONTHRESHOLDERROR && yellowBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "YELLOW BLOCK";
-            isFlag = false;
+            if(flagType == 3){
+                isFlag = false;
+            }else{
+            	isFlag = true;
+            }
         }
 
         return isFlag;
