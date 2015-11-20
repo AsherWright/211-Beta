@@ -124,7 +124,20 @@ public class LightLocalizer {
 		}else{
 			theta = 360.0 - (deltaThetaY/2 - theta);
 		}
-						
+		
+		//TODO: fix this... think carefully.
+		if(startingCorner.getId() == 2){
+			//x = -1*x + startingCorner.getX();
+			//theta = odo.getAng() + 90.0;
+		}else if(startingCorner.getId() == 3){
+			//x = odo.getX() + startingCorner.getX();
+			//y = odo.getY() + startingCorner.getY();
+			//theta = odo.getAng() + 180.0;
+		}else if(startingCorner.getId() == 4){
+			//x = odo.getX() + startingCorner.getX();
+			//y = odo.getY() + startingCorner.getY();
+			//theta = odo.getAng() + 270.0;
+		}	
 		//update the odometer position and send it to (0,0) and pointing to x-positive
 		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});
 		
@@ -132,20 +145,20 @@ public class LightLocalizer {
 		navigation.stopMotor();
 		
 		//Calculate the actual coordinates and direction according to starting corner
-		if(startingCorner.getId() == 2){
-			x = odo.getX() + startingCorner.getX();
-			y = odo.getY() + startingCorner.getY();
-			theta = odo.getAng() + 90.0;
-		}else if(startingCorner.getId() == 3){
-			x = odo.getX() + startingCorner.getX();
-			y = odo.getY() + startingCorner.getY();
-			theta = odo.getAng() + 180.0;
-		}else if(startingCorner.getId() == 4){
-			x = odo.getX() + startingCorner.getX();
-			y = odo.getY() + startingCorner.getY();
-			theta = odo.getAng() + 270.0;
-		}		
-		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});					
+//		if(startingCorner.getId() == 2){
+//			x = odo.getX() + startingCorner.getX();
+//			y = odo.getY() + startingCorner.getY();
+//			theta = odo.getAng() + 90.0;
+//		}else if(startingCorner.getId() == 3){
+//			x = odo.getX() + startingCorner.getX();
+//			y = odo.getY() + startingCorner.getY();
+//			theta = odo.getAng() + 180.0;
+//		}else if(startingCorner.getId() == 4){
+//			x = odo.getX() + startingCorner.getX();
+//			y = odo.getY() + startingCorner.getY();
+//			theta = odo.getAng() + 270.0;
+//		}		
+		//odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});					
 	}
 	
 	/**

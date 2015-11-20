@@ -15,6 +15,7 @@ import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import wifi.StartCorner;
 import wifi.Transmission;
 import wifi.WifiConnection;
 
@@ -63,25 +64,25 @@ public class Controller {
 		
 		//************************WiFi module********************************//
 	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
-		WifiConnection conn = null;
-		try {
-			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-			} catch (IOException e) {
-			LCD.drawString("Connection failed", 0, 1);
-		}		
-		if(conn == null){
-			LCD.drawString("Unable to find Server", 0, 5);
-		}else{
-		//Data received from the server is saved in "t". 
-		//Pass the data saved in t to the relevant class
-		Transmission t = conn.getTransmission();
-		//Display the data in t
-		if (t == null) {
-			LCD.drawString("Failed to read transmission", 0, 5);
-		} else {
-			conn.printTransmission();
-		}
-			LCD.clear();
+//		WifiConnection conn = null;
+//		try {
+//			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+//			} catch (IOException e) {
+//			LCD.drawString("Connection failed", 0, 1);
+//		}		
+//		if(conn == null){
+//			LCD.drawString("Unable to find Server", 0, 5);
+//		}else{
+//		//Data received from the server is saved in "t". 
+//		//Pass the data saved in t to the relevant class
+//		Transmission t = conn.getTransmission();
+//		//Display the data in t
+//		if (t == null) {
+//			LCD.drawString("Failed to read transmission", 0, 5);
+//		} else {
+//			conn.printTransmission();
+//		}
+//			LCD.clear();
 			//*******************WiFi module ends**********************//
 	
 			// setup the odometer
@@ -106,7 +107,8 @@ public class Controller {
 	
 			//set up the localization
 	//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-			LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
+			LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, StartCorner.BOTTOM_LEFT);
+			//LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
 			USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 			
 			/*
@@ -114,6 +116,11 @@ public class Controller {
 			 * otherwise we do the block stuff.
 			 */
 			int buttonPressed = Button.waitForAnyPress();
+			/** * ** *** **** ***** ****** ******* ******** ********* **********
+			 * Left button means just do localization.
+			 * Right button means do go capture the block and stay there
+			 * Any other button means play shake it off.
+			 */
 			if(buttonPressed == Button.ID_LEFT){
 				sidePoller.disableSensor();
 				navi.setCmError(0.4);
@@ -138,15 +145,17 @@ public class Controller {
 				//perofrm lightsensor localization
 				lsl.doLocalization();
 				
-
+				
 				//enable the side poller for navigating
 				sidePoller.enableSensor();
 				//speed up the robot for this part
 				navi.setSlowSpeed(90);
 				navi.setFastSpeed(140);
 				//travel to the flag's zone
-				navi.travelToAndAvoid(t.opponentHomeZoneBL_X - 10, t.opponentHomeZoneBL_Y-10);
-				navi.travelTo(t.opponentHomeZoneBL_X-10, t.opponentHomeZoneTR_Y-10);
+//				navi.travelToAndAvoid(t.opponentHomeZoneBL_X - 10, t.opponentHomeZoneBL_Y-10);
+
+//				navi.travelTo(t.opponentHomeZoneBL_X-10, t.opponentHomeZoneTR_Y-10);
+				
 				//turn to 270 degrees (250 because of slippage - should be fixed)
 				navi.turnTo(250, true);
 				//now set theta (should be fixed)
@@ -167,6 +176,6 @@ public class Controller {
 	
 			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 			System.exit(0);	
-		}
+//		}
 	}
 }
