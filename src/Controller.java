@@ -23,7 +23,7 @@ public class Controller {
 	//variables for WiFi module 
 	// *** INSTRUCTIONS ***
 	// SERVER_IP: the IP address of the computer running the server application
-	private static final String SERVER_IP = "192.168.10.116"; //YAN or Rahul: "192.168.43.118";
+	private static final String SERVER_IP = "192.168.10.120";//"192.168.10.116"; //YAN or Rahul: "192.168.43.118";
 	private static final int TEAM_NUMBER = 14;	
 	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 	//
