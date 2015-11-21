@@ -141,11 +141,15 @@ public class LightLocalizer {
 		//update the odometer position and send it to (0,0) and pointing to x-positive
 		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});
 		
-		travelToOrigin();
+		//travelToOrigin();
 		navigation.stopMotor();
 		
 		//Calculate the actual coordinates and direction according to starting corner
-//		if(startingCorner.getId() == 2){
+//		if(startingCorner.getId() == 1){
+//			x = odo.getX();
+//			y = odo.getY();
+//			theta = odo.getAng();
+//		} else if(startingCorner.getId() == 2){
 //			x = odo.getX() + startingCorner.getX();
 //			y = odo.getY() + startingCorner.getY();
 //			theta = odo.getAng() + 90.0;

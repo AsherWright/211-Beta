@@ -307,38 +307,38 @@ public class BlockDetector extends Thread {
         }else if(whiteBlockError[0] < DETECTIONTHRESHOLDERROR && whiteBlockError[1] < DETECTIONTHRESHOLDERROR && whiteBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "WHITE BLOCK";
             if(flagType == 4){
-                isFlag = false;
+                isFlag = true;
             }else{
-            	isFlag = true;
+            	isFlag = false;
             }
         }else if(BlueBlockError[0] < DETECTIONTHRESHOLDERROR && BlueBlockError[1] < DETECTIONTHRESHOLDERROR &&  BlueBlockError[2] < DETECTIONTHRESHOLDERROR ){
             blockType = "BLUE BLOCK";
             if(flagType == 1){
-                isFlag = false;
+                isFlag = true;
             }else{
-            	isFlag = true;
+            	isFlag = false;
             }
         }else if(DarkBlueBlockError[0] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[1] < DETECTIONTHRESHOLDERROR && DarkBlueBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "DARK BLUE BLOCK";
             if(flagType == 5){
-                isFlag = false;
+                isFlag = true;
             }else{
-            	isFlag = true;
+            	isFlag = false;
             }
         }else if(redBlockError[0] < DETECTIONTHRESHOLDERROR && redBlockError[1] < DETECTIONTHRESHOLDERROR && redBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "RED BLOCK";
             if(flagType == 2){
-                isFlag = false;
+                isFlag = true;
             }else{
-            	isFlag = true;
+            	isFlag = false;
             }
         
         }else if(yellowBlockError[0] < DETECTIONTHRESHOLDERROR && yellowBlockError[1] < DETECTIONTHRESHOLDERROR && yellowBlockError[2] < DETECTIONTHRESHOLDERROR){
             blockType = "YELLOW BLOCK";
             if(flagType == 3){
-                isFlag = false;
+                isFlag = true;
             }else{
-            	isFlag = true;
+            	isFlag = false;
             }
         }
 

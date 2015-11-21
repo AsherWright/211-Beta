@@ -23,7 +23,7 @@ public class Controller {
 	//variables for WiFi module 
 	// *** INSTRUCTIONS ***
 	// SERVER_IP: the IP address of the computer running the server application
-	private static final String SERVER_IP = "192.168.10.120";//"192.168.10.116"; //YAN or Rahul: "192.168.43.118";
+	private static final String SERVER_IP = "192.168.10.200";//"192.168.10.116";//"192.168.10.120";//"192.168.10.116"; //YAN or Rahul: "192.168.43.118";
 	private static final int TEAM_NUMBER = 14;	
 	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 	//
@@ -64,25 +64,25 @@ public class Controller {
 		
 		//************************WiFi module********************************//
 	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
-//		WifiConnection conn = null;
-//		try {
-//			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-//			} catch (IOException e) {
-//			LCD.drawString("Connection failed", 0, 1);
-//		}		
-//		if(conn == null){
-//			LCD.drawString("Unable to find Server", 0, 5);
-//		}else{
-//		//Data received from the server is saved in "t". 
-//		//Pass the data saved in t to the relevant class
-//		Transmission t = conn.getTransmission();
-//		//Display the data in t
-//		if (t == null) {
-//			LCD.drawString("Failed to read transmission", 0, 5);
-//		} else {
-//			conn.printTransmission();
-//		}
-//			LCD.clear();
+		WifiConnection conn = null;
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+			} catch (IOException e) {
+			LCD.drawString("Connection failed", 0, 1);
+		}		
+		if(conn == null){
+			LCD.drawString("Unable to find Server", 0, 5);
+		}else{
+		//Data received from the server is saved in "t". 
+		//Pass the data saved in t to the relevant class
+		Transmission t = conn.getTransmission();
+		//Display the data in t
+		if (t == null) {
+			LCD.drawString("Failed to read transmission", 0, 5);
+		} else {
+			conn.printTransmission();
+		}
+			LCD.clear();
 			//*******************WiFi module ends**********************//
 	
 			// setup the odometer
@@ -95,8 +95,8 @@ public class Controller {
 			
 			//set up the localization
 	
-//			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, t.flagType);
-			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 1);
+		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, t.flagType);
+//			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 1);
 			blockDetector.start();	
 			SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, zoneX, zoneY);
 	
@@ -142,7 +142,7 @@ public class Controller {
 				usl.doLocalization();
 				
 				//we want small errors for the light sensor localization
-				navi.setCmError(0.2);
+				navi.setCmError(0.3);
 				navi.setDegreeError(2.0);
 				//perofrm lightsensor localization
 				lsl.doLocalization();
@@ -154,12 +154,14 @@ public class Controller {
 				navi.setSlowSpeed(90);
 				navi.setFastSpeed(140);
 				//travel to the flag's zone
-//				navi.travelToAndAvoid(t.opponentHomeZoneBL_X - 10, t.opponentHomeZoneBL_Y-10);
-
-//				navi.travelTo(t.opponentHomeZoneBL_X-10, t.opponentHomeZoneTR_Y-10);
+//				navi.travelToAndAvoid(30.4*3 - 10, 30.4*3-10);
+//				navi.travelTo(30.4*3-10, 30.4*3-10);
+				
+				navi.travelToAndAvoid(30.4*t.opponentHomeZoneBL_X - 5, 30.4*t.opponentHomeZoneBL_Y-5);
+				navi.travelTo(30.4*t.opponentHomeZoneBL_X-5, 30.4*t.opponentHomeZoneTR_Y-5);
 				
 				//turn to 270 degrees (250 because of slippage - should be fixed)
-				navi.turnTo(250, true);
+				navi.turnTo(260, true);
 				//now set theta (should be fixed)
 				odo.setTheta(270);
 				
@@ -178,6 +180,6 @@ public class Controller {
 	
 			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 			System.exit(0);	
-//		}
+		}
 	}
 }
