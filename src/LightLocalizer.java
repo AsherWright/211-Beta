@@ -21,7 +21,6 @@ public class LightLocalizer {
 	private Navigation navigation;
 	private Odometer odo;
 	private double brightness;		
-	private int numberOfGridLines = 0;
 	private boolean isBlackLine = false;
 	/**
 	 * Holds intermediate variables for calculating x, y, theta 
@@ -65,12 +64,14 @@ public class LightLocalizer {
 	 */
 	public void doLocalization() {
 		
-		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
-		navigation.rotateForLightLocalization();
-		double angle = 0;
 		//setting the color sensor properties.
 		groundPoller.setPollRate(20);
+		int numberOfGridLines = 0;
+		double angle = 0;
+		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
 		
+		//start localization
+		navigation.rotateForLightLocalization();		
 		while (navigation.isRotating() == true){
 			correctionStart = System.currentTimeMillis();
 			brightness = groundPoller.getBrightness();
@@ -158,4 +159,88 @@ public class LightLocalizer {
 		 navigation.travelTo(0.0, 0.0);
 		 navigation.turnTo(0.0, true);
 	}
+	/**
+	 * 
+	 * @param lsl_point_x 
+	 * @param lsl_point_y
+	 */
+	public void reLocalization(double lsl_point_x, double lsl_point_y){
+		// store initial position		
+		double [] startingPosition = odo.getPosition();
+		int numberOfGridLines = 0;
+		double angle = 0;
+		// setting the color sensor properties.
+		groundPoller.setPollRate(20);
+		
+		// start localizaiton
+		navigation.turnTo(45.0, true);
+		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
+		navigation.rotateForLightLocalization();
+			
+		while (navigation.isRotating() == true){
+			correctionStart = System.currentTimeMillis();
+			brightness = groundPoller.getBrightness();
+		if (brightness < brightnessThreshold)
+		{
+			//get angle from odometer
+			angle = odo.getAng();
+			//light sensor is crossing the grid line
+			isBlackLine = true;
+			Sound.beep();
+			numberOfGridLines = numberOfGridLines + 1;
+		}
+		else 
+		{
+			isBlackLine = false;
+		}
+    
+		if (isBlackLine == true){
+			if (numberOfGridLines == 1){ 
+				thetaYNegative = angle;								
+			}
+			else if (numberOfGridLines == 2){
+				thetaXPositive = angle;				
+			}		
+			else if (numberOfGridLines == 3){ 
+				thetaYPositive = angle;
+			}
+			else if (numberOfGridLines == 4){
+				thetaXNegative = angle;
+				
+			}		
+		 }
+		
+			correctionEnd = System.currentTimeMillis();
+			if (correctionEnd - correctionStart < DATA_PERIOD) {
+				try {Thread.sleep(DATA_PERIOD - (correctionEnd - correctionStart));
+				} catch (InterruptedException e) {}
+			}
+		}
+		// check if the robot intersects with grid lines four times
+		if(numberOfGridLines != 4){
+			odo.setPosition(startingPosition, new boolean[]{true,true,true});
+			return;
+		}
+	
+		// do trig to compute x,y and theta
+		deltaThetaY = thetaYPositive - thetaYNegative;
+		deltaThetaX = thetaXNegative - thetaXPositive;
+		x = -1*del*Math.cos(Math.toRadians(deltaThetaY/2));
+		y = -1*del*Math.cos(Math.toRadians(deltaThetaX/2));
+	
+		theta = 180.0 - thetaYNegative;
+		if (theta >= deltaThetaY/2){
+			theta = theta - deltaThetaY/2;
+		}else{
+			theta = 360.0 - (deltaThetaY/2 - theta);
+		}
+	
+		//update the current position to odometer. Based on these value, the robot will go to (0,0) and pointing to x-positive
+		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});		
+		travelToOrigin();
+		navigation.stopMotor();
+	
+		//Calculate the actual coordinates and direction according to starting corner		
+		odo.setPosition(new double[] {odo.getX() + lsl_point_x, odo.getY() + lsl_point_y, odo.getAng()}, new boolean[] {true, true, true});					
+		}
 }
