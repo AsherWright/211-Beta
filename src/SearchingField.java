@@ -69,27 +69,29 @@ public class SearchingField extends Thread {
 		
 		if(!isFlag)//didnt find flag in first side
 		{
-		//turn 90 degrees ccw
-		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-			
+			//turn 90 degrees ccw
+			rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+				
+			leftMotor.setSpeed(100);
+			rightMotor.setSpeed(100);
+			navi.travelTo(x*30.4+ (b+2*30.5), odo.getY());	
 			//travel side 
-			while(odo.getX() < x*30.4+ (b+2*30.5)) 
-			{
-				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
-				{
-					checkObject();
-					if (isFlag)
-					{
-						break;
-					}
-				}
-				leftMotor.setSpeed(100);
-				rightMotor.setSpeed(100);
-				rightMotor.forward();
-				leftMotor.forward();
-
-			}
+	//			while(odo.getX() < x*30.4+ (b+2*30.5)) 
+	//			{
+	////				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
+	////				{
+	////					checkObject();
+	////					if (isFlag)
+	////					{
+	////						break;
+	////					}
+	////				}
+	//			
+	//				rightMotor.forward();
+	//				leftMotor.forward();
+	//
+	//			}
 			if (!isFlag)
 			{
 				//turn 90 degree ccw
@@ -114,7 +116,7 @@ public class SearchingField extends Thread {
 		
 		
 	}
-	}
+}
 	/**
 	 * 
 	 */
