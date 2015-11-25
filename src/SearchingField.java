@@ -50,7 +50,7 @@ public class SearchingField extends Thread {
 
 		//travel side to upper right corner
 
-		while(odo.getY() >y - (3*30.4+a+b))
+		while(odo.getY() >y*30.4 - (3*30.4+a+b))
 		{	
 			if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
 			{
@@ -74,7 +74,7 @@ public class SearchingField extends Thread {
 		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
 			
 			//travel side 
-			while(odo.getX() < x+ (b+2*30.5)) 
+			while(odo.getX() < x*30.4+ (b+2*30.5)) 
 			{
 				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
 				{
@@ -95,7 +95,7 @@ public class SearchingField extends Thread {
 				//turn 90 degree ccw
 				rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
 				leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-			while (odo.getY() < y) //object in second 1x3 area
+			while (odo.getY() < y*30.4) //object in second 1x3 area
 			{
 				if(sidePoller.getUsData()< (b+30.4))
 				{
