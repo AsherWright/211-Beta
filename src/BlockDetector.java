@@ -286,9 +286,11 @@ public class BlockDetector extends Thread {
         if(isFlag) //capture flag
         {      
             pickUp();
+            Sound.beepSequenceUp();
         }
         else //not flag, return to initial position
         {
+        	Sound.beepSequence();
         	rightMotor.setSpeed(100);
         	leftMotor.setSpeed(100);
         	//back up a bit 
@@ -296,7 +298,7 @@ public class BlockDetector extends Thread {
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
             navi.travelTo(pos[0], pos[1]);
             //navi.turnTo(pos[2], true);
-            Sound.beep();
+           // Sound.beep();
         }
     }
     
