@@ -182,6 +182,7 @@ public class Controller {
 				pos[2] = 270;
 				odo.setPosition(pos, update);
 				navi.setCmError(0.4);
+				navi.setDegreeError(3);
 				searcher.run();
 			}else{
 				Sound.beep();

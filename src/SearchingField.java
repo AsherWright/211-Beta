@@ -73,25 +73,25 @@ public class SearchingField extends Thread {
 			rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
 			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
 				
-			leftMotor.setSpeed(100);
-			rightMotor.setSpeed(100);
-			navi.travelTo(x*30.4+ (b+2*30.5), odo.getY());	
+		
+			//navi.travelTo(x*30.4 + (b+2*30.4), odo.getY());	
 			//travel side 
-	//			while(odo.getX() < x*30.4+ (b+2*30.5)) 
-	//			{
-	////				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
-	////				{
-	////					checkObject();
-	////					if (isFlag)
-	////					{
-	////						break;
-	////					}
-	////				}
-	//			
-	//				rightMotor.forward();
-	//				leftMotor.forward();
-	//
-	//			}
+				while(odo.getX() < x*30.4+ (b+2*30.5)) 
+				{
+	//				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
+	//				{
+	//					checkObject();
+	//					if (isFlag)
+	//					{
+	//						break;
+	//					}
+	//				}
+					leftMotor.setSpeed(100);
+					rightMotor.setSpeed(100);
+					rightMotor.forward();
+					leftMotor.forward();
+	
+				}
 			if (!isFlag)
 			{
 				//turn 90 degree ccw
@@ -112,6 +112,8 @@ public class SearchingField extends Thread {
 				rightMotor.forward();
 				leftMotor.forward();
 			}
+			leftMotor.stop(true);
+			rightMotor.stop(true);
 		}
 		
 		
@@ -124,8 +126,8 @@ public class SearchingField extends Thread {
 	{
 		Sound.beep();
 		//move forward 7cm to approximately get to the middle of block 
-		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,5), true);
-		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,5), false);
+		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,9), true);
+		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,9), false);
 
 		//record initial position
 		odo.getPosition(pos);
@@ -166,10 +168,9 @@ public class SearchingField extends Thread {
 				rightMotor.forward();
 				leftMotor.forward();
 			}
+		Sound.beep();
 		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), true);
 		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), false);
-
-		Sound.beep();
 		Sound.beep();
 		
 		//option 2; problem: hard coding too many variants and can skip block too 
