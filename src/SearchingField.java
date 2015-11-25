@@ -5,20 +5,20 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 public class SearchingField extends Thread {
 	
-	Odometer odo;
-	Navigation navi;
-	BlockDetector detector;
+	private Odometer odo;
+	private Navigation navi;
+	private BlockDetector detector;
 	private UltrasonicPoller frontPoller;
-	UltrasonicPoller sidePoller;
-	EV3LargeRegulatedMotor leftMotor;
-	EV3LargeRegulatedMotor rightMotor;
+	private UltrasonicPoller sidePoller;
+	private EV3LargeRegulatedMotor leftMotor;
+	private EV3LargeRegulatedMotor rightMotor;
 	
 	private double[] pos = new double [3];
 	private boolean isFlag; //determines if flag is found
-	double b = 6; 
-	double a = 3;
-	double x;
-	double y;
+	private double b = 6; 
+	private double a = 3;
+	private double x;
+	private double y;
 	
 	//constructor 
 	public SearchingField( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,

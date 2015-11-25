@@ -98,7 +98,7 @@ public class Controller {
 		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, t.flagType);
 //			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 1);
 			blockDetector.start();	
-			SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, t.opponentHomeZoneBL_X, t.opponentHomeZoneTR_X);
+			//SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, t.opponentHomeZoneBL_X, t.opponentHomeZoneTR_X);
 	
 			LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 			
@@ -166,10 +166,22 @@ public class Controller {
 				odo.setTheta(270);
 				
 				//now search for blocks in the area
-				searcher.run();
+				//searcher.run();
 				//travel home (not needed for Beta)
 				//navi.travelToAndAvoid(0, 0);
 	
+			}else if(buttonPressed == Button.ID_DOWN){
+				SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 5);
+				double[] pos = new double[3];
+				boolean[] update = new boolean[3];
+				update[0] = true;
+				update[1] = true;
+				update[2] = true;
+				pos[0] = 3*30.4-5;
+				pos[1] = 5*30.4-5;
+				pos[2] = 270;
+				odo.setPosition(pos, update);
+				searcher.run();
 			}else{
 				Sound.beep();
 				File shakeItOff = new File("ShakeItOff.wav");
