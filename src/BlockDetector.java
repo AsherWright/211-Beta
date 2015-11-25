@@ -209,6 +209,9 @@ public class BlockDetector extends Thread {
         		newTheta +=360;
         	}
         }
+        if(Math.abs(newTheta-pos[2]) > 45){
+        	return;
+        }
         navi.turnTo(newTheta, true);
         Sound.buzz();
         while(getFilteredUSData() > DETECTIONRANGE) //get within 4cm
