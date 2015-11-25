@@ -15,14 +15,14 @@ public class SearchingField extends Thread {
 	
 	private double[] pos = new double [3];
 	private boolean isFlag; //determines if flag is found
-	double b = 6; //TODO: test distance
+	double b = 6; 
 	double a = 3;
 	double x;
 	double y;
 	
 	//constructor 
 	public SearchingField( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
-			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector, double endX, double endY)
+			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector, double zoneX, double zoneY)
 
 	{
         this.odo = odo;
@@ -32,8 +32,8 @@ public class SearchingField extends Thread {
         this.detector= detector;
         this.frontPoller = frontPoller;
         this.sidePoller = sidePoller;
-        this.x = endX;
-        this.y = endY;
+        this.x = zoneX;
+        this.y = zoneY;
 	}
 	/**
 	 * 
@@ -50,7 +50,7 @@ public class SearchingField extends Thread {
 
 		//travel side to upper right corner
 
-		while(odo.getY() >y - (2*30.4+a+b))
+		while(odo.getY() >y - (3*30.4+a+b))
 		{	
 			if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
 			{
@@ -73,7 +73,7 @@ public class SearchingField extends Thread {
 		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
 		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
 			
-			//travel side to upper left corner
+			//travel side 
 			while(odo.getX() < x+ (b+2*30.5)) 
 			{
 				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
@@ -122,8 +122,8 @@ public class SearchingField extends Thread {
 	{
 		Sound.beep();
 		//move forward 7cm to approximately get to the middle of block 
-		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,7), true);
-		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,7), false);
+		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,5), true);
+		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,5), false);
 
 		//record initial position
 		odo.getPosition(pos);
