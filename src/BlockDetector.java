@@ -95,7 +95,15 @@ public class BlockDetector extends Thread {
      */
     public void run(){
         blockPoller.setMode(2);
-
+        while(true){
+        investigateFlag();
+        try {
+			Thread.sleep(50);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        }
     }
     /**
      * Method that gets close to block in order to get accurate readings for the light sensor, calls isFlagDetected method
@@ -104,7 +112,7 @@ public class BlockDetector extends Thread {
     {
         //record initial position
         odo.getPosition(pos);
-        
+        int generalSpeed = 100;
         double lTheta; //falling edge angle
         double rTheta; //rising edge angle
         boolean goneHalf = false;
@@ -112,8 +120,8 @@ public class BlockDetector extends Thread {
         //USDistance = getFilteredUSData();
         //spin until we see the block.
         while(getFilteredUSData() > 29){
-        	leftMotor.setSpeed(50);
-        	rightMotor.setSpeed(50);
+        	leftMotor.setSpeed(generalSpeed);
+        	rightMotor.setSpeed(generalSpeed);
         	leftMotor.backward();
         	rightMotor.forward();
         	if(Math.abs(odo.getAng()-pos[2]) > 100){
@@ -134,8 +142,8 @@ public class BlockDetector extends Thread {
         while(getFilteredUSData() <= 30.4)
         {
             //USDistance = getFilteredUSData();
-            leftMotor.setSpeed(50);
-            rightMotor.setSpeed(50);
+            leftMotor.setSpeed(generalSpeed);
+            rightMotor.setSpeed(generalSpeed);
             rightMotor.forward();
             leftMotor.backward();
         }
@@ -148,8 +156,8 @@ public class BlockDetector extends Thread {
         while(getFilteredUSData() >= 29)
         {
             //USDistance = getFilteredUSData();
-            leftMotor.setSpeed(50);
-            rightMotor.setSpeed(50);
+            leftMotor.setSpeed(generalSpeed);
+            rightMotor.setSpeed(generalSpeed);
             rightMotor.backward();
             leftMotor.forward();
         }
@@ -167,8 +175,8 @@ public class BlockDetector extends Thread {
         while(getFilteredUSData() <= 29)
         {
            // USDistance = getFilteredUSData();
-            leftMotor.setSpeed(50);
-            rightMotor.setSpeed(50);
+            leftMotor.setSpeed(generalSpeed);
+            rightMotor.setSpeed(generalSpeed);
             leftMotor.forward();
             rightMotor.backward();
         }
