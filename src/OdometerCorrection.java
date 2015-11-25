@@ -38,7 +38,6 @@ public class OdometerCorrection extends Thread {
 	public void run() {
 		long correctionStart, correctionEnd;
 		
-		firstBrightnessLevel = -1; //start the first brightness at -1 (to know it is first reading)
 		//colorSensor.setFloodlight(lejos.robotics.Color.WHITE); //we set our light to White (we use white over R)
 		while (true) {
 			correctionStart = System.currentTimeMillis();
@@ -85,8 +84,6 @@ public class OdometerCorrection extends Thread {
 		double currX = odometer.getX();
 		double currY = odometer.getY();
 		double currT = odometer.getAng();
-		double correctedX = 0;
-		double correctedY = 0;
 		double offset = 10.6;
 		//find out what the position of our black line hit was (where the light sensor is).
 		double blackLineX = currX - offset*Math.cos(currT);
@@ -96,8 +93,8 @@ public class OdometerCorrection extends Thread {
 		int xTile = (int) (blackLineX / 30.4);
 		int yTile = (int) (blackLineY / 30.4);
 		double linethreshold = 5;
-		double xOff = Math.abs(blackLineX - xTile);
-		double yOff = Math.abs(blackLineY - yTile);
+		double xOff = Math.abs(blackLineX - xTile*30.4);
+		double yOff = Math.abs(blackLineY - yTile*30.4);
 		//create an array for what fields to update for our robot and set values
 		boolean[] update = new boolean[3];		//create an array for the position of our robot and set the values
 		double[] position = new double[3];

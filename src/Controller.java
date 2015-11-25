@@ -157,16 +157,13 @@ public class Controller {
 				navi.setSlowSpeed(90);
 				navi.setFastSpeed(140);
 				//travel to the flag's zone
-//				navi.travelToAndAvoid(30.4*3 - 10, 30.4*3-10);
-//				navi.travelTo(30.4*3-10, 30.4*3-10);
-//				lsl.reLocalization(30.4*3, 30.4*3);
+				navi.travelToAndAvoid(30.4*2, 30.4*2);
+				lsl.reLocalization(30.4*2, 30.4*2);
+				navi.travelTo(30.4*2-10, 30.4*2-10);
 //				navi.travelToAndAvoid(30.4*t.opponentHomeZoneBL_X - 5, 30.4*t.opponentHomeZoneBL_Y-5);
 //				navi.travelTo(30.4*t.opponentHomeZoneBL_X-5, 30.4*t.opponentHomeZoneTR_Y-5);
-				
-				//turn to 270 degrees (250 because of slippage - should be fixed)
-				navi.turnTo(260, true);
-				//now set theta (should be fixed)
-				odo.setTheta(270);
+			
+				navi.turnTo(270, true);
 				
 				//now search for blocks in the area
 				//searcher.run();
