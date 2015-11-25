@@ -80,14 +80,14 @@ public class OdometerCorrection extends Thread {
 	 * Corrects the odometer's position (is triggered on hitting a black line).
 	 */
 	private void correctOdometerPosition(){
-		Sound.beep();
+
 		//variables
 		double currX = odometer.getX();
 		double currY = odometer.getY();
 		double currT = odometer.getAng();
 		double correctedX = 0;
 		double correctedY = 0;
-		double offset = 10.0;
+		double offset = 10.6;
 		//find out what the position of our black line hit was (where the light sensor is).
 		double blackLineX = currX - offset*Math.cos(currT);
 		double blackLineY = currY - offset*Math.sin(currT);
@@ -96,20 +96,28 @@ public class OdometerCorrection extends Thread {
 		int xTile = (int) (blackLineX / 30.4);
 		int yTile = (int) (blackLineY / 30.4);
 		double linethreshold = 5;
-		double xOff = Math.abs(blackLineX -xTile);
+		double xOff = Math.abs(blackLineX - xTile);
 		double yOff = Math.abs(blackLineY - yTile);
-		
-			
-		//create an array for the position of our robot and set the values
-		double[] position = new double[3];
-		position[0] = correctedX;
-		position[1] = correctedY;
-		position[2] = 0;
 		//create an array for what fields to update for our robot and set values
-		boolean[] update = new boolean[3];
-		update[0] = true;
-		update[1] = true;
+		boolean[] update = new boolean[3];		//create an array for the position of our robot and set the values
+		double[] position = new double[3];
+		update[0] = false;
+		update[1] = false;
 		update[2] = false;
+		if(xOff < yOff && xOff < linethreshold){
+			position[0] = xTile*30.4;
+			update[0] = true;
+			Sound.beep();
+		}else if (yOff < xOff && yOff < linethreshold){
+			position[1] = yTile*30.4;
+			update[1] = true;
+			Sound.beep();
+		}
+
+//		position[0] = correctedX;
+//		position[1] = correctedY;
+//		position[2] = 0;
+
 		//now use those two arrays to set the position of the odometer (it is now corrected).
 		odometer.setPosition(position,update);
 		

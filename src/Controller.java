@@ -87,6 +87,9 @@ public class Controller {
 	
 			// setup the odometer
 			Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
+			OdometerCorrection odoCorr = new OdometerCorrection(odo, groundPoller);
+			odoCorr.start();
+			
 			//setup the wall avoider
 			WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
 	//		WallAvoider avoider = new WallAvoider(odo, frontPoller, null);
