@@ -133,8 +133,8 @@ public class SearchingField extends Thread {
 		odo.getPosition(pos);
 		
 		//turn 90 degrees ccw
-		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+//		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+//		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
 		
 		//turn off side sensor and turn on front sensor
 		sidePoller.disableSensor();

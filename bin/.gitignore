@@ -1,15 +1,6 @@
-/BlockDetectorOld.class
-/ColorSensorPoller.class
-/Controller.class
-/LCDInfo.class
-/LightLocalizer.class
-/Navigation.class
-/Odometer.class
 /SearchingField.class
 /USLocalizer$LocalizationType.class
 /USLocalizer.class
 /UltrasonicPoller.class
 /WallAvoider.class
 /wifi/
-/OdometerCorrection.class
-/OdometrerCorrection.class
