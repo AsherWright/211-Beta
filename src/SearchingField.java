@@ -45,8 +45,8 @@ public class SearchingField extends Thread {
 		
 		isFlag = detector.isFlag(); //false
 		
-		rightMotor.setSpeed(100);
-		leftMotor.setSpeed(100);
+		rightMotor.setSpeed(150);
+		leftMotor.setSpeed(150);
 
 		//travel side to upper right corner
 
@@ -60,8 +60,8 @@ public class SearchingField extends Thread {
 					break;
 				}
 			}
-			leftMotor.setSpeed(100);
-			rightMotor.setSpeed(100);
+			leftMotor.setSpeed(150);
+			rightMotor.setSpeed(150);
 			rightMotor.forward();
 			leftMotor.forward();
 
@@ -86,8 +86,8 @@ public class SearchingField extends Thread {
 	//						break;
 	//					}
 	//				}
-					leftMotor.setSpeed(100);
-					rightMotor.setSpeed(100);
+					leftMotor.setSpeed(150);
+					rightMotor.setSpeed(150);
 					rightMotor.forward();
 					leftMotor.forward();
 	
@@ -107,8 +107,8 @@ public class SearchingField extends Thread {
 						break;
 					}
 				}
-				leftMotor.setSpeed(100);
-				rightMotor.setSpeed(100);
+				leftMotor.setSpeed(150);
+				rightMotor.setSpeed(150);
 				rightMotor.forward();
 				leftMotor.forward();
 			}
@@ -133,8 +133,8 @@ public class SearchingField extends Thread {
 		odo.getPosition(pos);
 		
 		//turn 90 degrees ccw
-		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+//		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+//		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
 		
 		//turn off side sensor and turn on front sensor
 		sidePoller.disableSensor();
@@ -168,6 +168,12 @@ public class SearchingField extends Thread {
 				rightMotor.forward();
 				leftMotor.forward();
 			}
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		Sound.beep();
 		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), true);
 		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), false);
