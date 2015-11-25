@@ -104,11 +104,11 @@ public class BlockDetectorOld extends Thread {
         }
         rightMotor.stop(true);
         leftMotor.stop(true);
-        Sound.beep();
+
         lTheta = pos[2]-odo.getAng();
         
         navi.turnTo(pos[2], false);
-        Sound.beep();
+   
         
         USDistance = getFilteredUSData();
         
@@ -123,13 +123,11 @@ public class BlockDetectorOld extends Thread {
         }
         leftMotor.stop(true);
         rightMotor.stop(true);
-        Sound.beep();
+  
         rTheta = pos[2]-odo.getAng();
         
         navi.turnTo(pos[2], true);
         
-        Sound.beep();
-        Sound.beep();
         rightMotor.setSpeed(100);
         leftMotor.setSpeed(100);
         USDistance = getFilteredUSData();
@@ -150,8 +148,6 @@ public class BlockDetectorOld extends Thread {
         
         if(difference <= 88 && difference >= 65)//within center range
         {
-            Sound.buzz();
-            Sound.buzz();
             
             USDistance = getFilteredUSData();
             while(USDistance > DETECTIONRANGE) //get within light sensor range
@@ -172,7 +168,6 @@ public class BlockDetectorOld extends Thread {
         
         else //too far to right or left 
         {
-            Sound.buzz();
             
             //drive into the block to straighten it out
             rightMotor.rotate(convertDistance(WHEEL_RADIUS,17),true); 
@@ -212,7 +207,7 @@ public class BlockDetectorOld extends Thread {
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
             navi.travelTo(pos[0], pos[1]);
             navi.turnTo(pos[2], true);
-            Sound.beep();
+           
         }
     }
     

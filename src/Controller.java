@@ -145,7 +145,7 @@ public class Controller {
 				usl.doLocalization();
 				
 				//we want small errors for the light sensor localization
-				navi.setCmError(0.3);
+				navi.setCmError(0.5);
 				navi.setDegreeError(2.0);
 				//perofrm lightsensor localization
 				lsl.doLocalization();
@@ -159,7 +159,7 @@ public class Controller {
 				//travel to the flag's zone
 //				navi.travelToAndAvoid(30.4*3 - 10, 30.4*3-10);
 //				navi.travelTo(30.4*3-10, 30.4*3-10);
-				
+//				lsl.reLocalization(30.4*3, 30.4*3);
 //				navi.travelToAndAvoid(30.4*t.opponentHomeZoneBL_X - 5, 30.4*t.opponentHomeZoneBL_Y-5);
 //				navi.travelTo(30.4*t.opponentHomeZoneBL_X-5, 30.4*t.opponentHomeZoneTR_Y-5);
 				
