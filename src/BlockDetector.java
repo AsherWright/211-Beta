@@ -83,8 +83,8 @@ public class BlockDetector extends Thread {
         yellowBlockReading[0] = 1.5;
         yellowBlockReading[1] = 1.1;
         yellowBlockReading[2] = 0.1;
-        whiteBlockReading[0] = 1.6;
-        whiteBlockReading[1] = 1.8;
+        whiteBlockReading[0] = 2.0;
+        whiteBlockReading[1] = 2.2;
         whiteBlockReading[2] = 1.3;
         this.flagType = flagType;
 
