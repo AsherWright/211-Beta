@@ -64,25 +64,25 @@ public class Controller {
 		
 		//************************WiFi module********************************//
 	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
-		WifiConnection conn = null;
-		try {
-			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-			} catch (IOException e) {
-			LCD.drawString("Connection failed", 0, 1);
-		}		
-		if(conn == null){
-			LCD.drawString("Unable to find Server", 0, 5);
-		}else{
-		//Data received from the server is saved in "t". 
-		//Pass the data saved in t to the relevant class
-		Transmission t = conn.getTransmission();
-		//Display the data in t
-		if (t == null) {
-			LCD.drawString("Failed to read transmission", 0, 5);
-		} else {
-			conn.printTransmission();
-		}
-			LCD.clear();
+//		WifiConnection conn = null;
+//		try {
+//			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+//			} catch (IOException e) {
+//			LCD.drawString("Connection failed", 0, 1);
+//		}		
+//		if(conn == null){
+//			LCD.drawString("Unable to find Server", 0, 5);
+//		}else{
+//		//Data received from the server is saved in "t". 
+//		//Pass the data saved in t to the relevant class
+//		Transmission t = conn.getTransmission();
+//		//Display the data in t
+//		if (t == null) {
+//			LCD.drawString("Failed to read transmission", 0, 5);
+//		} else {
+//			conn.printTransmission();
+//		}
+//			LCD.clear();
 			//*******************WiFi module ends**********************//
 	
 			// setup the odometer
@@ -94,8 +94,8 @@ public class Controller {
 			Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 			
 			//set up the localization
-	
-		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, t.flagType);
+			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 1);
+//		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, t.flagType);
 //			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 1);
 			blockDetector.start();	
 			//SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, t.opponentHomeZoneBL_X, t.opponentHomeZoneTR_X);
@@ -108,8 +108,8 @@ public class Controller {
 	
 			//set up the localization
 	//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-	//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, StartCorner.BOTTOM_LEFT);
-		    LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
+			LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, StartCorner.BOTTOM_LEFT);
+//		    LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
 			USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
 			
 			/*
@@ -157,8 +157,8 @@ public class Controller {
 //				navi.travelToAndAvoid(30.4*3 - 10, 30.4*3-10);
 //				navi.travelTo(30.4*3-10, 30.4*3-10);
 				
-				navi.travelToAndAvoid(30.4*t.opponentHomeZoneBL_X - 5, 30.4*t.opponentHomeZoneBL_Y-5);
-				navi.travelTo(30.4*t.opponentHomeZoneBL_X-5, 30.4*t.opponentHomeZoneTR_Y-5);
+//				navi.travelToAndAvoid(30.4*t.opponentHomeZoneBL_X - 5, 30.4*t.opponentHomeZoneBL_Y-5);
+//				navi.travelTo(30.4*t.opponentHomeZoneBL_X-5, 30.4*t.opponentHomeZoneTR_Y-5);
 				
 				//turn to 270 degrees (250 because of slippage - should be fixed)
 				navi.turnTo(260, true);
@@ -181,6 +181,7 @@ public class Controller {
 				pos[1] = 5*30.4-5;
 				pos[2] = 270;
 				odo.setPosition(pos, update);
+				navi.setCmError(0.4);
 				searcher.run();
 			}else{
 				Sound.beep();
@@ -193,5 +194,5 @@ public class Controller {
 			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 			System.exit(0);	
 		}
-	}
+//	}
 }
