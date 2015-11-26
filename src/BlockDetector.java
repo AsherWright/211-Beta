@@ -27,6 +27,9 @@ public class BlockDetector extends Thread {
     private String blockType;
     private boolean isFlag; //indicates if flag was found
     private int flagType;
+    private double diagonal;
+    private double lTheta; //falling edge angle
+    private double rTheta; //rising edge angle
     //odometer and navigator
     Odometer odo;
     Navigation navi;
@@ -113,12 +116,11 @@ public class BlockDetector extends Thread {
         //record initial position
         odo.getPosition(pos);
         int generalSpeed = 100;
-        double lTheta; //falling edge angle
-        double rTheta; //rising edge angle
+
         boolean goneHalf = false;
         
         //USDistance = getFilteredUSData();
-        //spin until we see the block.
+        //spin until we see the block. with front sensor
         while(getFilteredUSData() > 29){
         	leftMotor.setSpeed(generalSpeed);
         	rightMotor.setSpeed(generalSpeed);
@@ -182,7 +184,7 @@ public class BlockDetector extends Thread {
         }
         leftMotor.stop(true);
         rightMotor.stop(true);
-       
+       diagonal = getFilteredUSData();
 //        rTheta = pos[2]-odo.getAng();
         rTheta = odo.getAng();
         Sound.buzz();
@@ -299,7 +301,10 @@ public class BlockDetector extends Thread {
         	//back up a bit 
         	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
-            navi.travelTo(pos[0], pos[1]);
+            
+            navi.travelTo(diagonal*Math.sin(Math.abs(rTheta-pos[0]))+pos[0], diagonal*Math.cos(Math.abs(rTheta-pos[0])+pos[1]));
+            //navi.travelTo(pos[0], pos[1]);
+            
             //navi.turnTo(pos[2], true);
            // Sound.beep();
         }
