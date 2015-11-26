@@ -141,7 +141,7 @@ public class BlockDetector extends Thread {
 		}
     	
         //turn left till cant see block, record angle
-        while(getFilteredUSData() <= 30.4)
+        while(getFilteredUSData() <= 29)
         {
             //USDistance = getFilteredUSData();
             leftMotor.setSpeed(generalSpeed);
@@ -175,7 +175,7 @@ public class BlockDetector extends Thread {
         
         //turn right till cant see block, record angle
         while(getFilteredUSData() <= 29)
-        {
+        {		
            // USDistance = getFilteredUSData();
             leftMotor.setSpeed(generalSpeed);
             rightMotor.setSpeed(generalSpeed);
@@ -211,9 +211,10 @@ public class BlockDetector extends Thread {
         		newTheta +=360;
         	}
         }
-        if(Math.abs(newTheta-pos[2]) > 45){
-        	return;
-        }
+//        if(Math.abs(newTheta-pos[2]) > 45){
+//        	return;
+//        }
+        
         navi.turnTo(newTheta, true);
         Sound.buzz();
         while(getFilteredUSData() > DETECTIONRANGE) //get within 4cm
@@ -302,8 +303,8 @@ public class BlockDetector extends Thread {
         	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
             
-            navi.travelTo(diagonal*Math.sin(Math.abs(rTheta-pos[0]))+pos[0], diagonal*Math.cos(Math.abs(rTheta-pos[0])+pos[1]));
-            //navi.travelTo(pos[0], pos[1]);
+            //navi.travelTo(diagonal*Math.sin(Math.abs(rTheta-pos[0]))+pos[0], diagonal*Math.cos(Math.abs(rTheta-pos[0])+pos[1]));
+            navi.travelTo(pos[0], pos[1]);
             
             //navi.turnTo(pos[2], true);
            // Sound.beep();

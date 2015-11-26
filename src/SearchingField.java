@@ -155,16 +155,16 @@ public class SearchingField extends Thread {
 		frontPoller.disableSensor();
 		sidePoller.enableSensor();
 		
-		leftMotor.setSpeed(100);
-		rightMotor.setSpeed(100);
+		leftMotor.setSpeed(150);
+		rightMotor.setSpeed(150);
 		
 		//go back to original position
 		navi.turnTo(pos[2], true);
 //		//option 1; problem: blocks right next to each other
 		while (sidePoller.getUsData() <= (b+30.4)) //travel into cant see block anymore
 			{
-				leftMotor.setSpeed(100);
-				rightMotor.setSpeed(100);
+				leftMotor.setSpeed(150);
+				rightMotor.setSpeed(150);
 				rightMotor.forward();
 				leftMotor.forward();
 			}
