@@ -114,11 +114,11 @@ public class BlockDetector extends Thread {
         //record initial position
         odo.getPosition(pos);
         int generalSpeed = 100;
-
+        double angleTraveled = odo.getAng();
         boolean goneHalf = false;
         
         //spin until we see the block. with front sensor
-        while(getFilteredUSData() > 29){
+        while(getFilteredUSData() > 29 && Math.abs(odo.getAng()-angleTraveled) < 60){
         	leftMotor.setSpeed(generalSpeed);
         	rightMotor.setSpeed(generalSpeed);
         	leftMotor.backward();
@@ -138,8 +138,9 @@ public class BlockDetector extends Thread {
 		}
     	
         //turn left till cant see block, record angle
-        while(getFilteredUSData() <= 29)
+        while(getFilteredUSData() <= 31)
         {
+        	Sound.playTone(700, 2000);
             //USDistance = getFilteredUSData();
             leftMotor.setSpeed(generalSpeed);
             rightMotor.setSpeed(generalSpeed);
@@ -148,7 +149,7 @@ public class BlockDetector extends Thread {
         }
         rightMotor.stop(true);
         leftMotor.stop(true);
-       
+       angleTraveled = odo.getAng();
         lTheta = odo.getAng();
         Sound.buzz();
         while(getFilteredUSData() >= 29)
@@ -164,14 +165,30 @@ public class BlockDetector extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    	
         
         //turn right till cant see block, record angle
         while(getFilteredUSData() <= 29)
         {		
-            leftMotor.setSpeed(generalSpeed);
-            rightMotor.setSpeed(generalSpeed);
-            leftMotor.forward();
-            rightMotor.backward();
+        	boolean doIt = true;
+        	if(odo.getAng() > 180 && angleTraveled > 180 || odo.getAng() < 180 && angleTraveled < 180){
+        		 if(Math.abs(odo.getAng() - angleTraveled) > 75){
+        			 doIt = false;
+        		 }
+        	}else if(odo.getAng() < 180 && angleTraveled > 180){
+        		if(Math.abs(odo.getAng() - (360-angleTraveled)) > 75){
+        			doIt = false;
+        		}
+        	}
+        	
+        	if(doIt){
+        		leftMotor.setSpeed(generalSpeed);
+        		rightMotor.setSpeed(generalSpeed);
+        		leftMotor.forward();
+        		rightMotor.backward();        		
+        	}else{
+        		break;
+        	}
         }
         leftMotor.stop(true);
         rightMotor.stop(true);
@@ -193,6 +210,7 @@ public class BlockDetector extends Thread {
         		newTheta +=360;
         	}
         }
+        
 //        if(Math.abs(newTheta-pos[2]) > 45){
 //        	return;
 //        }
