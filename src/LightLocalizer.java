@@ -1,3 +1,4 @@
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 /**
  * This class implements a light sensor localization.
@@ -127,7 +128,8 @@ public class LightLocalizer {
 		}
 		
 		//update the current position to odometer and send it to (0,0) and pointing to x-positive
-		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});		
+		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});	
+		Button.waitForAnyPress();
 		travelToOrigin();
 		navigation.stopMotor();
 		

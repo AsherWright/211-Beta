@@ -96,15 +96,15 @@ public class BlockDetector extends Thread {
      */
     public void run(){
         blockPoller.setMode(2);
-        while(true){
-        investigateFlag();
-        try {
-			Thread.sleep(50);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        }
+////        while(true){
+////        investigateFlag();
+////        try {
+////			Thread.sleep(50);
+////		} catch (InterruptedException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+//        }
     }
     /**
      * Method that gets close to block in order to get accurate readings for the light sensor, calls isFlagDetected method
@@ -140,7 +140,6 @@ public class BlockDetector extends Thread {
         //turn left till cant see block, record angle
         while(getFilteredUSData() <= 31)
         {
-        	Sound.playTone(700, 2000);
             //USDistance = getFilteredUSData();
             leftMotor.setSpeed(generalSpeed);
             rightMotor.setSpeed(generalSpeed);
@@ -244,6 +243,7 @@ public class BlockDetector extends Thread {
         isFlag = investigateFlag();
         rightMotor.rotate(convertDistance(WHEEL_RADIUS,-3), true);
         leftMotor.rotate(convertDistance(WHEEL_RADIUS,-3), false);
+
         
         if(isFlag) //capture flag
         {      
@@ -290,8 +290,8 @@ public class BlockDetector extends Thread {
         }
         
         //back up
-        rightMotor.setSpeed(30);
-        leftMotor.setSpeed(30);
+        rightMotor.setSpeed(70);
+        leftMotor.setSpeed(70);
         rightMotor.rotate(-convertDistance(WHEEL_RADIUS,10),true);//arms dont hit at 15cm, perf dist: -8
         leftMotor.rotate(-convertDistance(WHEEL_RADIUS,10),false);
             
