@@ -78,14 +78,6 @@ public class SearchingField extends Thread {
 			//travel side 
 				while(odo.getX() < x*30.4+ (b+2*30.5)) 
 				{
-	//				if(sidePoller.getUsData() < (b+30.4))//object in front 1x2
-	//				{
-	//					checkObject();
-	//					if (isFlag)
-	//					{
-	//						break;
-	//					}
-	//				}
 					leftMotor.setSpeed(150);
 					rightMotor.setSpeed(150);
 					rightMotor.forward();
@@ -132,9 +124,6 @@ public class SearchingField extends Thread {
 		//record initial position
 		odo.getPosition(pos);
 		
-		//turn 90 degrees ccw
-//		rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-//		leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
 		
 		//turn off side sensor and turn on front sensor
 		sidePoller.disableSensor();
@@ -160,7 +149,7 @@ public class SearchingField extends Thread {
 		
 		//go back to original position
 		navi.turnTo(pos[2], true);
-//		//option 1; problem: blocks right next to each other
+
 		while (sidePoller.getUsData() <= (b+30.4)) //travel into cant see block anymore
 			{
 				leftMotor.setSpeed(150);
@@ -179,15 +168,6 @@ public class SearchingField extends Thread {
 		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), false);
 		Sound.beep();
 		
-		//option 2; problem: hard coding too many variants and can skip block too 
-		//skip the block just checked
-//		Sound.beep();
-//		Sound.beep();
-//			rightMotor.rotate(convertDistance(WHEEL_RADIUS,80), true);
-//			leftMotor.rotate(convertDistance(WHEEL_RADIUS,80), false);
-//		Sound.buzz();
-
-		
 		}
 	}
 	private static int convertDistance(double radius, double distance) {
@@ -204,24 +184,5 @@ public class SearchingField extends Thread {
     private static int convertAngle(double radius, double width, double angle) {
         return convertDistance(radius, Math.PI * width * angle / 360.0);
     }
-	
-//	private float getFilteredUSData() {
-//        float distance = frontPoller.getUsData();
-//        float result = 0;
-//        if (distance > 200){
-//            // true 255, therefore set distance to 255
-//            result = 200; //clips it at 50
-//        } else {
-//            // distance went below 255, therefore reset everything.
-//            result = distance;
-//        }
-//        //lastDistance = distance;
-//        return result;
-//    }
-//	public boolean isReadingBlock(){
-//		synchronized (this) {
-//			return isReadingBlock;	
-//		}
-//	}
 
 }
