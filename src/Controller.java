@@ -123,7 +123,8 @@ public class Controller {
 			/** * ** *** **** ***** ****** ******* ******** ********* **********
 			 * Left button means just do localization.
 			 * Right button means do go capture the block and stay there
-			 * Any other button means play shake it off.
+			 * Down button means Search
+			 * Any other button means play shake it off. 
 			 */
 			if(buttonPressed == Button.ID_LEFT){
 				sidePoller.disableSensor();

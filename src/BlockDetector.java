@@ -21,13 +21,11 @@ public class BlockDetector extends Thread {
     private static final double BANDWIDTH = 16.2;
     private final int DETECTIONRANGE = 4;
     //ultrasonic sensor variables
-    private double USDistance;
     private UltrasonicPoller frontPoller;
     //Reading properties
     private String blockType;
     private boolean isFlag; //indicates if flag was found
     private int flagType;
-    private double diagonal;
     private double lTheta; //falling edge angle
     private double rTheta; //rising edge angle
     //odometer and navigator
@@ -119,7 +117,6 @@ public class BlockDetector extends Thread {
 
         boolean goneHalf = false;
         
-        //USDistance = getFilteredUSData();
         //spin until we see the block. with front sensor
         while(getFilteredUSData() > 29){
         	leftMotor.setSpeed(generalSpeed);
@@ -152,12 +149,10 @@ public class BlockDetector extends Thread {
         rightMotor.stop(true);
         leftMotor.stop(true);
        
-        //lTheta = pos[2]-odo.getAng();
         lTheta = odo.getAng();
         Sound.buzz();
         while(getFilteredUSData() >= 29)
         {
-            //USDistance = getFilteredUSData();
             leftMotor.setSpeed(generalSpeed);
             rightMotor.setSpeed(generalSpeed);
             rightMotor.backward();
@@ -169,14 +164,10 @@ public class BlockDetector extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-       // Sound.beep();
-        
-        //USDistance = getFilteredUSData();
         
         //turn right till cant see block, record angle
         while(getFilteredUSData() <= 29)
         {		
-           // USDistance = getFilteredUSData();
             leftMotor.setSpeed(generalSpeed);
             rightMotor.setSpeed(generalSpeed);
             leftMotor.forward();
@@ -184,23 +175,14 @@ public class BlockDetector extends Thread {
         }
         leftMotor.stop(true);
         rightMotor.stop(true);
-       diagonal = getFilteredUSData();
-//        rTheta = pos[2]-odo.getAng();
         rTheta = odo.getAng();
         Sound.buzz();
-       // navi.turnTo(pos[2], true);
-        
-//        //Sound.beep();
-//        //Sound.beep();
-//        rightMotor.setSpeed(100);
-//        leftMotor.setSpeed(100);
-//        USDistance = getFilteredUSData();
+
         
         /*calculate position in relation to the center of block
          * 1: within center threshold, drive within DETECTIONRANGE detect if its good a) good: pickup b) bad: go back to original position
          * 2: too far to right or left, hit block, back up to DETECTIONRANGE, detect if it is good a) good: pickup b) bad: go back to original position
          */
-//        double difference = Math.abs(rTheta - lTheta);
         double newTheta;
         if (rTheta < lTheta)
         {
@@ -233,51 +215,7 @@ public class BlockDetector extends Thread {
           Sound.buzz();
           isFlagDetected();
    }
-//        if (difference > 180 ) //take orientation of grid into account
-//        {
-//            difference = 360-difference;
-//        }
-//        
-//        if(difference <= 88 && difference >= 65)//within center of block
-//        {
-//            Sound.buzz();
-//            Sound.buzz();
-//                
-//            while(getFilteredUSData() > DETECTIONRANGE) //get within 4cm
-//            {
-//                rightMotor.forward();
-//                leftMotor.forward();
-//            }
-//            rightMotor.stop(true);
-//            leftMotor.stop(true);
-//            
-//            //get within light sensor range (cant use ultrasonic because only detects till 4cm)
-//            rightMotor.rotate(convertDistance(WHEEL_RADIUS,5), true);
-//            leftMotor.rotate(convertDistance(WHEEL_RADIUS,5), false);
-//            
-//            isFlagDetected();
-//        }
-//        
-//        else //block at angle 
-//        {
-//            Sound.buzz();
-//            while(getFilteredUSData() > DETECTIONRANGE) //get within 4cm
-//            {
-//                rightMotor.forward();
-//                leftMotor.forward();
-//     
-//            }
-//            rightMotor.stop(true);
-//            leftMotor.stop(true);
-//            //drive into the block to straighten it out
-//
-//            rightMotor.rotate(convertDistance(WHEEL_RADIUS,7),true); 
-//            leftMotor.rotate(convertDistance(WHEEL_RADIUS,7),false);
-//      
-//            isFlagDetected();
-//        }
-        
-//    } 
+
     
     /**
      * Method determines whether to capture flag by checking value of isFlag calling pickUp method is true or returning robot to initial position otherwise
@@ -303,11 +241,7 @@ public class BlockDetector extends Thread {
         	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
             
-            //navi.travelTo(diagonal*Math.sin(Math.abs(rTheta-pos[0]))+pos[0], diagonal*Math.cos(Math.abs(rTheta-pos[0])+pos[1]));
             navi.travelTo(pos[0], pos[1]);
-            
-            //navi.turnTo(pos[2], true);
-           // Sound.beep();
         }
     }
     
