@@ -3,7 +3,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.robotics.SampleProvider;
 /**
  * @author danielebercovici
- * @version 1.1
+ * @version 2.0
  */
 public class BlockDetector extends Thread {
     //constants
