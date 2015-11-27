@@ -174,6 +174,7 @@ public class LightLocalizer {
 	 */
 	public void reLocalization(double lsl_point_x, double lsl_point_y){
 		
+		double[] startPosition = odo.getPosition();
 		int numberOfGridLines = 0;
 		double angle = 0;
 		// setting the color sensor properties.
@@ -225,6 +226,7 @@ public class LightLocalizer {
 		}
 		// check if the robot intersects with grid lines four times
 		if(numberOfGridLines != 4){
+			odo.setPosition(startPosition, new boolean[] {true, true, true});
 			return;
 		}
 	
