@@ -56,10 +56,8 @@ public class OdometerCorrection extends Thread {
 				//we only want to correct it every so and so seconds...
 				//if we've reached a black line, correct the position of the robot.
 				correctOdometerPosition();
-				
+				Sound.beep();
 			}
-
-			
 			
 			// this ensure the odometry correction occurs only once every period
 			correctionEnd = System.currentTimeMillis();
@@ -86,8 +84,9 @@ public class OdometerCorrection extends Thread {
 		double currT = odometer.getAng();
 		double offset = 10.6;
 		//find out what the position of our black line hit was (where the light sensor is).
-		double blackLineX = currX - offset*Math.cos(currT);
-		double blackLineY = currY - offset*Math.sin(currT);
+		double blackLineX = currX - offset*Math.cos(currT*2*Math.PI/360.0);
+		double blackLineY = currY - offset*Math.sin(currT*2*Math.PI/360.0);
+
 		
 		//now figure out where these x and y could possibly point to.
 		int xTile = (int) (blackLineX / 30.4);
@@ -111,93 +110,9 @@ public class OdometerCorrection extends Thread {
 			Sound.beep();
 		}
 
-//		position[0] = correctedX;
-//		position[1] = correctedY;
-//		position[2] = 0;
-
 		//now use those two arrays to set the position of the odometer (it is now corrected).
 		odometer.setPosition(position,update);
 		
 	}
-	/*
-	 * Finds the "corrected" X value, assuming (0,0) is in the middle of the first square,
-	 * and blocks are 30x30. 
-	 */
-	private double findCorrectedX(double x){
-		double result = x;
-		/*
-		 * if it's the first correction, we know that X should be 15. otherwise find the nearest line value
-		 * to where we are. If none are close enough, keep it the same (false reading).
-		 */
-		if(isFirstXCorrection){
-			result = 15;
-			isFirstXCorrection = false;
-		}else{
-			for(int i = 0; i < 4; i++){
-				if(Math.abs(x - (15-SENSORDIST + 30*i)) < 12){
-					result = 15 + 30*i;
-					break;
-				}
-			}	
-		}
-		return result;
-	}
-	/*
-	 * Finds the "corrected" Y value, assuming (0,0) is in the middle of the first square,
-	 * and blocks are 30x30.
-	 */
-	private double findCorrectedY(double y){
-		double result = y;
-		/*
-		 * if it's the first correction, we know that Y should be -15. otherwise find the nearest line value
-		 * to where we are. If none are close enough, keep it the same (false reading).
-		 */
-		if(isFirstYCorrection){
-			result = -15;
-			isFirstYCorrection = false;
-		}else{
-			for(int i = 0; i < 4; i++){
-				if(Math.abs(y + (15-SENSORDIST + 30*i)) < 12){
-					result = (-1)*(15 + 30*i);
-					break;
-				}
-			}
-		}
-		return result;
-	}
-	/*
-	 * Finds the nearest right angle (0,90,180,270,etc) to the robots direction
-	 * to determine if we are moving in the X or the Y. We call X 0 and Y 90.
-	 */
-	private int findRightAngleRobotDirection(int t){
-		int result = 0;
-		int allowedError = 5;
-		/*
-		 * checks to see if we are in the allowed range for any of the right angles.
-		 */
-		if (Math.abs(t) < allowedError || Math.abs(t-360) < allowedError || Math.abs(t+360) < allowedError || Math.abs(t-180) < allowedError || Math.abs(t+180) < allowedError){
-			result = 0;
-		}else if (Math.abs(t-90) < allowedError || Math.abs(t+90) < allowedError || Math.abs(t-270) < allowedError || Math.abs(t+270) < allowedError){
-			result = 90;
-		}
-		
-		return result;
-	}
-	
-	//accessors used for displaying text on LCD.
-	public boolean isReadingBlack(){
-		return reachedBlackLine;
-	}
-	public double getR(){
-		return RGBValues[0];
-	}
-	public double getG(){
-		return RGBValues[1];
-	}
-	public double getB(){
-		return RGBValues[2];
-	}
-	public double getBrightness(){
-		return currBrightnessLevel;
-	}
+
 }
