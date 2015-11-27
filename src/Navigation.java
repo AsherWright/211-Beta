@@ -8,6 +8,7 @@
  * 
  * Movement control class (turnTo, travelTo, flt, localize)
  */
+import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 

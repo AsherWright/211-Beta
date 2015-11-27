@@ -1,3 +1,4 @@
+package pollers;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3ColorSensor;
@@ -19,7 +20,7 @@ public class ColorSensorPoller extends Thread {
 		csData = new float[csSample.sampleSize()];			// colorData is the buffer in which data are returned
 		lock = new Object();
 		try {
-			Thread.sleep(500);
+			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

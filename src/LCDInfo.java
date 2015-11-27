@@ -6,6 +6,8 @@
  * This class controls the text that is displayed on the LCD screen. 
  * Taken from MyCourses.
  */
+import pollers.ColorSensorPoller;
+import pollers.UltrasonicPoller;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.sensor.EV3UltrasonicSensor;

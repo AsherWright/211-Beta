@@ -10,6 +10,8 @@
 import java.io.File;
 import java.io.IOException;
 
+import pollers.ColorSensorPoller;
+import pollers.UltrasonicPoller;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
