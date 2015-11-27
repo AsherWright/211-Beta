@@ -138,7 +138,7 @@ public class BlockDetector extends Thread {
 		}
     	
         //turn left till cant see block, record angle
-        while(getFilteredUSData() <= 31)
+        while(getFilteredUSData() <= 33)
         {
             leftMotor.setSpeed(generalSpeed);
             rightMotor.setSpeed(generalSpeed);
@@ -170,11 +170,11 @@ public class BlockDetector extends Thread {
         {		
         	boolean doIt = true;
         	if(odo.getAng() > 180 && angleTraveled > 180 || odo.getAng() < 180 && angleTraveled < 180){
-        		 if(Math.abs(odo.getAng() - angleTraveled) > 75){
+        		 if(Math.abs(odo.getAng() - angleTraveled) > 73){
         			 doIt = false;
         		 }
         	}else if(odo.getAng() < 180 && angleTraveled > 180){
-        		if(Math.abs(odo.getAng() - (360-angleTraveled)) > 75){
+        		if(Math.abs(odo.getAng() - (360-angleTraveled)) > 73){
         			doIt = false;
         		}
         	}
@@ -226,8 +226,8 @@ public class BlockDetector extends Thread {
           leftMotor.stop(true);
           
           //get within light sensor range (cant use ultrasonic because only detects till 4cm)
-          rightMotor.rotate(convertDistance(WHEEL_RADIUS,5), true);
-          leftMotor.rotate(convertDistance(WHEEL_RADIUS,5), false);
+          rightMotor.rotate(convertDistance(WHEEL_RADIUS,6), true);
+          leftMotor.rotate(convertDistance(WHEEL_RADIUS,6), false);
           //Sound.buzz();
           isFlagDetected();
    }
@@ -252,9 +252,10 @@ public class BlockDetector extends Thread {
         else //not flag, return to initial position
         {
         	Sound.beepSequence();
-        	rightMotor.setSpeed(100);
-        	leftMotor.setSpeed(100);
+        	rightMotor.setSpeed(130);
+        	leftMotor.setSpeed(130);
         	//back up a bit 
+ 
         	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
             

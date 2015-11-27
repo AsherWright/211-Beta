@@ -106,8 +106,7 @@ public class SearchingField extends Thread {
 			}
 			leftMotor.stop(true);
 			rightMotor.stop(true);
-		}
-		
+		}	
 		
 	}
 }
@@ -156,13 +155,13 @@ public class SearchingField extends Thread {
 				rightMotor.forward();
 				leftMotor.forward();
 			}
-		try {
-			Thread.sleep(300);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+//		try {
+//			Thread.sleep(300);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		Sound.beep();
 		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), true);
 		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), false);
 		
