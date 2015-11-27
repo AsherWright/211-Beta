@@ -135,8 +135,7 @@ public class SearchingField extends Thread {
 		isFlag = detector.isFlag();
 
 		if (isFlag)
-		{
-			Sound.buzz();   
+		{  
 			return;
 		}
 		else{
@@ -163,10 +162,10 @@ public class SearchingField extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Sound.beep();
+		
 		rightMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), true);
 		leftMotor.rotate(convertDistance(Controller.WHEEL_RADIUS,8), false);
-		Sound.beep();
+		
 		
 		}
 	}
