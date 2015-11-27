@@ -191,6 +191,23 @@ public class Controller {
 				navi.setCmError(0.4);
 				navi.setDegreeError(3);
 				searcher.run();
+			}else if(buttonPressed == Button.ID_ENTER){
+				boolean[] update = new boolean[3];		//create an array for the position of our robot and set the values
+				double[] position = new double[3];
+				update[0] = false;
+				update[1] = false;
+				update[2] = false;
+				position[0] = 60;
+				position[1] = 60;
+				position[2] = 0;
+				odo.setPosition(position, update);
+				
+				navi.travelTo(15, 70);
+				navi.travelTo(15, 15);
+				navi.travelTo(0, 0);
+				navi.turnTo(0, true);
+				Button.waitForAnyPress();
+				
 			}else{
 				Sound.beep();
 				File shakeItOff = new File("ShakeItOff.wav");

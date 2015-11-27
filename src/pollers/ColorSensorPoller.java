@@ -14,8 +14,20 @@ public class ColorSensorPoller extends Thread {
 	int pollRate;
 	
 	public ColorSensorPoller(String port){
-		csPort = LocalEV3.get().getPort(port);		
+		csPort = LocalEV3.get().getPort(port);
+  		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
   		csSensor = new EV3ColorSensor(csPort);
+  		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
   		csSample = csSensor.getRGBMode();	// colorValue provides samples from this instance
 		csData = new float[csSample.sampleSize()];			// colorData is the buffer in which data are returned
 		lock = new Object();

@@ -38,13 +38,11 @@ public class OdometerCorrection extends Thread {
 	// run method (required for Thread)
 	public void run() {
 		long correctionStart, correctionEnd;
-		
+		Long lastCorrection = System.currentTimeMillis();
 		//colorSensor.setFloodlight(lejos.robotics.Color.WHITE); //we set our light to White (we use white over R)
 		while (true) {
 			correctionStart = System.currentTimeMillis();
-			
-			Long lastCorrection = System.currentTimeMillis();
-			
+		
 			//we define the brightness as the average of the magnitudes of R,G,B (really "Whiteness")
 			currBrightnessLevel = linePoller.getBrightness();
 			
@@ -52,12 +50,12 @@ public class OdometerCorrection extends Thread {
 			 * If it is our first brightness level, we just set it to our measured
 			 * Else, it is not our FIRST measurement, so we check to see if we hit a black line. 
 			 */
-			if (currBrightnessLevel< brightnessThreshold && Math.abs(lastCorrection-System.currentTimeMillis()) > 2000){	
+			if (currBrightnessLevel < brightnessThreshold && Math.abs(lastCorrection-System.currentTimeMillis()) > 2000){	
 				lastCorrection = System.currentTimeMillis();
 				//we only want to correct it every so and so seconds...
 				//if we've reached a black line, correct the position of the robot.
 				correctOdometerPosition();
-				Sound.beep();
+//				Sound.beep();
 			}
 			
 			// this ensure the odometry correction occurs only once every period
@@ -92,7 +90,7 @@ public class OdometerCorrection extends Thread {
 		//now figure out where these x and y could possibly point to.
 		int xTile = (int) (blackLineX / 30.4);
 		int yTile = (int) (blackLineY / 30.4);
-		double linethreshold = 5;
+		double linethreshold = 10;
 		double xOff = Math.abs(blackLineX - xTile*30.4);
 		double yOff = Math.abs(blackLineY - yTile*30.4);
 		//create an array for what fields to update for our robot and set values
@@ -102,13 +100,13 @@ public class OdometerCorrection extends Thread {
 		update[1] = false;
 		update[2] = false;
 		if(xOff < yOff && xOff < linethreshold){
-			position[0] = xTile*30.4;
+			position[0] = xTile*30.4 +offset*Math.cos(currT*2*Math.PI/360.0);
 			update[0] = true;
-			Sound.beep();
+//			Sound.beep();
 		}else if (yOff < xOff && yOff < linethreshold){
-			position[1] = yTile*30.4;
+			position[1] = yTile*30.4 +offset*Math.sin(currT*2*Math.PI/360.0);
 			update[1] = true;
-			Sound.beep();
+//			Sound.beep();
 		}
 
 		//now use those two arrays to set the position of the odometer (it is now corrected).

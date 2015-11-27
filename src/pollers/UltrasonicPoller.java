@@ -16,7 +16,19 @@ public class UltrasonicPoller extends Thread{
 	private int pollPeriod;
 	public UltrasonicPoller(String portName) {
 		usPort = LocalEV3.get().getPort(portName);
+  		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		usSensor =  new EV3UltrasonicSensor(usPort);
+  		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		usDistance = usSensor.getMode("Distance");
 		usData =  new float[usDistance.sampleSize()];
 		lock = new Object();
