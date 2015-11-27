@@ -55,7 +55,6 @@ public class Controller {
 		double zoneX = 4*30.4;
 		double zoneY = 6*30.4;
 
-//		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
 		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
 		UltrasonicPoller sidePoller = new UltrasonicPoller("S1");
 		ColorSensorPoller blockPoller = new ColorSensorPoller("S2");
@@ -90,7 +89,6 @@ public class Controller {
 			// setup the odometer
 			Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
 			OdometerCorrection odoCorr = new OdometerCorrection(odo, groundPoller);
-			odoCorr.start();
 			
 			//setup the wall avoider
 			WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
@@ -123,15 +121,18 @@ public class Controller {
 			 */
 			int buttonPressed = Button.waitForAnyPress();
 			/** * ** *** **** ***** ****** ******* ******** ********* **********
-			 * Left button means just do localization.
-			 * Right button means do go capture the block and stay there
+			 * Left button means localization --> navigate to a point with odo correction.
+			 * Right button means localization --> navigate to a point with odo correction --> localization again
 			 * Down button means Search
 			 * Any other button means play shake it off. 
 			 */
 			if(buttonPressed == Button.ID_LEFT){
+				//disable the side sensor for localization so that it doens't interfere
 				sidePoller.disableSensor();
+				//set the errors on the navigation to be large for US localization
 				navi.setCmError(0.4);
 				navi.setDegreeError(4.0);
+				//perform ultrasonic localization
 				usl.doLocalization();
 				//set the errors back
 				navi.setCmError(0.5);
@@ -139,9 +140,18 @@ public class Controller {
 				
 				//perofrm lightsensor localization
 				lsl.doLocalization();
-				navi.travelTo(30.4*2, 30.4*4);
-				//
-				lsl.reLocalization(30.4*2, 30.4*4);
+								
+				//enable the side poller for navigating
+				sidePoller.enableSensor();
+				//speed up the robot for this part
+				navi.setSlowSpeed(90);
+				navi.setFastSpeed(140);
+				
+				//start odometer correction
+				odoCorr.start();
+				//navigation
+				navi.travelTo(30.4*2, 30.4*6);
+								
 			}else if(buttonPressed == Button.ID_RIGHT){ 
 				//disable the side sensor for localization so that it doens't interfere
 				sidePoller.disableSensor();
@@ -156,27 +166,20 @@ public class Controller {
 				
 				//perofrm lightsensor localization
 				lsl.doLocalization();
-				
-				
+								
 				//enable the side poller for navigating
 				sidePoller.enableSensor();
 				//speed up the robot for this part
 				navi.setSlowSpeed(90);
 				navi.setFastSpeed(140);
-				//travel to the flag's zone
-				navi.travelToAndAvoid(30.4*2, 30.4*2);
-				lsl.reLocalization(30.4*2, 30.4*2);
-				navi.travelTo(30.4*2-10, 30.4*2-10);
-//				navi.travelToAndAvoid(30.4*t.opponentHomeZoneBL_X - 5, 30.4*t.opponentHomeZoneBL_Y-5);
-//				navi.travelTo(30.4*t.opponentHomeZoneBL_X-5, 30.4*t.opponentHomeZoneTR_Y-5);
-			
-				navi.turnTo(270, true);
 				
-				//now search for blocks in the area
-				//searcher.run();
-				//travel home (not needed for Beta)
-				//navi.travelToAndAvoid(0, 0);
-	
+				//start odometer correction
+				odoCorr.start();
+				//navigation
+				navi.travelTo(30.4*2, 30.4*6);
+				//perform second localization
+				lsl.reLocalization(30.4*2, 30.4*6);
+				
 			}else if(buttonPressed == Button.ID_DOWN){
 				SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 5);
 				double[] pos = new double[3];
