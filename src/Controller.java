@@ -131,11 +131,15 @@ public class Controller {
 				navi.setCmError(0.4);
 				navi.setDegreeError(4.0);
 				usl.doLocalization();
-				
-				navi.setCmError(0.2);
+				//set the errors back
+				navi.setCmError(0.5);
 				navi.setDegreeError(2.0);
 				
+				//perofrm lightsensor localization
 				lsl.doLocalization();
+				navi.travelTo(30.4*2, 30.4*4);
+				//
+				lsl.reLocalization(30.4*2, 30.4*4);
 			}else if(buttonPressed == Button.ID_RIGHT){ 
 				//disable the side sensor for localization so that it doens't interfere
 				sidePoller.disableSensor();
@@ -144,10 +148,10 @@ public class Controller {
 				navi.setDegreeError(4.0);
 				//perform ultrasonic localization
 				usl.doLocalization();
-				
-				//we want small errors for the light sensor localization
+				//set the errors back
 				navi.setCmError(0.5);
 				navi.setDegreeError(2.0);
+				
 				//perofrm lightsensor localization
 				lsl.doLocalization();
 				

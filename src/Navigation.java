@@ -42,7 +42,7 @@ public class Navigation {
 		this.leftMotor.setAcceleration(ACCELERATION);
 		this.rightMotor.setAcceleration(ACCELERATION);
 		degreeError = 2.0;
-		cmError = 0.2;
+		cmError = 0.5;
 		fast = 120;
 		slow = 90;
 	}

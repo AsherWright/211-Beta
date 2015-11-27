@@ -114,6 +114,11 @@ public class LightLocalizer {
 			}
 		}
 		
+		// check if the robot intersects with grid lines four times
+		if(numberOfGridLines != 4){
+			return;
+		}
+		
 		// do trig to compute x,y and theta
 		deltaThetaY = thetaYPositive - thetaYNegative;
 		deltaThetaX = thetaXNegative - thetaXPositive;
@@ -129,9 +134,9 @@ public class LightLocalizer {
 		
 		//update the current position to odometer and send it to (0,0) and pointing to x-positive
 		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});	
-		Button.waitForAnyPress();
-		travelToOrigin();
-		navigation.stopMotor();
+//		Button.waitForAnyPress();
+//		travelToOrigin();
+//		navigation.stopMotor();
 		
 		//Calculate the actual coordinates and direction according to starting corner
 		if(startingCorner.getId() == 2){
@@ -167,8 +172,7 @@ public class LightLocalizer {
 	 * @param lsl_point_y
 	 */
 	public void reLocalization(double lsl_point_x, double lsl_point_y){
-		// store initial position		
-		double [] startingPosition = odo.getPosition();
+		
 		int numberOfGridLines = 0;
 		double angle = 0;
 		// setting the color sensor properties.
@@ -220,7 +224,6 @@ public class LightLocalizer {
 		}
 		// check if the robot intersects with grid lines four times
 		if(numberOfGridLines != 4){
-			odo.setPosition(startingPosition, new boolean[]{true,true,true});
 			return;
 		}
 	
@@ -238,11 +241,11 @@ public class LightLocalizer {
 		}
 	
 		//update the current position to odometer. Based on these value, the robot will go to (0,0) and pointing to x-positive
-		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});		
-		travelToOrigin();
-		navigation.stopMotor();
+//		odo.setPosition(new double[] {x, y, theta}, new boolean[] {true, true, true});		
+//		travelToOrigin();
+//		navigation.stopMotor();
 	
 		//Calculate the actual coordinates and direction according to starting corner		
-		odo.setPosition(new double[] {odo.getX() + lsl_point_x, odo.getY() + lsl_point_y, odo.getAng()}, new boolean[] {true, true, true});					
+		odo.setPosition(new double[] {x + lsl_point_x, y + lsl_point_y, theta}, new boolean[] {true, true, true});					
 		}
 }
