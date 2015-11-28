@@ -3,9 +3,13 @@ import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
-
+/**
+ * @author danielebercovici
+ * @version v1.1
+ */
 public class SearchingField extends Thread {
 	
+	//get incoming values for variables
 	private Odometer odo;
 	private Navigation navi;
 	private BlockDetector detector;
@@ -16,12 +20,23 @@ public class SearchingField extends Thread {
 	
 	private double[] pos = new double [3];
 	private boolean isFlag; //determines if flag is found
-	private double b = 6; 
-	private double a = 3;
-	private double x;
+	private double b = 6; //perimeter 
+	private double a = 3; //start position
+	private double x; //coordinates of Zone
 	private double y;
 	
-	//constructor 
+	/**
+	 * Class Constructor
+	 * @param leftMotor EV3 Motor on the left
+	 * @param rightMotor EV3 Motor on the right
+	 * @param sidePoller USsensor on the side of robot
+	 * @param frontPoller USsensor on the front of robot
+	 * @param navi Navigator class Object
+	 * @param odo Odometer class Object
+	 * @param detector BlockDetector class Object
+	 * @param zoneX wifi x coordinate for opponents zone
+	 * @param zoneY wifi y coordinate for opponents zone
+	 */
 	public SearchingField( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
 			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector, double zoneX, double zoneY)
 
@@ -37,7 +52,7 @@ public class SearchingField extends Thread {
         this.y = zoneY;
 	}
 	/**
-	 * 
+	 * Runs the Search algorithm of searching for the flag along the perimeter of the opponents zone and exiting when flag is found 
 	 */
 	public void run()
 	{
@@ -50,7 +65,6 @@ public class SearchingField extends Thread {
 		leftMotor.setSpeed(150);
 
 		//travel side to upper right corner
-
 		while(odo.getY() >y*30.4 - (3*30.4+a+b))
 		{	
 			if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
@@ -73,9 +87,7 @@ public class SearchingField extends Thread {
 			//turn 90 degrees ccw
 			rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
 			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-				
-		
-			//navi.travelTo(x*30.4 + (b+2*30.4), odo.getY());	
+					
 			//travel side 
 				while(odo.getX() < x*30.4+ (b+2*30.5)) 
 				{
@@ -112,7 +124,8 @@ public class SearchingField extends Thread {
 	}
 }
 	/**
-	 * 
+	 * Gets near the block it found and switches to the front sensor, 
+	 * calls detector to investigate block, moves on if not flag or returns if flag found
 	 */
 	public void checkObject()
 	{
@@ -169,16 +182,22 @@ public class SearchingField extends Thread {
 		
 		}
 	}
+	/**
+	 * Converts a distance in cm to angle in degrees
+	 * @param radius the wheel radius
+	 * @param distance desired distance to convert
+	 * @return angle in degrees
+	 */
 	private static int convertDistance(double radius, double distance) {
         return (int) ((180.0 * distance) / (Math.PI * radius));
     }
     
     /**
-     * This method converts an angle to distance in cm
+     * Converts an angle to distance in cm
      * @param radius the wheel radius
      * @param width the bandwidth of the two wheels 
      * @param angle desired angle to convert
-     * @return result of method convertDistanc() distance in cm
+     * @return result of method convertDistance() distance in cm
      */
     private static int convertAngle(double radius, double width, double angle) {
         return convertDistance(radius, Math.PI * width * angle / 360.0);

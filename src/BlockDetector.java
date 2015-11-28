@@ -43,15 +43,14 @@ public class BlockDetector extends Thread {
     ColorSensorPoller blockPoller;
     
     /**
-     * Class constructor
-     * @param colorSensorPoller sample and data provider for colored sensor
+     * Class Constructor
+     * @param blockPoller Color Sensor to identify the colors of the block
      * @param navi Navigator class Object
      * @param odo Odometer class Object
-     * @param leftMotor EV3 Motor on the left
-     * @param rightMotor EV3 Motor on the right
-     * @param UltrasonicPoller frontPollerusSensor, sample provider for ultrasonic sensor, usData sample data for Ultrasonic sensor
+     * @param frontPoller USsensor on the front of robot
      * @param verticalArmMotor EV3 Motor for up/down movement of arm
      * @param horizontalArmMotor EV3 Motor for open/close movement of arm
+     * @param flagType wifi flag color to find
      */
     public BlockDetector(ColorSensorPoller blockPoller, Navigation navi, Odometer odo,UltrasonicPoller frontPoller, EV3LargeRegulatedMotor verticalArmMotor, EV3LargeRegulatedMotor horizontalArmMotor, int flagType) {
         //get incoming values for variables
@@ -109,17 +108,17 @@ public class BlockDetector extends Thread {
 //        }
     }
     /**
-     * Method that gets close to block in order to get accurate readings for the light sensor, calls isFlagDetected method
+     * Calculates the path to get close enough to block in order to get accurate readings from the light sensor, calls isFlagDetected method
      */
     public void investigateBlock()
     {
-        //record initial position
+        //initialize variables
         odo.getPosition(pos);
         int generalSpeed = 100;
         double angleTraveled = odo.getAng();
         boolean goneHalf = false;
         
-        //spin until we see the block. with front sensor
+        //spin until we see the block with front sensor
         while(getFilteredUSData() > 29 && Math.abs(odo.getAng()-angleTraveled) < 60){
         	leftMotor.setSpeed(generalSpeed);
         	rightMotor.setSpeed(generalSpeed);
@@ -151,7 +150,7 @@ public class BlockDetector extends Thread {
         leftMotor.stop(true);
        angleTraveled = odo.getAng();
         lTheta = odo.getAng();
-        //Sound.buzz();
+
         while(getFilteredUSData() >= 29)
         {
             leftMotor.setSpeed(generalSpeed);
@@ -170,7 +169,7 @@ public class BlockDetector extends Thread {
         //turn right till cant see block, record angle
         while(getFilteredUSData() <= 29)
         {		
-        	boolean doIt = true;
+        	boolean doIt = true; //clip angle to avoid detecting two blocks as one
         	if(odo.getAng() > 180 && angleTraveled > 180 || odo.getAng() < 180 && angleTraveled < 180){
         		 if(Math.abs(odo.getAng() - angleTraveled) > 73){
         			 doIt = false;
@@ -193,12 +192,11 @@ public class BlockDetector extends Thread {
         leftMotor.stop(true);
         rightMotor.stop(true);
         rTheta = odo.getAng();
-        //Sound.buzz();
+        
 
         
-        /*calculate position in relation to the center of block
-         * 1: within center threshold, drive within DETECTIONRANGE detect if its good a) good: pickup b) bad: go back to original position
-         * 2: too far to right or left, hit block, back up to DETECTIONRANGE, detect if it is good a) good: pickup b) bad: go back to original position
+        /*calculate path angle in relation to the position of the block and the position of the robot
+         *  a) good: pickup b) bad: go back to original position
          */
         double newTheta;
         if (rTheta < lTheta)
@@ -230,13 +228,13 @@ public class BlockDetector extends Thread {
           //get within light sensor range (cant use ultrasonic because only detects till 4cm)
           rightMotor.rotate(convertDistance(WHEEL_RADIUS,6), true);
           leftMotor.rotate(convertDistance(WHEEL_RADIUS,6), false);
-          //Sound.buzz();
+        
           isFlagDetected();
    }
 
     
     /**
-     * Method determines whether to capture flag by checking value of isFlag calling pickUp method is true or returning robot to initial position otherwise
+     * Determines whether to capture flag by checking value of isFlag calling pickUp method is true or returning robot to initial position otherwise
      */
     public void isFlagDetected()
     {
@@ -251,22 +249,22 @@ public class BlockDetector extends Thread {
             pickUp();
             Sound.beepSequenceUp();
         }
-        else //not flag, return to initial position
+        else //not flag 
         {
         	Sound.beepSequence();
         	rightMotor.setSpeed(130);
         	leftMotor.setSpeed(130);
+        
         	//back up a bit 
- 
         	rightMotor.rotate(convertDistance(WHEEL_RADIUS,-5), true);
             leftMotor.rotate(convertDistance(WHEEL_RADIUS,-5), false);
-            
+            //return to initial position
             navi.travelTo(pos[0], pos[1]);
         }
     }
     
     /**
-     * Method picks up flag its facing
+     * Picks up flag its facing
      */
     public void pickUp()
     {
@@ -307,7 +305,7 @@ public class BlockDetector extends Thread {
         
     }
     /**
-     * This method uses color sensor to identify if block is color of flag
+     * Uses color sensor to identify if block is color of flag
      * @return boolean value, true if flag color, false otherwise
      */
     public boolean investigateFlag()
@@ -379,7 +377,7 @@ public class BlockDetector extends Thread {
     }
     
     /**
-     * This method converts a distance to an angle in degrees
+     * Converts a distance to an angle in degrees
      * @param radius the wheel radius
      * @param distance desired distance to convert
      * @return angle in degrees
@@ -389,7 +387,7 @@ public class BlockDetector extends Thread {
     }
     
     /**
-     * This method converts an angle to distance in cm
+     * Converts an angle to distance in cm
      * @param radius the wheel radius
      * @param width the bandwidth of the two wheels 
      * @param angle desired angle to convert
@@ -399,7 +397,7 @@ public class BlockDetector extends Thread {
         return convertDistance(radius, Math.PI * width * angle / 360.0);
     }
     /**
-     * This method filters the Ultrasonic Data. clips data if too far
+     * Filters the Ultrasonic Data. clips data if too far
      * @return result
      */
     private float getFilteredUSData() {
