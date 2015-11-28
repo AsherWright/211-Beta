@@ -88,8 +88,8 @@ public class OdometerCorrection extends Thread {
 
 		
 		//now figure out where these x and y could possibly point to.
-		int xTile = (int) (blackLineX / 30.4);
-		int yTile = (int) (blackLineY / 30.4);
+		int xTile = (int) Math.round(blackLineX / 30.4);
+		int yTile = (int) Math.round(blackLineY / 30.4);
 		double linethreshold = 10;
 		double xOff = Math.abs(blackLineX - xTile*30.4);
 		double yOff = Math.abs(blackLineY - yTile*30.4);
