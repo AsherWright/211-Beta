@@ -50,8 +50,8 @@ public class Navigation {
 		this.rightMotor.setAcceleration(ACCELERATION);
 		degreeError = 2.0;
 		cmError = 0.5;
-		fast = 120;
-		slow = 90;
+		fast = 160;
+		slow = 100;
 	}
 	/**
 	 * Sets the traveling forward speed of the robot

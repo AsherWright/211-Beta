@@ -1,4 +1,5 @@
 
+import lejos.hardware.Sound;
 import pollers.ColorSensorPoller;
 
 /**
@@ -95,11 +96,11 @@ public class OdometerCorrection extends Thread {
 		if(xOff < yOff && xOff < linethreshold){
 			position[0] = xTile*30.4 +offset*Math.cos(currT*2*Math.PI/360.0);
 			update[0] = true;
-//			Sound.beep();
+			Sound.beep();
 		}else if (yOff < xOff && yOff < linethreshold){
 			position[1] = yTile*30.4 +offset*Math.sin(currT*2*Math.PI/360.0);
 			update[1] = true;
-//			Sound.beep();
+			Sound.beep();
 		}
 
 		//now use those two arrays to set the position of the odometer (it is now corrected).
