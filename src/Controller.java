@@ -153,6 +153,9 @@ public class Controller {
 				navi.travelTo(30.4*2, 30.4*6);
 								
 			}else if(buttonPressed == Button.ID_RIGHT){ 
+				/*
+				 * right button used to do full run
+				 */
 				//disable the side sensor for localization so that it doens't interfere
 				sidePoller.disableSensor();
 				//set the errors on the navigation to be large for US localization
@@ -181,6 +184,9 @@ public class Controller {
 				lsl.reLocalization(30.4*2, 30.4*6);
 				
 			}else if(buttonPressed == Button.ID_DOWN){
+				/*
+				 * Down button used to do searching tests
+				 */
 				SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 5);
 				double[] pos = new double[3];
 				boolean[] update = new boolean[3];
@@ -195,6 +201,9 @@ public class Controller {
 				navi.setDegreeError(3);
 				searcher.run();
 			}else if(buttonPressed == Button.ID_ENTER){
+				/*
+				 * Enter button used to do navigation test
+				 */
 				boolean[] update = new boolean[3];		//create an array for the position of our robot and set the values
 				double[] position = new double[3];
 				update[0] = false;
@@ -211,6 +220,17 @@ public class Controller {
 				navi.turnTo(0, true);
 				Button.waitForAnyPress();
 				
+			}else if(buttonPressed == Button.ID_UP){
+				/*/
+				 * Up button used to do endurance test
+				 */
+				navi.travelToAndAvoid(60.8, 60.8);
+				navi.travelToAndAvoid(60.8,0);
+				navi.travelToAndAvoid(0, 0);
+				lsl.reLocalization(0, 0);
+				navi.travelToAndAvoid(30.4, 0);
+				navi.travelToAndAvoid(60.8, 60.8);
+				navi.turnTo(0, true);
 			}else{
 				Sound.beep();
 				File shakeItOff = new File("ShakeItOff.wav");

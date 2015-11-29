@@ -1,7 +1,5 @@
 
 import pollers.ColorSensorPoller;
-import lejos.hardware.Sound;
-import lejos.hardware.sensor.EV3ColorSensor;
 
 /* 
  * OdometryCorrection.java
@@ -11,23 +9,11 @@ public class OdometerCorrection extends Thread {
 	//variables
 	private static final long CORRECTION_PERIOD = 10;
 	//distance from the sensor to the centre of rotation
-	private static final double SENSORDIST = 4.5;
-	//the minimum value of RGB that could be called white.
-	private static final double MINIMUMWHITEVALUE = 0.20;
 	private double brightnessThreshold = 0.40;
 	private Odometer odometer;
 	private ColorSensorPoller linePoller;
 	//first and current brightnesses.
-	private double firstBrightnessLevel;
 	private double currBrightnessLevel;
-	//the percent difference in our reading to consider it a different color (used for reading black)
-	private double significantPercentThreshold = 20;
-	//array to store the measured RGB values
-	private float[] RGBValues = new float[3];
-	private boolean reachedBlackLine = false;
-	//variables to see if it is the first X or Y correction. It always starts in same first square (-15,-15)-->(15,15)
-	private boolean isFirstXCorrection = true;
-	private boolean isFirstYCorrection = true;
 	
 	// constructor
 	public OdometerCorrection(Odometer odometer, ColorSensorPoller linePoller) {

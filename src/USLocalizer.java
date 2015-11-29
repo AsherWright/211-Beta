@@ -1,11 +1,6 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.robotics.SampleProvider;
 
 
 /**
@@ -317,15 +312,7 @@ public class USLocalizer {
 					angleToTurnTo = angles[otherWallIndex];
 				}
 			}
-			//System.out.println("My wall is at angle: " + angleToTurnTo);
-			//navi.turnTo(angleToTurnTo,true);
-			//Sound.beep();
-//			try {
-//				Thread.sleep(2000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+
 			//we are now facing +180 degrees (along negative x axis).
 			//we want to face 45 degrees, so subtract 135 + 10 since we are rotating clockwise and have offset.
 			angleToTurnTo -=145;
