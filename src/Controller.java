@@ -212,13 +212,19 @@ public class Controller {
 				/*/
 				 * Up button used to do endurance test
 				 */
-				navi.travelToAndAvoid(60.8, 60.8);
-				navi.travelToAndAvoid(60.8,0);
-				navi.travelToAndAvoid(0, 0);
-				lsl.reLocalization(0, 0);
-				navi.travelToAndAvoid(30.4, 0);
-				navi.travelToAndAvoid(60.8, 60.8);
-				navi.turnTo(0, true);
+				//travels to a position, relocates, takes different path back, relocates
+				//repeats above 10 times.
+				for(int i =0; i < 10; i++){					
+					navi.travelToAndAvoid(91.2, 91.2);
+					lsl.reLocalization(91.2, 91.2);
+					navi.travelToAndAvoid(91.2, 0);
+					navi.travelToAndAvoid(0, 0);
+					lsl.reLocalization(0, 0);
+					navi.travelTo(0, 0);
+					navi.turnTo(0, true);
+					Button.waitForAnyPress();
+				}
+				
 			}else{
 				Sound.beep();
 				File shakeItOff = new File("ShakeItOff.wav");

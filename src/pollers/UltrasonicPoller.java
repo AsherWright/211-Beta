@@ -4,7 +4,13 @@ import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 
-//create this thread only for polling data from US sensor every 50ms
+/**
+ * This is a "Ultrasonic Poller". It controls an ultrasonic sensor. It can control
+ * how often it gets data, whether or not it is enabled, etc. It is used to get data
+ * from ultrasonic sensors
+ * @author AsherW
+ *
+ */
 public class UltrasonicPoller extends Thread{
 
 	private Port usPort;
@@ -13,6 +19,10 @@ public class UltrasonicPoller extends Thread{
 	float[] usData;		// usData is the buffer in which data are returned
 	private Object lock;
 	private int pollPeriod;
+	/**
+	 * Basic constructor
+	 * @param portName The port that the sensor is plugged into the robot
+	 */
 	public UltrasonicPoller(String portName) {
 		usPort = LocalEV3.get().getPort(portName);
   		try {
@@ -40,23 +50,9 @@ public class UltrasonicPoller extends Thread{
 		}
 		this.start();
 	}
-	public void disableSensor(){
-		synchronized (lock) {
-			usSensor.disable();			
-		}
-	}
-	public void enableSensor(){
-		synchronized (lock) {
-			usSensor.enable();			
-		}
-	}
-//  Sensors now return floats using a uniform protocol.	
-	public float getUsData() {
-		synchronized (lock) {
-			return (float) (usData[0]*100.0);
-		}
-	}
-
+	/**
+	 * The run method (overrides Thread's run method). 
+	 */
 	public void run() {
 		
 		while (true) {
@@ -68,6 +64,37 @@ public class UltrasonicPoller extends Thread{
 			try { Thread.sleep(pollPeriod); } catch(Exception e){}		// Poor man's timed sampling
 		}
 	}
+	/**
+	 * Disables the ultrasonic sensor
+	 */
+	public void disableSensor(){
+		synchronized (lock) {
+			usSensor.disable();			
+		}
+	}
+	/**
+	 * Enables the ultrasonic sensor
+	 */
+	public void enableSensor(){
+		synchronized (lock) {
+			usSensor.enable();			
+		}
+	}
+	/**
+	 * Gets the distance measurement from the ultrasonic sensor
+	 * @return The distance the ultrasonic sensor is reading
+	 */
+	public float getUsData() {
+		synchronized (lock) {
+			return (float) (usData[0]*100.0);
+		}
+	}
+
+
+	/**
+	 * Sets the rate at which the sensor collects data
+	 * @param pollRate The period of the data collection
+	 */
 	public void setPollRate(int pollPeriod){
 		synchronized (lock){
 			this.pollPeriod = pollPeriod;

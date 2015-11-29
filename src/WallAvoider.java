@@ -72,11 +72,11 @@ public class WallAvoider {
 				//if we are too close to the wall
 				}else if (distance < bandCenter){
 					//calculate and store our speedAdjustment
-					speedAdjustment = calcProp(distance-bandCenter, PROPCONSTINSIDETURN);
+					speedAdjustment = getWheelRotationCorrection(distance-bandCenter, PROPCONSTINSIDETURN);
 				//if we are too far from the wall
 				}else if (distance > bandCenter) {
 					//calculate and store our speed adjustment
-					speedAdjustment = calcProp(distance -bandCenter, PROPCONSTOUTSIDETURN);
+					speedAdjustment = getWheelRotationCorrection(distance -bandCenter, PROPCONSTOUTSIDETURN);
 				}
 				//now we have the speed adjustment, we can set the speed of the motors.
 				//we need to make sure that, if our adjustment is greater than our regular speed (motorStraight),
@@ -130,12 +130,15 @@ public class WallAvoider {
 		}
 	}
 	
-	/*
-	 * This method has been modified! This method calculates the Adjustment we must make
-	 * to the speeds of the wheels. However, if the adjustment wants to make a wheel spin
-	 * BACKWARDS, we let it! This is true proportionality.
+	/**
+	 * Calculates the correction for the robot's position based on how far it is 
+	 * away from where it wants to be. If the robot is K away from where it should be,
+	 * it will adjust the motors'speeds by K*(proportional constant), in opposite directions
+	 * @param dist The distance the robot is from where it should be
+	 * @param propC The proportionalality constant
+	 * @return The amount to correct the motors' rotational speeds
 	 */
-	public int calcProp(double dist, double propC){
+	private int getWheelRotationCorrection(double dist, double propC){
 		int correction; //the speed adjustment, or correction
 		
 		//simple formula for the correction
