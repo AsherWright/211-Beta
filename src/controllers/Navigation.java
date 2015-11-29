@@ -1,3 +1,5 @@
+package controllers;
+import odometry.Odometer;
 import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -53,34 +55,7 @@ public class Navigation {
 		fast = 160;
 		slow = 100;
 	}
-	/**
-	 * Sets the traveling forward speed of the robot
-	 * @param speed How fast to turn the motors while traveling forward
-	 */
-	public void setFastSpeed(int speed){
-		this.fast = speed;
-	}
-	/**
-	 * Sets the rotational speed of the robot
-	 * @param speed How fast to turn the motors while rotating
-	 */
-	public void setSlowSpeed(int speed){
-		this.slow = speed;
-	}
-	/**
-	 * Sets the amount of positional error the robot can be off the final position (in cm)
-	 * @param cmErr The amount of error allowed
-	 */
-	public void setCmError(double cmErr){
-		cmError = cmErr;
-	}
-	/**
-	 * Sets the amount of degree error the robot can be off the final position (in deg)
-	 * @param deg The amount of error allowed
-	 */
-	public void setDegreeError(double deg){
-		degreeError = deg;
-	}
+
 
 	/**
 	 * Sets the speeds of the motors.
@@ -104,7 +79,15 @@ public class Navigation {
 			this.rightMotor.stop(true);
 		}
 	}
-
+	/**
+	 * This makes the robot rotate 360 degrees, and is used for light localization
+	 */
+	public void rotateFullCircle(){
+		leftMotor.setSpeed(ROTATION_SPEED_FOR_LIGHTLOCALIZATION);
+		rightMotor.setSpeed(ROTATION_SPEED_FOR_LIGHTLOCALIZATION);
+		leftMotor.rotate(-convertAngle(wheelRadius, wheelBase, 360.0), true);
+		rightMotor.rotate(convertAngle(wheelRadius, wheelBase, 360.0), true);
+	}
 	/**
 	 * Function that makes the robot travel to a position in the arena
 	 * @param x The x coordinate of the position
@@ -123,10 +106,7 @@ public class Navigation {
 		this.setSpeeds(0, 0);
 	}
 
-	/*
-	 * TravelToAndAvoid function which takes as arguments the x and y position in cm Will travel to designated position, while
-	 * constantly updating it's heading. It also avoids blocks in the way
-	 */
+
 	/**
 	 * Function that makes the robot travel to a position in the arena WHILE avoiding obstacles
 	 * @param x The x coordinate of the position
@@ -184,7 +164,34 @@ public class Navigation {
 			this.setSpeeds(0, 0);
 		}
 	}
-
+	/**
+	 * Sets the traveling forward speed of the robot
+	 * @param speed How fast to turn the motors while traveling forward
+	 */
+	public void setFastSpeed(int speed){
+		this.fast = speed;
+	}
+	/**
+	 * Sets the rotational speed of the robot
+	 * @param speed How fast to turn the motors while rotating
+	 */
+	public void setSlowSpeed(int speed){
+		this.slow = speed;
+	}
+	/**
+	 * Sets the amount of positional error the robot can be off the final position (in cm)
+	 * @param cmErr The amount of error allowed
+	 */
+	public void setCmError(double cmErr){
+		cmError = cmErr;
+	}
+	/**
+	 * Sets the amount of degree error the robot can be off the final position (in deg)
+	 * @param deg The amount of error allowed
+	 */
+	public void setDegreeError(double deg){
+		degreeError = deg;
+	}
 	/**
 	 * Checks to see if either of the wheels is rotating
 	 * @return True if rotating
@@ -212,13 +219,5 @@ public class Navigation {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
 
-	/**
-	 * This makes the robot rotate 360 degrees, and is used for light localization
-	 */
-	public void rotateForLightLocalization(){
-		leftMotor.setSpeed(ROTATION_SPEED_FOR_LIGHTLOCALIZATION);
-		rightMotor.setSpeed(ROTATION_SPEED_FOR_LIGHTLOCALIZATION);
-		leftMotor.rotate(-convertAngle(wheelRadius, wheelBase, 360.0), true);
-		rightMotor.rotate(convertAngle(wheelRadius, wheelBase, 360.0), true);
-	}
+
 }

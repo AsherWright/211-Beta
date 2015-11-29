@@ -1,3 +1,5 @@
+package controllers;
+import odometry.Odometer;
 import pollers.ColorSensorPoller;
 import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
@@ -235,7 +237,7 @@ public class BlockDetector extends Thread {
     /**
      * Determines whether to capture flag by checking value of isFlag calling pickUp method is true or returning robot to initial position otherwise
      */
-    public void isFlagDetected()
+    private void isFlagDetected()
     {
     	//check if flag or just other block
         isFlag = investigateFlag();
@@ -265,7 +267,7 @@ public class BlockDetector extends Thread {
     /**
      * Picks up flag its facing
      */
-    public void pickUp()
+    private void pickUp()
     {
         //back up
     	rightMotor.rotate(-convertDistance(WHEEL_RADIUS,13), true);
@@ -307,7 +309,7 @@ public class BlockDetector extends Thread {
      * Uses color sensor to identify if block is color of flag
      * @return boolean value, true if flag color, false otherwise
      */
-    public boolean investigateFlag()
+    private boolean investigateFlag()
     {
         isFlag = false;
         //gets the data from the color sensor.

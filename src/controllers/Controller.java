@@ -1,10 +1,18 @@
+package controllers;
 import java.io.File;
+
+import odometry.Odometer;
+import odometry.OdometerCorrector;
 import pollers.ColorSensorPoller;
 import pollers.UltrasonicPoller;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import localization.LightLocalizer;
+import localization.USLocalizer;
+import localization.USLocalizer.LocalizationType;
+import view.LCDDisplay;
 import wifi.StartCorner;
 /**
  * @author Asher Wright
@@ -19,7 +27,12 @@ public class Controller {
 	// SERVER_IP: the IP address of the computer running the server application
 	private static final String SERVER_IP = "192.168.10.200";//"192.168.10.116";//"192.168.10.120";//"192.168.10.116"; //YAN or Rahul: "192.168.43.118";
 	private static final int TEAM_NUMBER = 14;	
-	//
+
+	//robot dimension constants
+	public static final double ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR = 10.6;
+	public static final double WHEEL_RADIUS = 2.09;
+	public static final double TRACK = 15.15; 
+	
 
 	// Static Resources:
 	// Left motor connected to output A
@@ -36,11 +49,6 @@ public class Controller {
 	//sensor ports
 	
 
-	//robot dimension constants
-	public static final double ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR = 10.6;
-	public static final double WHEEL_RADIUS = 2.09;
-	public static final double TRACK = 15.15; 
-	
 	public static void main(String[] args)  {
 
 		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
@@ -76,7 +84,7 @@ public class Controller {
 	
 			// setup the odometer
 			Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
-			OdometerCorrection odoCorr = new OdometerCorrection(odo, groundPoller);
+			OdometerCorrector odoCorr = new OdometerCorrector(odo, groundPoller);
 			
 			//setup the wall avoider
 			WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
@@ -91,7 +99,7 @@ public class Controller {
 			blockDetector.start();	
 			//SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, t.opponentHomeZoneBL_X, t.opponentHomeZoneTR_X);
 	
-			LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
+			LCDDisplay lcd = new LCDDisplay(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 			lcd.start();
 			//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 			//set up the light localization
@@ -169,13 +177,13 @@ public class Controller {
 				//navigation
 				navi.travelTo(30.4*2, 30.4*6);
 				//perform second localization
-				lsl.reLocalization(30.4*2, 30.4*6);
+				lsl.doRelocalization(30.4*2, 30.4*6);
 				
 			}else if(buttonPressed == Button.ID_DOWN){
 				/*
 				 * Down button used to do searching tests
 				 */
-				SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 5);
+				BlockZoneSearcher searcher = new BlockZoneSearcher(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 5);
 				double[] pos = new double[3];
 				boolean[] update = new boolean[3];
 				update[0] = true;
@@ -216,10 +224,10 @@ public class Controller {
 				//repeats above 10 times.
 				for(int i =0; i < 10; i++){					
 					navi.travelToAndAvoid(91.2, 91.2);
-					lsl.reLocalization(91.2, 91.2);
+					lsl.doRelocalization(91.2, 91.2);
 					navi.travelToAndAvoid(91.2, 0);
 					navi.travelToAndAvoid(0, 0);
-					lsl.reLocalization(0, 0);
+					lsl.doRelocalization(0, 0);
 					navi.travelTo(0, 0);
 					navi.turnTo(0, true);
 					Button.waitForAnyPress();

@@ -1,3 +1,7 @@
+package localization;
+import odometry.Odometer;
+import controllers.Controller;
+import controllers.Navigation;
 import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -14,11 +18,11 @@ public class USLocalizer {
 	/**
 	 * The speed at which the robot rotates when performing the localization
 	 */
-	public static int ROTATION_SPEED = 160;
+	private static int ROTATION_SPEED = 160;
 	/**
 	 * The acceleration of the motors (lower acceleration = less slip)
 	 */
-	public static int ACCELERATION = 800;
+	private static int ACCELERATION = 800;
 	/**
 	 * The distance that the robot reads to consider it a wall
 	 */

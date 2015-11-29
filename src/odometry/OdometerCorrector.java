@@ -1,3 +1,4 @@
+package odometry;
 
 import lejos.hardware.Sound;
 import pollers.ColorSensorPoller;
@@ -7,7 +8,7 @@ import pollers.ColorSensorPoller;
  * @author AsherW
  * Corrects the odometer of the robot using the black grid lines in the arena.
  */
-public class OdometerCorrection extends Thread {
+public class OdometerCorrector extends Thread {
 	
 	//global variables
 	private static final long CORRECTION_PERIOD = 10;
@@ -23,7 +24,7 @@ public class OdometerCorrection extends Thread {
 	 * @param odometer The robot's odometer
 	 * @param linePoller The Color Sensor Poller facing down (towards ground)
 	 */
-	public OdometerCorrection(Odometer odometer, ColorSensorPoller linePoller) {
+	public OdometerCorrector(Odometer odometer, ColorSensorPoller linePoller) {
 		this.odometer = odometer;
 		this.linePoller = linePoller;
 	}
@@ -45,7 +46,7 @@ public class OdometerCorrection extends Thread {
 				lastCorrection = System.currentTimeMillis();
 				//we only want to correct it every so and so seconds...
 				//if we've reached a black line, correct the position of the robot.
-				correctOdometerPosition();
+				correctOdometer();
 //				Sound.beep();
 			}
 			
@@ -69,7 +70,7 @@ public class OdometerCorrection extends Thread {
 	 * Works by figuring out where the sensor hit a line, seeing whether that is close 
 	 * to an actual line, and if so, fixes it.
 	 */
-	private void correctOdometerPosition(){
+	private void correctOdometer(){
 
 		//variables
 		double currX = odometer.getX();

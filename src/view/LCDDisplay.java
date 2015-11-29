@@ -1,3 +1,6 @@
+package view;
+import odometry.Odometer;
+import controllers.BlockDetector;
 import pollers.ColorSensorPoller;
 import pollers.UltrasonicPoller;
 import lejos.hardware.ev3.LocalEV3;
@@ -12,7 +15,7 @@ import lejos.utility.TimerListener;
  * This class controls the text that is displayed on the LCD Screen.
  * Taken from MyCourses
  */
-public class LCDInfo implements TimerListener{
+public class LCDDisplay implements TimerListener{
 	public static final int LCD_REFRESH = 100;
 	private Odometer odo;
 	private Timer lcdTimer;
@@ -32,7 +35,7 @@ public class LCDInfo implements TimerListener{
 	 * @param blockPoller The Light Sensor Poller for detecting blocks
 	 * @param detector The block detector for the robot
 	 */
-	public LCDInfo(Odometer odo, UltrasonicPoller frontPoller, UltrasonicPoller sidePoller,ColorSensorPoller blockPoller, BlockDetector detector) {
+	public LCDDisplay(Odometer odo, UltrasonicPoller frontPoller, UltrasonicPoller sidePoller,ColorSensorPoller blockPoller, BlockDetector detector) {
 		this.odo = odo;
 		this.lcdTimer = new Timer(LCD_REFRESH, this);
 		

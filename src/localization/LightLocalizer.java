@@ -1,3 +1,6 @@
+package localization;
+import odometry.Odometer;
+import controllers.Navigation;
 import pollers.ColorSensorPoller;
 import lejos.hardware.Sound;
 /**
@@ -10,7 +13,7 @@ import wifi.StartCorner;
 
 public class LightLocalizer {
 	//constants
-	private double del;         //distance from the color sensor to the centre of robot.
+	private double colorSensToCenterDist;         //distance from the color sensor to the centre of robot.
 	/**
 	 * This constant controls the period(millisecond) in which lightLocalizer requires data from ColorSensorPoller
 	 */
@@ -37,25 +40,20 @@ public class LightLocalizer {
 	private double deltaThetaX;   
 	private double x, y, theta;   
 	private ColorSensorPoller groundPoller;
-	
+
 	/**
-	 * Constructor for the light localizer
+	 * Basic constructor
 	 * @param odo - The odometer being used by the robot
-	 * @param colorSensor - The color sensor that the robot is using
-	 * @param colorData - The float array containing the color data of the sensor
+	 * @param groundPoller - The color sensor that the robot is using facing the ground
 	 * @param navigation - The navigation class being used by the robot
+	 * @param csDist - The distance from the color sensor to the centre of the robot
+	 * @param startingCorner - The starting corner of the robot
 	 */
-	public LightLocalizer(Odometer odo, ColorSensorPoller groundPoller, Navigation navigation, double del) {
+	public LightLocalizer(Odometer odo, ColorSensorPoller groundPoller, Navigation navigation, double csDist, StartCorner startingCorner) {
 		this.navigation = navigation;
 		this.odo = odo;
 		this.groundPoller = groundPoller;
-		this.del = del;
-	}
-	public LightLocalizer(Odometer odo, ColorSensorPoller groundPoller, Navigation navigation, double del, StartCorner startingCorner) {
-		this.navigation = navigation;
-		this.odo = odo;
-		this.groundPoller = groundPoller;
-		this.del = del;
+		this.colorSensToCenterDist = csDist;
 		this.startingCorner = startingCorner;
 	}
 	/**
@@ -72,7 +70,7 @@ public class LightLocalizer {
 		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
 		
 		//start localization
-		navigation.rotateForLightLocalization();		
+		navigation.rotateFullCircle();		
 		while (navigation.isRotating() == true){
 			correctionStart = System.currentTimeMillis();
 			brightness = groundPoller.getBrightness();
@@ -122,8 +120,8 @@ public class LightLocalizer {
 		// do trig to compute x,y and theta
 		deltaThetaY = thetaYPositive - thetaYNegative;
 		deltaThetaX = thetaXNegative - thetaXPositive;
-		x = -1*del*Math.cos(Math.toRadians(deltaThetaY/2));
-		y = -1*del*Math.cos(Math.toRadians(deltaThetaX/2));
+		x = -1*colorSensToCenterDist*Math.cos(Math.toRadians(deltaThetaY/2));
+		y = -1*colorSensToCenterDist*Math.cos(Math.toRadians(deltaThetaX/2));
 		
 		theta = 180.0 - thetaYNegative;
 		if (theta >= deltaThetaY/2){
@@ -171,7 +169,7 @@ public class LightLocalizer {
 	 * @param lsl_point_x 
 	 * @param lsl_point_y
 	 */
-	public void reLocalization(double lsl_point_x, double lsl_point_y){
+	public void doRelocalization(double lsl_point_x, double lsl_point_y){
 		
 		double[] startPosition = odo.getPosition();
 		int numberOfGridLines = 0;
@@ -182,7 +180,7 @@ public class LightLocalizer {
 		// start localizaiton
 		navigation.turnTo(45.0, true);
 		odo.setPosition(new double[] {0.0, 0.0, 0.0} , new boolean[] {true, true, true} );
-		navigation.rotateForLightLocalization();
+		navigation.rotateFullCircle();
 			
 		while (navigation.isRotating() == true){
 			correctionStart = System.currentTimeMillis();
@@ -232,8 +230,8 @@ public class LightLocalizer {
 		// do trig to compute x,y and theta
 		deltaThetaY = thetaYPositive - thetaYNegative;
 		deltaThetaX = thetaXNegative - thetaXPositive;
-		x = -1*del*Math.cos(Math.toRadians(deltaThetaY/2));
-		y = -1*del*Math.cos(Math.toRadians(deltaThetaX/2));
+		x = -1*colorSensToCenterDist*Math.cos(Math.toRadians(deltaThetaY/2));
+		y = -1*colorSensToCenterDist*Math.cos(Math.toRadians(deltaThetaX/2));
 	
 		theta = 180.0 - thetaYNegative;
 		if (theta >= deltaThetaY/2){

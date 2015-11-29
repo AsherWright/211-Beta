@@ -1,4 +1,6 @@
+package controllers;
 
+import odometry.Odometer;
 import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
@@ -7,7 +9,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  * @author danielebercovici
  * @version v1.1
  */
-public class SearchingField extends Thread {
+public class BlockZoneSearcher extends Thread {
 	
 	//get incoming values for variables
 	private Odometer odo;
@@ -37,7 +39,7 @@ public class SearchingField extends Thread {
 	 * @param zoneX wifi x coordinate for opponents zone
 	 * @param zoneY wifi y coordinate for opponents zone
 	 */
-	public SearchingField( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
+	public BlockZoneSearcher( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
 			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector, double zoneX, double zoneY)
 
 	{
@@ -51,83 +53,88 @@ public class SearchingField extends Thread {
         this.x = zoneX;
         this.y = zoneY;
 	}
+
 	/**
-	 * Runs the Search algorithm of searching for the flag along the perimeter of the opponents zone and exiting when flag is found 
+	 * Run method (overrides Thread Run method). Starts the searching	
 	 */
 	public void run()
 	{
 		//turn off front sensor
 		frontPoller.disableSensor();
-		
 		isFlag = detector.isFlag(); //false
 		
 		rightMotor.setSpeed(150);
 		leftMotor.setSpeed(150);
-
-		//travel side to upper right corner
-		while(odo.getY() >y*30.4 - (3*30.4+a+b))
-		{	
-			if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
-			{
-				checkObject();
-				if (isFlag)
-				{
-					break;
-				}
-			}
-			leftMotor.setSpeed(150);
-			rightMotor.setSpeed(150);
-			rightMotor.forward();
-			leftMotor.forward();
-
-		}
-		
-		if(!isFlag)//didnt find flag in first side
-		{
-			//turn 90 degrees ccw
-			rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-					
-			//travel side 
-				while(odo.getX() < x*30.4+ (b+2*30.5)) 
-				{
+		searchZone();
+	}
+	/**
+	 * Runs the Search algorithm of searching for the flag along the perimeter of the opponents zone and exiting when flag is found 
+	 */
+	private void searchZone(){
+				//travel side to upper right corner
+				while(odo.getY() >y*30.4 - (3*30.4+a+b))
+				{	
+					if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
+					{
+						checkObject();
+						if (isFlag)
+						{
+							break;
+						}
+					}
 					leftMotor.setSpeed(150);
 					rightMotor.setSpeed(150);
 					rightMotor.forward();
 					leftMotor.forward();
-	
+
 				}
-			if (!isFlag)
-			{
-				//turn 90 degree ccw
-				rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-				leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-			while (odo.getY() < y*30.4) //object in second 1x3 area
-			{
-				if(sidePoller.getUsData()< (b+30.4))
+				
+				if(!isFlag)//didnt find flag in first side
 				{
-					checkObject();
-					if (isFlag)
+					//turn 90 degrees ccw
+					rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+					leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+							
+					//travel side 
+						while(odo.getX() < x*30.4+ (b+2*30.5)) 
+						{
+							leftMotor.setSpeed(150);
+							rightMotor.setSpeed(150);
+							rightMotor.forward();
+							leftMotor.forward();
+			
+						}
+					if (!isFlag)
 					{
-						break;
-					}
+							//turn 90 degree ccw
+							rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
+							leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
+						while (odo.getY() < y*30.4) //object in second 1x3 area
+						{
+							if(sidePoller.getUsData()< (b+30.4))
+							{
+								checkObject();
+								if (isFlag)
+								{
+									break;
+								}
+							}
+							leftMotor.setSpeed(150);
+							rightMotor.setSpeed(150);
+							rightMotor.forward();
+							leftMotor.forward();
+						}
+						leftMotor.stop(true);
+						rightMotor.stop(true);
+					}	
+				
 				}
-				leftMotor.setSpeed(150);
-				rightMotor.setSpeed(150);
-				rightMotor.forward();
-				leftMotor.forward();
-			}
-			leftMotor.stop(true);
-			rightMotor.stop(true);
-		}	
-		
 	}
-}
 	/**
 	 * Gets near the block it found and switches to the front sensor, 
 	 * calls detector to investigate block, moves on if not flag or returns if flag found
 	 */
-	public void checkObject()
+	private void checkObject()
 	{
 		Sound.beep();
 		//move forward 7cm to approximately get to the middle of block 
