@@ -27,10 +27,7 @@ public class USLocalizer {
 	 * The buffer distance value to ensure the robot reads a wall accurately
 	 */
 	private static int WALL_GAP = 3;
-	/**
-	 * The amount of max value readings the sensor must read to consider it a real value (and not an error)
-	 */
-	private static int FILTER_OUT = 3;
+
 	/**
 	 * The robot's odometer
 	 */
@@ -40,14 +37,7 @@ public class USLocalizer {
 	 * The type of localization that the robot performs
 	 */
 	private LocalizationType locType;
-	/**
-	 * The amount of times the robot has read a max-distance value
-	 */
-	private int filterControl;
-	/**
-	 * The value of the last distance the robot has read
-	 */
-	private float lastDistance;
+
 	
 	private Navigation navi;
 	//Motors (we will get these from the odometer)
@@ -72,8 +62,6 @@ public class USLocalizer {
 		this.rightMotor = motors[1];
 		leftMotor.setAcceleration(ACCELERATION);
 		rightMotor.setAcceleration(ACCELERATION);
-		filterControl = 0;
-		lastDistance = 100;
 	}
 
 	/**

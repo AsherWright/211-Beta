@@ -4,7 +4,6 @@ import pollers.UltrasonicPoller;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import wifi.StartCorner;
 /**
@@ -20,7 +19,6 @@ public class Controller {
 	// SERVER_IP: the IP address of the computer running the server application
 	private static final String SERVER_IP = "192.168.10.200";//"192.168.10.116";//"192.168.10.120";//"192.168.10.116"; //YAN or Rahul: "192.168.43.118";
 	private static final int TEAM_NUMBER = 14;	
-	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 	//
 
 	// Static Resources:
@@ -44,9 +42,6 @@ public class Controller {
 	public static final double TRACK = 15.15; 
 	
 	public static void main(String[] args)  {
-				
-		double zoneX = 4*30.4;
-		double zoneY = 6*30.4;
 
 		UltrasonicPoller frontPoller = new UltrasonicPoller("S4");
 		UltrasonicPoller sidePoller = new UltrasonicPoller("S1");
@@ -97,7 +92,7 @@ public class Controller {
 			//SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, t.opponentHomeZoneBL_X, t.opponentHomeZoneTR_X);
 	
 			LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
-			
+			lcd.start();
 			//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 			//set up the light localization
 	

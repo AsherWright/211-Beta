@@ -42,6 +42,11 @@ public class LCDInfo implements TimerListener{
 		this.sidePoller = sidePoller;
 		this.blockPoller = blockPoller;
 		this.detector = detector;
+	}
+	/**
+	 * Starts the LCD screen.
+	 */
+	public void start(){
 		// start the timer
 		lcdTimer.start();
 	}
