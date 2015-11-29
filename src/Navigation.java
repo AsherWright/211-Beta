@@ -1,22 +1,20 @@
-/*
- * File: Navigation.java
- * Written by: Sean Lawlor
- * ECSE 211 - Design Principles and Methods, Head TA
- * Fall 2011
- * Ported to EV3 by: Francois Ouellet Delorme
- * Fall 2015
- * 
- * Movement control class (turnTo, travelTo, flt, localize)
- */
 import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-
+/**
+ * @author TEAM 14
+ * @version 2.0
+ * ECSE 211 CTF Robot
+ * This class controls the navigation of the robot. It can travel to places,
+ * travel to places while avoiding blocks, and rotate.
+ * Originally written by: Sean Lawlor
+ * Ported to EV3 by: Francois Ouellet Delorme
+ */
 public class Navigation {
 
+	//global variables
 	final static int ACCELERATION = 1000;
 	final int ROTATION_SPEED_FOR_LIGHTLOCALIZATION = 180;
-	
 	private int fast;
 	private int slow;
 	private Odometer odometer;
@@ -28,6 +26,14 @@ public class Navigation {
 	private double degreeError;
 	private double cmError;
 	
+	/**
+	 * 
+	 * @param odo The odometer of the robot
+	 * @param avoider The wallavoider of the robot
+	 * @param frontPoller The frontfacing ultrasonic sensor
+	 * @param wheelRadius The radius of the wheels of the robot
+	 * @param wheelBase The distance between the two wheels
+	 */
 	public Navigation(Odometer odo, WallAvoider avoider,  UltrasonicPoller frontPoller, double wheelRadius, double wheelBase) {
 		this.wheelRadius = wheelRadius;
 		this.wheelBase = wheelBase;
@@ -47,23 +53,41 @@ public class Navigation {
 		fast = 120;
 		slow = 90;
 	}
+	/**
+	 * Sets the traveling forward speed of the robot
+	 * @param speed How fast to turn the motors while traveling forward
+	 */
 	public void setFastSpeed(int speed){
 		this.fast = speed;
 	}
+	/**
+	 * Sets the rotational speed of the robot
+	 * @param speed How fast to turn the motors while rotating
+	 */
 	public void setSlowSpeed(int speed){
 		this.slow = speed;
 	}
+	/**
+	 * Sets the amount of positional error the robot can be off the final position (in cm)
+	 * @param cmErr The amount of error allowed
+	 */
 	public void setCmError(double cmErr){
 		cmError = cmErr;
 	}
+	/**
+	 * Sets the amount of degree error the robot can be off the final position (in deg)
+	 * @param deg The amount of error allowed
+	 */
 	public void setDegreeError(double deg){
 		degreeError = deg;
 	}
 
-	/*
-	 * Functions to set the motor speeds jointly
+	/**
+	 * Sets the speeds of the motors.
+	 * @param lSpd The speed to set the left motor
+	 * @param rSpd The speed to set the right motor
 	 */
-	public void setSpeeds(float lSpd, float rSpd) {
+	private void setSpeeds(int lSpd, int rSpd) {
 		this.leftMotor.setSpeed(lSpd);
 		this.rightMotor.setSpeed(rSpd);
 		if (lSpd < 0)
@@ -81,43 +105,14 @@ public class Navigation {
 		}
 	}
 
-	public void setSpeeds(int lSpd, int rSpd) {
-		this.leftMotor.setSpeed(lSpd);
-		this.rightMotor.setSpeed(rSpd);
-		if (lSpd < 0)
-			this.leftMotor.backward();
-		else
-			this.leftMotor.forward();
-		if (rSpd < 0)
-			this.rightMotor.backward();
-		else
-			this.rightMotor.forward();
-		
-		if(lSpd == 0 && rSpd == 0){
-			this.leftMotor.stop(true);
-			this.rightMotor.stop(true);
-		}
-	}
-
-	/*
-	 * Float the two motors jointly
-	 */
-	public void setFloat() {
-		this.leftMotor.stop();
-		this.rightMotor.stop();
-		this.leftMotor.flt(true);
-		this.rightMotor.flt(true);
-	}
-
-	/*
-	 * TravelTo function which takes as arguments the x and y position in cm Will travel to designated position, while
-	 * constantly updating it's heading
+	/**
+	 * Function that makes the robot travel to a position in the arena
+	 * @param x The x coordinate of the position
+	 * @param y The y coordinate of the position
 	 */
 	public void travelTo(double x, double y) {
 		double minAng;
 		while (Math.abs(x - odometer.getX()) > cmError || Math.abs(y - odometer.getY()) > cmError) {
-			
-			
 			minAng = (Math.atan2(y - odometer.getY(), x - odometer.getX())) * (180.0 / Math.PI);
 			if (minAng < 0)
 				minAng += 360.0;
@@ -132,11 +127,14 @@ public class Navigation {
 	 * TravelToAndAvoid function which takes as arguments the x and y position in cm Will travel to designated position, while
 	 * constantly updating it's heading. It also avoids blocks in the way
 	 */
+	/**
+	 * Function that makes the robot travel to a position in the arena WHILE avoiding obstacles
+	 * @param x The x coordinate of the position
+	 * @param y The y coordinate of the position
+	 */
 	public void travelToAndAvoid(double x, double y) {
 		double minAng;
 		while (Math.abs(x - odometer.getX()) > cmError || Math.abs(y - odometer.getY()) > cmError) {
-			
-			
 			minAng = (Math.atan2(y - odometer.getY(), x - odometer.getX())) * (180.0 / Math.PI);
 			if (minAng < 0)
 				minAng += 360.0;
@@ -148,9 +146,7 @@ public class Navigation {
 				Sound.beep();
 				Sound.beep();
 				this.setSpeeds(0, 0);
-
 				avoider.avoidWall(odometer.getX()+10.0*Math.cos(odometer.getAng()), odometer.getY()+10.0*Math.sin(odometer.getAng()),x, y);	
-				
 				this.setSpeeds(fast,fast);
 
 			}
@@ -159,9 +155,11 @@ public class Navigation {
 		this.setSpeeds(0, 0);
 	}
 	
-	/*
-	 * TurnTo function which takes an angle and boolean as arguments The boolean controls whether or not to stop the
-	 * motors when the turn is completed
+
+	/**
+	 * Turns the robot to face a certain orientation.
+	 * @param angle The angle to face the robot (0 deg along x axis)
+	 * @param stop Whether to stop the robot after turning
 	 */
 	public void turnTo(double angle, boolean stop) {
 
@@ -186,55 +184,36 @@ public class Navigation {
 			this.setSpeeds(0, 0);
 		}
 	}
-	
-	/*
-	 * Go foward a set distance in cm
-	 */
-	public void goForward(double distance) {
-		this.travelTo(Math.cos(Math.toRadians(this.odometer.getAng())) * distance, Math.cos(Math.toRadians(this.odometer.getAng())) * distance);
 
-	}
-	//from Ming
-	public void rotate(int leftspeed, int rightspeed) {
-
-		leftMotor.setAcceleration(ACCELERATION);
-		rightMotor.setAcceleration(ACCELERATION);
-		leftMotor.setSpeed(Math.abs(leftspeed));
-		rightMotor.setSpeed(Math.abs(rightspeed));
-		if (leftspeed < 0)
-			leftMotor.backward();
-		else
-			leftMotor.forward();
-		if (rightspeed < 0)
-			rightMotor.backward();
-		else
-			rightMotor.forward();
-	}
 	/**
-	 * Stops both motors immediately
-	 */
-	public void stopMotor() {
-
-		leftMotor.setSpeed(0);
-		rightMotor.setSpeed(0);
-		try {	Thread.sleep(100);	} catch (InterruptedException e) {}
-	}
-	/*
-	 * This method returns if the wheels are rotating
+	 * Checks to see if either of the wheels is rotating
+	 * @return True if rotating
 	 */
 	public boolean isRotating(){
 		return rightMotor.isMoving() || leftMotor.isMoving();
 	}
-	
+	/**
+	 * Converts a distance to travel in the arena to an amount the robot's wheels should spin
+	 * @param radius The radius of the wheels of the robot
+	 * @param distance The distance the robot should travel
+	 * @return The amount to spin the robot's wheels (in deg)
+	 */
 	private static int convertDistance(double radius, double distance) {
 		return (int) ((180.0 * distance) / (Math.PI * radius));
 	}
-
+	/**
+	 * Converts an amount the robot should rotate into an amount to spin the wheels
+	 * @param radius The radius of the robot's wheels
+	 * @param width The distance between the two wheels of the robot
+	 * @param angle The angle to rotate the robot
+	 * @return The amount to spin each wheel (in deg)
+	 */
 	private static int convertAngle(double radius, double width, double angle) {
 		return convertDistance(radius, Math.PI * width * angle / 360.0);
 	}
-	/*
-	 * rotateForLocalization method is for rotating 360 degree, being used in light localization
+
+	/**
+	 * This makes the robot rotate 360 degrees, and is used for light localization
 	 */
 	public void rotateForLightLocalization(){
 		leftMotor.setSpeed(ROTATION_SPEED_FOR_LIGHTLOCALIZATION);

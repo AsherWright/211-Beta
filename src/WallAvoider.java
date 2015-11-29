@@ -2,7 +2,12 @@ import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
-
+/**
+ * Enables the robot to avoid walls in the way. This method is used by navigation to
+ * avoid walls while traveling.
+ * @author AsherW
+ *
+ */
 public class WallAvoider {
 	private Odometer odo;
 	private UltrasonicPoller frontPoller;
@@ -28,10 +33,12 @@ public class WallAvoider {
 	//, we don't allow ANY speeds greater than this. This is the REAL max. 
 
 	public static final int MAXCORRECTION = 50; //was 80
-
-
-	
-	
+	/**
+	 * Basic constructor
+	 * @param odo The robot's odometer
+	 * @param frontPoller The ultrasonic poller facing forwards
+	 * @param sidePoller The ultrasonic poller facing 90-degrees
+	 */
 	public WallAvoider(Odometer odo, UltrasonicPoller frontPoller, UltrasonicPoller sidePoller){
 		this.odo = odo;
 		EV3LargeRegulatedMotor[] motors = odo.getMotors();
@@ -40,6 +47,15 @@ public class WallAvoider {
 		this.frontPoller = frontPoller;
 		this.sidePoller = sidePoller;
 	}
+	/**
+	 * Avoids a wall that is in front of the robot. Works by rotating, and then performing a 
+	 * wall-avoiding algorithm to follow along the wall with the side poller.
+	 * Uses the block's position to figure out when it passes the block (and should stop).
+	 * @param blockX The block's x position 
+	 * @param blockY The block's y position
+	 * @param endX The final x position
+	 * @param endY The final y position
+	 */
 	public void avoidWall(double blockX, double blockY, double endX, double endY){
 		
 		while(true){

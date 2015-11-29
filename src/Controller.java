@@ -1,15 +1,4 @@
-/*
- * Beta demo.java
- * Alessandro Commodari and Asher Wright
- * ECSE 211 DPM Lab 5 - Finding Objects
- * Group 53
- * This class sets up the classes for Finding the objects, and calls them. It also initializes the sensors
- * and the motors.
- */
-
 import java.io.File;
-import java.io.IOException;
-
 import pollers.ColorSensorPoller;
 import pollers.UltrasonicPoller;
 import lejos.hardware.Button;
@@ -18,9 +7,13 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import wifi.StartCorner;
-import wifi.Transmission;
-import wifi.WifiConnection;
-
+/**
+ * @author Asher Wright
+ * @version 2.0
+ * ECSE 211 CTF Robot
+ * This class sets up the classes for Finding the objects, and calls them. It also initializes the sensors
+ * and the motors.
+ */
 public class Controller {
 	//variables for WiFi module 
 	// *** INSTRUCTIONS ***

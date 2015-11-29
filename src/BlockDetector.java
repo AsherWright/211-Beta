@@ -2,7 +2,6 @@ import pollers.ColorSensorPoller;
 import pollers.UltrasonicPoller;
 import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import lejos.robotics.SampleProvider;
 /**
  * @author danielebercovici
  * @version 2.0

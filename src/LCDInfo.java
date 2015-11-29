@@ -1,20 +1,17 @@
-/*
- * LCDInfo.java
- * Alessandro Commodari and Asher Wright
- * ECSE 211 DPM Lab 4 - Localization
- * Group 53
- * This class controls the text that is displayed on the LCD screen. 
- * Taken from MyCourses.
- */
 import pollers.ColorSensorPoller;
 import pollers.UltrasonicPoller;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
-import lejos.robotics.SampleProvider;
 import lejos.utility.Timer;
 import lejos.utility.TimerListener;
 
+/**
+ * @author Asher Wright
+ * @version 2.0
+ * ECSE 211 CTF Robot
+ * This class controls the text that is displayed on the LCD Screen.
+ * Taken from MyCourses
+ */
 public class LCDInfo implements TimerListener{
 	public static final int LCD_REFRESH = 100;
 	private Odometer odo;
@@ -27,6 +24,14 @@ public class LCDInfo implements TimerListener{
 	// arrays for displaying data
 	private double [] pos;
 	
+	/**
+	 * 
+	 * @param odo The odometer for the robot
+	 * @param frontPoller The Ultrasonic Poller facing forward
+	 * @param sidePoller The Ultrasonic Poller facing 90-degrees
+	 * @param blockPoller The Light Sensor Poller for detecting blocks
+	 * @param detector The block detector for the robot
+	 */
 	public LCDInfo(Odometer odo, UltrasonicPoller frontPoller, UltrasonicPoller sidePoller,ColorSensorPoller blockPoller, BlockDetector detector) {
 		this.odo = odo;
 		this.lcdTimer = new Timer(LCD_REFRESH, this);
@@ -40,10 +45,10 @@ public class LCDInfo implements TimerListener{
 		// start the timer
 		lcdTimer.start();
 	}
-	/*
-	 * (non-Javadoc)
+	/**
+	 * 
 	 * @see lejos.utility.TimerListener#timedOut()
-	 * Prints the info on the LCD.
+	 * Prints the info on the LCD
 	 */
 	public void timedOut() {
 		odo.getPosition(pos);

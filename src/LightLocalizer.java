@@ -1,5 +1,4 @@
 import pollers.ColorSensorPoller;
-import lejos.hardware.Button;
 import lejos.hardware.Sound;
 /**
  * This class implements a light sensor localization.

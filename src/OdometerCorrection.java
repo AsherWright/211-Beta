@@ -1,12 +1,14 @@
 
 import pollers.ColorSensorPoller;
 
-/* 
- * OdometryCorrection.java
+/**
+ * 
+ * @author AsherW
+ * Corrects the odometer of the robot using the black grid lines in the arena.
  */
 public class OdometerCorrection extends Thread {
 	
-	//variables
+	//global variables
 	private static final long CORRECTION_PERIOD = 10;
 	//distance from the sensor to the centre of rotation
 	private double brightnessThreshold = 0.40;
@@ -15,13 +17,19 @@ public class OdometerCorrection extends Thread {
 	//first and current brightnesses.
 	private double currBrightnessLevel;
 	
-	// constructor
+	/**
+	 * Basic constructor
+	 * @param odometer The robot's odometer
+	 * @param linePoller The Color Sensor Poller facing down (towards ground)
+	 */
 	public OdometerCorrection(Odometer odometer, ColorSensorPoller linePoller) {
 		this.odometer = odometer;
 		this.linePoller = linePoller;
 	}
 
-	// run method (required for Thread)
+	/**
+	 * Run method (overrides Thread Run)
+	 */
 	public void run() {
 		long correctionStart, correctionEnd;
 		Long lastCorrection = System.currentTimeMillis();
@@ -32,10 +40,6 @@ public class OdometerCorrection extends Thread {
 			//we define the brightness as the average of the magnitudes of R,G,B (really "Whiteness")
 			currBrightnessLevel = linePoller.getBrightness();
 			
-			/*
-			 * If it is our first brightness level, we just set it to our measured
-			 * Else, it is not our FIRST measurement, so we check to see if we hit a black line. 
-			 */
 			if (currBrightnessLevel < brightnessThreshold && Math.abs(lastCorrection-System.currentTimeMillis()) > 2000){	
 				lastCorrection = System.currentTimeMillis();
 				//we only want to correct it every so and so seconds...
@@ -58,8 +62,11 @@ public class OdometerCorrection extends Thread {
 			}
 		}
 	}
-	/*
+
+	/**
 	 * Corrects the odometer's position (is triggered on hitting a black line).
+	 * Works by figuring out where the sensor hit a line, seeing whether that is close 
+	 * to an actual line, and if so, fixes it.
 	 */
 	private void correctOdometerPosition(){
 

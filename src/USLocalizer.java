@@ -88,6 +88,17 @@ public class USLocalizer {
 		leftMotor.setSpeed(ROTATION_SPEED);
 		rightMotor.setSpeed(ROTATION_SPEED);
 		
+		/*
+		 * We have three types of localization:
+		 * 1) Falling edge
+		 * 	This uses the falling edge between the walls and the open area to find the angle
+		 * 	that the robot was originally facing at
+		 * 2) Rising edge
+		 * This uses the falling edge between the walls and the open area to find the angle
+		 * 	that the robot was originally facing at
+		 * 3) Full Circle
+		 * 	This uses a 360-degree distance profile to determine the orientation of the robot.
+		 */
 		if (locType == LocalizationType.FALLING_EDGE) {
 					
 			// rotate the robot until it sees no wall
@@ -131,11 +142,6 @@ public class USLocalizer {
 			double averageAngle = (angleA + angleB)/2;
 			double ZeroPoint =  angleB - averageAngle + 45;
 
-			//System.out.println("A" + angleA);
-			//System.out.println("B:" + angleB);
-			//System.out.println("Average" + averageAngle);
-			//System.out.println("To Turn" + (FortyFiveDegPastNorth + 45));
-			//rotate to the diagonal + 45 (to the horizontal x axis)
 			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS, Controller.TRACK, ZeroPoint), true);
 			rightMotor.rotate(-convertAngle(Controller.WHEEL_RADIUS, Controller.TRACK, ZeroPoint), false);
 			
@@ -184,12 +190,6 @@ public class USLocalizer {
 			//calculate the average angle andd the zero point (zeropoint is x axis)
 			double averageAngle = (angleA + angleB)/2;
 			double ZeroPoint =  angleB - averageAngle - 45;
-
-			// angleA is clockwise from angleB, so assume the average of the
-			// angles to the right of angleB is 45 degrees past 'north'
-			//double averageAngle = (angleA + angleB)/2;
-			//double FortyFiveDegPastNorth =  angleB - averageAngle;
-			//Sound.beep();
 			//rotate to the diagonal + 45 (to the x axis).
 			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS, Controller.TRACK, ZeroPoint), true);
 			rightMotor.rotate(-convertAngle(Controller.WHEEL_RADIUS, Controller.TRACK, ZeroPoint), false);
