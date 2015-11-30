@@ -1,6 +1,8 @@
 package controllers;
 import java.io.File;
 
+import com.sun.glass.ui.TouchInputSupport;
+
 import odometry.Odometer;
 import odometry.OdometerCorrector;
 import pollers.ColorSensorPoller;
@@ -140,15 +142,22 @@ public class Controller {
 				//enable the side poller for navigating
 				sidePoller.enableSensor();
 				//speed up the robot for this part
-				navi.setSlowSpeed(90);
-				navi.setFastSpeed(140);
+				//navi.setSlowSpeed(90);
+				//navi.setFastSpeed(140);
 				
 				//start odometer correction
 				odoCorr.start();
 				//navigation
-				navi.travelTo(30.4*2, 30.4*6);
-								
-			}else if(buttonPressed == Button.ID_RIGHT){ 
+				navi.travelToAndAvoid(30.4*2, 30.4*6);
+				//navi.rotateFullCircle();
+//				double distance = 30.4;
+//				leftMotor.setAcceleration(500);
+//				rightMotor.setAcceleration(500);
+//				leftMotor.setSpeed(100);
+//				rightMotor.setSpeed(100);
+//				leftMotor.rotate((int) ((180.0 * distance) / (Math.PI * WHEEL_RADIUS)), true);
+//				rightMotor.rotate((int) ((180.0 * distance) / (Math.PI * WHEEL_RADIUS)), false);
+				}else if(buttonPressed == Button.ID_RIGHT){ 
 				/*
 				 * right button used to do full run
 				 */
@@ -169,13 +178,13 @@ public class Controller {
 				//enable the side poller for navigating
 				sidePoller.enableSensor();
 				//speed up the robot for this part
-				navi.setSlowSpeed(90);
-				navi.setFastSpeed(140);
+				//navi.setSlowSpeed(90);
+				//navi.setFastSpeed(140);
 				
 				//start odometer correction
 				odoCorr.start();
 				//navigation
-				navi.travelTo(30.4*2, 30.4*6);
+				navi.travelToAndAvoid(30.4*2, 30.4*6);
 				//perform second localization
 				lsl.doRelocalization(30.4*2, 30.4*6);
 				

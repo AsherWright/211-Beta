@@ -42,7 +42,7 @@ public class OdometerCorrector extends Thread {
 			//we define the brightness as the average of the magnitudes of R,G,B (really "Whiteness")
 			currBrightnessLevel = linePoller.getBrightness();
 			
-			if (currBrightnessLevel < brightnessThreshold && Math.abs(lastCorrection-System.currentTimeMillis()) > 2000){	
+			if (currBrightnessLevel < brightnessThreshold && Math.abs(lastCorrection-System.currentTimeMillis()) > 200){	
 				lastCorrection = System.currentTimeMillis();
 				//we only want to correct it every so and so seconds...
 				//if we've reached a black line, correct the position of the robot.

@@ -1,10 +1,6 @@
-/pollers/
-/wifi/
-/LCDDisplay.class
-/OdometerCorrector.class
-/BlockSearcher.class
-/BlockZoneSearcher.class
 /controllers/
-/view/
-/odometry/
 /localization/
+/odometry/
+/pollers/
+/view/
+/wifi/
