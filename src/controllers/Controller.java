@@ -137,25 +137,35 @@ public class Controller {
 				
 				//perofrm lightsensor localization
 				lsl.doLocalization();
-				Button.waitForAnyPress();				
+				 navi.travelTo(0.0, 0.0);
+				 navi.turnTo(0.0, true);
+				 Button.waitForAnyPress();
+				 
 				//enable the side poller for navigating
 				sidePoller.enableSensor();
 				//speed up the robot for this part
-				//navi.setSlowSpeed(90);
-				//navi.setFastSpeed(140);
+				navi.setSlowSpeed(90);
+				navi.setFastSpeed(160);
 				
 				//start odometer correction
 				odoCorr.start();
 				//navigation
-				navi.travelToAndAvoid(30.4*2, 30.4*6);
+				navi.travelToAndAvoid(30.4*3, 30.4*1);
+				//perform second localization
+				lsl.doRelocalization(30.4*3, 30.4*1);
+				navi.travelTo(30.4*3-5, 30.4*4-5);
 				//navi.rotateFullCircle();
-//				double distance = 30.4;
-//				leftMotor.setAcceleration(500);
-//				rightMotor.setAcceleration(500);
-//				leftMotor.setSpeed(100);
-//				rightMotor.setSpeed(100);
-//				leftMotor.rotate((int) ((180.0 * distance) / (Math.PI * WHEEL_RADIUS)), true);
-//				rightMotor.rotate((int) ((180.0 * distance) / (Math.PI * WHEEL_RADIUS)), false);
+				navi.turnTo(270, true);
+				navi.setCmError(0.4);
+				navi.setDegreeError(3);
+				
+				BlockZoneSearcher searcher = new BlockZoneSearcher(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 1);
+				searcher.run();
+				
+				if(blockDetector.isFlag()){
+					navi.travelTo(1*30.4+15.2, 1*30.4+15.2); //wifi
+				}
+				
 				}else if(buttonPressed == Button.ID_RIGHT){ 
 				/*
 				 * right button used to do full run
@@ -198,12 +208,17 @@ public class Controller {
 				update[1] = true;
 				update[2] = true;
 				pos[0] = 3*30.4-5;
-				pos[1] = 5*30.4-5;
+				pos[1] = 4*30.4-5;
 				pos[2] = 270;
 				odo.setPosition(pos, update);
 				navi.setCmError(0.4);
 				navi.setDegreeError(3);
 				searcher.run();
+				
+				if(blockDetector.isFlag()){
+					navi.travelTo(1*30.4+15.2, 1*30.4+15.2); //wifi
+					
+				}
 			}else if(buttonPressed == Button.ID_ENTER){
 				/*
 				 * Enter button used to do navigation test
