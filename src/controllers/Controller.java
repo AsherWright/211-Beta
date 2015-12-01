@@ -1,7 +1,6 @@
 package controllers;
 import java.io.File;
 
-import com.sun.glass.ui.TouchInputSupport;
 
 import odometry.Odometer;
 import odometry.OdometerCorrector;
@@ -138,7 +137,7 @@ public class Controller {
 				
 				//perofrm lightsensor localization
 				lsl.doLocalization();
-								
+				Button.waitForAnyPress();				
 				//enable the side poller for navigating
 				sidePoller.enableSensor();
 				//speed up the robot for this part

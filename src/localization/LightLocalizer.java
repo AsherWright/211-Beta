@@ -138,16 +138,45 @@ public class LightLocalizer {
 		
 		//Calculate the actual coordinates and direction according to starting corner
 		if(startingCorner.getId() == 2){
-			x = odo.getX() + startingCorner.getX();
-			y = odo.getY() + startingCorner.getY();
+			if(x < 0 && y >0){
+				x = x + startingCorner.getX();
+				y = -1.0 * y;
+			}else if(x < 0 && y < 0){			
+				x = -1.0*x + startingCorner.getX();
+			}else if(x > 0 && y < 0){
+				x = x + startingCorner.getX();
+				y = -1.0 * y;
+			}else if(x > 0 && y > 0){
+				x = -1.0 * x + startingCorner.getX();
+			}
 			theta = odo.getAng() + 90.0;
 		}else if(startingCorner.getId() == 3){
-			x = odo.getX() + startingCorner.getX();
-			y = odo.getY() + startingCorner.getY();
+			if(x < 0 && y >0){
+				x = -1.0 * x + startingCorner.getX();
+				y = -1.0 * y + startingCorner.getY();
+			}else if(x < 0 && y < 0){			
+				x = -1.0*x + startingCorner.getX();
+				y = -1.0*y + startingCorner.getY();
+			}else if(x > 0 && y < 0){
+				x = -1.0 * x + startingCorner.getX();
+				y = -1.0 * y + startingCorner.getY();
+			}else if(x > 0 && y > 0){
+				x = -1.0 * x + startingCorner.getX();
+				y = -1.0 * y + startingCorner.getY();
+			}
 			theta = odo.getAng() + 180.0;
 		}else if(startingCorner.getId() == 4){
-			x = odo.getX() + startingCorner.getX();
-			y = odo.getY() + startingCorner.getY();
+			if(x < 0 && y >0){
+				x = -1.0 * x;
+				y = y + startingCorner.getY();
+			}else if(x < 0 && y < 0){			
+				y = -1.0*y + startingCorner.getY();
+			}else if(x > 0 && y < 0){
+				x = -1.0 * x;
+				y = y + startingCorner.getY();
+			}else if(x > 0 && y > 0){
+				y = -1.0 * y + startingCorner.getY();
+			}
 			theta = odo.getAng() + 270.0;
 		}else{
 			x = odo.getX();
