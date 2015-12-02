@@ -160,7 +160,7 @@ public class Controller {
 				firstCornerY = bottomLeftY;
 				zoneBuffer = -1*TILE_WIDTH/3.0;
 				angleForSearch = 270;
-				
+
 			}else{ //it is the top left or top right
 				searchDirection = "up";
 				searchStartX = topRightX;
@@ -169,6 +169,7 @@ public class Controller {
 				firstCornerY = topRightY;
 				zoneBuffer = TILE_WIDTH/3.0;
 				angleForSearch = 90;
+
 			}
 			
 			/*
