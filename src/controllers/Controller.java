@@ -182,7 +182,7 @@ public class Controller {
 			navi.setCmError(0.5);
 			navi.setDegreeError(4.0);
 			//perform ultra-sonic localization
-//			usl.doLocalization();
+			usl.doLocalization();
 			
 			/*
 			 * Step 2: Light Localization
@@ -192,7 +192,7 @@ public class Controller {
 			navi.setCmError(0.5);
 			navi.setDegreeError(2.0);
 			//perform light-sensor localization
-//			lsl.doLocalization();
+			lsl.doLocalization();
 			
 			
 			/*
@@ -205,7 +205,7 @@ public class Controller {
 			navi.setSlowSpeed(90);
 			navi.setFastSpeed(160);
 			//start odometry correction
-//			odoCorr.start();
+			odoCorr.start();
 			//navigation
 			navi.travelToAndAvoid(TILE_WIDTH*firstCornerX, TILE_WIDTH*firstCornerY);
 			
