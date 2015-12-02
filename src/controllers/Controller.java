@@ -2,6 +2,10 @@ package controllers;
 import java.io.File;
 
 
+
+
+import java.io.IOException;
+
 import odometry.Odometer;
 import odometry.OdometerCorrector;
 import pollers.ColorSensorPoller;
@@ -9,12 +13,15 @@ import pollers.UltrasonicPoller;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import localization.LightLocalizer;
 import localization.USLocalizer;
 import localization.USLocalizer.LocalizationType;
 import view.LCDDisplay;
 import wifi.StartCorner;
+import wifi.Transmission;
+import wifi.WifiConnection;
 /**
  * @author Asher Wright
  * @version 2.0
@@ -33,9 +40,11 @@ public class Controller {
 	public static final double ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR = 10.6;
 	public static final double WHEEL_RADIUS = 2.09;
 	public static final double TRACK = 15.15; 
-	
+	public static final double TILE_WIDTH = 30.4;
 
 	// Static Resources:
+	//LCD screen
+	private static TextLCD LCD = LocalEV3.get().getTextLCD();
 	// Left motor connected to output A
 	// Right motor connected to output D
 	// Ultrasonic sensor port connected to input S1
@@ -59,213 +68,187 @@ public class Controller {
 		groundPoller.setMode(1);
 		// start the block detector thread, which will be constantly checking with the light sensor
 		//to see if there is a block.
+		boolean wifiWorked = true;
 		
 		//************************WiFi module********************************//
-	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
+//	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
 //		WifiConnection conn = null;
+//		Transmission t = null;
 //		try {
 //			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
 //			} catch (IOException e) {
 //			LCD.drawString("Connection failed", 0, 1);
+//			wifiWorked = false;
 //		}		
 //		if(conn == null){
 //			LCD.drawString("Unable to find Server", 0, 5);
+//			wifiWorked = false;
 //		}else{
-//		//Data received from the server is saved in "t". 
-//		//Pass the data saved in t to the relevant class
-//		Transmission t = conn.getTransmission();
-//		//Display the data in t
-//		if (t == null) {
-//			LCD.drawString("Failed to read transmission", 0, 5);
-//		} else {
-//			conn.printTransmission();
-//		}
+//			//Data received from the server is saved in "t". 
+//			//Pass the data saved in t to the relevant class
+//			t = conn.getTransmission();
+//			//Display the data in t
+//			if (t == null) {
+//				LCD.drawString("Failed to read transmission", 0, 5);
+//				wifiWorked = false;
+//			} else {
+//				conn.printTransmission();
+//			}
 //			LCD.clear();
-			//*******************WiFi module ends**********************//
-	
+//		}
+		//*******************WiFi module ends**********************//
+		
+		if(wifiWorked){	
+			//variables from WIFI
+//			int flagType = t.flagType;
+//			StartCorner startingCorner = t.startingCorner;
+//			int bottomLeftX = t.opponentHomeZoneBL_X;
+//			int bottomLeftY = t.opponentHomeZoneBL_Y;
+//			int topRightX = t.opponentHomeZoneTR_X;
+//			int topRightY = t.opponentHomeZoneTR_Y;
+//			int capturePointX = t.dropZone_X;
+//			int capturePointY = t.dropZone_Y;
+			//variables HARDCODED
+			int flagType = 1;
+			StartCorner startingCorner = StartCorner.TOP_RIGHT;
+			int bottomLeftX = 3;
+			int bottomLeftY = 3;
+			int topRightX = 5;
+			int topRightY = 5;
+			int capturePointX = 1;
+			int capturePointY = 1;
+
+			//***********************Initialization Module******************************//
 			// setup the odometer
 			Odometer odo = new Odometer(leftMotor, rightMotor, 30, true);
 			OdometerCorrector odoCorr = new OdometerCorrector(odo, groundPoller);
 			
 			//setup the wall avoider
 			WallAvoider avoider = new WallAvoider(odo, frontPoller, sidePoller);
-	//		WallAvoider avoider = new WallAvoider(odo, frontPoller, null);
-			//set up the display and navigator
+			
+			//set up the navigator
 			Navigation navi = new Navigation(odo, avoider, frontPoller, WHEEL_RADIUS, TRACK);
 			
-			//set up the localization
-			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 3);
-//		BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, t.flagType);
-//			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, 1);
+			//set up the detector
+			BlockDetector blockDetector = new BlockDetector(blockPoller, navi, odo, frontPoller, verticalArmMotor, horizontalArmMotor, flagType);
 			blockDetector.start();	
-			//SearchingField searcher = new SearchingField(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, t.opponentHomeZoneBL_X, t.opponentHomeZoneTR_X);
-	
+			//set up the searcher
+			BlockZoneSearcher flagSearcher = new BlockZoneSearcher(sidePoller, frontPoller, navi, odo, blockDetector);
+			//set up the LCD
 			LCDDisplay lcd = new LCDDisplay(odo,frontPoller,sidePoller, blockPoller, blockDetector);
 			lcd.start();
-			//LCDInfo lcd = new LCDInfo(odo,frontPoller,sidePoller, blockPoller, blockDetector);
-			//set up the light localization
-	
-	
+			
 			//set up the localization
-	//		LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR);
-			LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, StartCorner.BOTTOM_LEFT);
-//		    LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, t.startingCorner);
+			LightLocalizer lsl = new LightLocalizer(odo, groundPoller, navi, ROBOT_CENTRE_TO_LIGHTLOCALIZATION_SENSOR, startingCorner);
 			USLocalizer usl = new USLocalizer(odo,navi, frontPoller, USLocalizer.LocalizationType.FULL_CIRCLE);
+			//***********************End of Initialization******************************//
+
+			
+			double angleForSearch;
+			String searchDirection = "";
+			int searchStartX;
+			int searchStartY;
+			int firstCornerX;
+			int firstCornerY;
+			double zoneBuffer;
+			// we use our starting corner to determine where we want to travel to in order to search. 
+			if(startingCorner == StartCorner.BOTTOM_LEFT || startingCorner == StartCorner.BOTTOM_RIGHT){
+				searchDirection = "down";
+				searchStartX = bottomLeftX;
+				searchStartY = topRightY;
+				firstCornerX = bottomLeftX;
+				firstCornerY = bottomLeftY;
+				zoneBuffer = -1*TILE_WIDTH/3.0;
+				angleForSearch = 270;
+				
+			}else{ //it is the top left or top right
+				searchDirection = "up";
+				searchStartX = topRightX;
+				searchStartY = bottomLeftY;
+				firstCornerX = topRightX;
+				firstCornerY = topRightY;
+				zoneBuffer = TILE_WIDTH/3.0;
+				angleForSearch = 90;
+			}
 			
 			/*
-			 * We wait for a press. If it is a left button, we're just doing the detection
-			 * otherwise we do the block stuff.
+			 * Step 1: Ultrasonic Localization
+			 * 	Figure out where we are, roughly
 			 */
-			int buttonPressed = Button.waitForAnyPress();
-			/** * ** *** **** ***** ****** ******* ******** ********* **********
-			 * Left button means localization --> navigate to a point with odo correction.
-			 * Right button means localization --> navigate to a point with odo correction --> localization again
-			 * Down button means Search
-			 * Any other button means play shake it off. 
+			//disable the side sensor for localization so that it doesn't interfere
+			sidePoller.disableSensor();
+			//set the errors on the navigation to be large for US localization
+			navi.setCmError(0.5);
+			navi.setDegreeError(4.0);
+			//perform ultra-sonic localization
+//			usl.doLocalization();
+			
+			/*
+			 * Step 2: Light Localization
+			 * 	Figure out where we are, precisely
 			 */
-			if(buttonPressed == Button.ID_LEFT){
-				//disable the side sensor for localization so that it doens't interfere
-				sidePoller.disableSensor();
-				//set the errors on the navigation to be large for US localization
-				navi.setCmError(0.4);
-				navi.setDegreeError(4.0);
-				//perform ultrasonic localization
-				usl.doLocalization();
-				//set the errors back
-				navi.setCmError(0.5);
-				navi.setDegreeError(2.0);
-				
-				//perofrm lightsensor localization
-				lsl.doLocalization();
-				 navi.travelTo(0.0, 0.0);
-				 navi.turnTo(0.0, true);
-				 Button.waitForAnyPress();
-				 
-				//enable the side poller for navigating
-				sidePoller.enableSensor();
-				//speed up the robot for this part
-				navi.setSlowSpeed(90);
-				navi.setFastSpeed(160);
-				
-				//start odometer correction
-				odoCorr.start();
-				//navigation
-				navi.travelToAndAvoid(30.4*3, 30.4*1);
-				//perform second localization
-				lsl.doRelocalization(30.4*3, 30.4*1);
-				navi.travelTo(30.4*3-5, 30.4*4-5);
-				//navi.rotateFullCircle();
-				navi.turnTo(270, true);
-				navi.setCmError(0.4);
-				navi.setDegreeError(3);
-				
-				BlockZoneSearcher searcher = new BlockZoneSearcher(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 1);
-				searcher.run();
-				
-				if(blockDetector.isFlag()){
-					navi.travelTo(1*30.4+15.2, 1*30.4+15.2); //wifi
-				}
-				
-				}else if(buttonPressed == Button.ID_RIGHT){ 
-				/*
-				 * right button used to do full run
-				 */
-				//disable the side sensor for localization so that it doens't interfere
-				sidePoller.disableSensor();
-				//set the errors on the navigation to be large for US localization
-				navi.setCmError(0.4);
-				navi.setDegreeError(4.0);
-				//perform ultrasonic localization
-				usl.doLocalization();
-				//set the errors back
-				navi.setCmError(0.5);
-				navi.setDegreeError(2.0);
-				
-				//perofrm lightsensor localization
-				lsl.doLocalization();
-								
-				//enable the side poller for navigating
-				sidePoller.enableSensor();
-				//speed up the robot for this part
-				//navi.setSlowSpeed(90);
-				//navi.setFastSpeed(140);
-				
-				//start odometer correction
-				odoCorr.start();
-				//navigation
-				navi.travelToAndAvoid(30.4*2, 30.4*6);
-				//perform second localization
-				lsl.doRelocalization(30.4*2, 30.4*6);
-				
-			}else if(buttonPressed == Button.ID_DOWN){
-				/*
-				 * Down button used to do searching tests
-				 */
-				BlockZoneSearcher searcher = new BlockZoneSearcher(leftMotor, rightMotor, sidePoller, frontPoller, navi, odo, blockDetector, 3, 5);
-				double[] pos = new double[3];
-				boolean[] update = new boolean[3];
-				update[0] = true;
-				update[1] = true;
-				update[2] = true;
-				pos[0] = 3*30.4-5;
-				pos[1] = 4*30.4-5;
-				pos[2] = 270;
-				odo.setPosition(pos, update);
-				navi.setCmError(0.4);
-				navi.setDegreeError(3);
-				searcher.run();
-				
-				if(blockDetector.isFlag()){
-					navi.travelTo(1*30.4+15.2, 1*30.4+15.2); //wifi
-					
-				}
-			}else if(buttonPressed == Button.ID_ENTER){
-				/*
-				 * Enter button used to do navigation test
-				 */
-				boolean[] update = new boolean[3];		//create an array for the position of our robot and set the values
-				double[] position = new double[3];
-				update[0] = false;
-				update[1] = false;
-				update[2] = false;
-				position[0] = 60;
-				position[1] = 60;
-				position[2] = 0;
-				odo.setPosition(position, update);
-				
-				navi.travelTo(15, 70);
-				navi.travelTo(15, 15);
-				navi.travelTo(0, 0);
-				navi.turnTo(0, true);
-				Button.waitForAnyPress();
-				
-			}else if(buttonPressed == Button.ID_UP){
-				/*/
-				 * Up button used to do endurance test
-				 */
-				//travels to a position, relocates, takes different path back, relocates
-				//repeats above 10 times.
-				for(int i =0; i < 10; i++){					
-					navi.travelToAndAvoid(91.2, 91.2);
-					lsl.doRelocalization(91.2, 91.2);
-					navi.travelToAndAvoid(91.2, 0);
-					navi.travelToAndAvoid(0, 0);
-					lsl.doRelocalization(0, 0);
-					navi.travelTo(0, 0);
-					navi.turnTo(0, true);
-					Button.waitForAnyPress();
-				}
-				
-			}else{
-				Sound.beep();
-				File shakeItOff = new File("ShakeItOff.wav");
-				System.out.println(Sound.playSample(shakeItOff, 100));
-				Sound.beep();
-	
+			//set the errors back to smaller values
+			navi.setCmError(0.5);
+			navi.setDegreeError(2.0);
+			//perform light-sensor localization
+//			lsl.doLocalization();
+			
+			
+			/*
+			 * Step 3: Travel to first corner
+			 * 	Travel to the corner of the block zone in which we are going to relocalize
+			 */
+			//enable the side poller for navigating
+			sidePoller.enableSensor();
+			//speed up the robot for navigation
+			navi.setSlowSpeed(90);
+			navi.setFastSpeed(160);
+			//start odometry correction
+//			odoCorr.start();
+			//navigation
+			navi.travelToAndAvoid(TILE_WIDTH*firstCornerX, TILE_WIDTH*firstCornerY);
+			
+			/*
+			 * Step 4: Relocalize
+			 * 	Use the lines to relocalize (figure out where we are, again)
+			 */
+			//perform second localization
+			lsl.doRelocalization(TILE_WIDTH*firstCornerX, TILE_WIDTH*firstCornerY);
+			
+			/*
+			 * Step 5: Travel to second corner & rotate
+			 * 	Travel to the top (or bottom) corner of the block zone, and turn to searching position
+			 */
+			//we first travel a bit away from the zone
+			navi.travelTo(TILE_WIDTH*firstCornerX + zoneBuffer, TILE_WIDTH*firstCornerY + zoneBuffer);
+			//we travel to the second corner with no avoidance (there can't be any blocks there, anyway)
+			navi.travelTo(TILE_WIDTH*searchStartX + zoneBuffer, TILE_WIDTH*searchStartY);
+			navi.turnTo(angleForSearch, true);
+			
+			/*
+			 * Step 6: Search for block
+			 * 	Start to search around the perimeter for the block
+			 */	
+			//lower errors
+			navi.setCmError(0.4);
+			navi.setDegreeError(3);
+			//find dimensions of place to search
+			int zoneWidth = topRightX - bottomLeftX;
+			int zoneHeight = topRightY - bottomLeftY;
+			//run searcher
+			flagSearcher.searchZone(searchStartX, searchStartY, zoneWidth, zoneHeight, searchDirection);
+			
+			/*
+			 * Step 7: Drive to end position
+			 * 	We now have the block. Drive to the final position 
+			 */
+			if(blockDetector.isFlag()){
+				//we want to travel to the center of the blocks.
+				navi.travelTo(capturePointX*TILE_WIDTH+TILE_WIDTH/2, capturePointY*TILE_WIDTH+TILE_WIDTH/2); //wifi
 			}
-	
+			
 			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
 			System.exit(0);	
 		}
-//	}
+	}
 }

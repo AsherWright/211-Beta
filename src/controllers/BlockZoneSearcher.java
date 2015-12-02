@@ -9,7 +9,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  * @author danielebercovici
  * @version v1.1
  */
-public class BlockZoneSearcher extends Thread {
+public class BlockZoneSearcher {
 	
 	//get incoming values for variables
 	private Odometer odo;
@@ -24,111 +24,109 @@ public class BlockZoneSearcher extends Thread {
 	private boolean isFlag; //determines if flag is found
 	private double b = 6; //perimeter 
 	private double a = 3; //start position
-	private double x; //coordinates of Zone
-	private double y;
 	
 	/**
 	 * Class Constructor
-	 * @param leftMotor EV3 Motor on the left
-	 * @param rightMotor EV3 Motor on the right
 	 * @param sidePoller USsensor on the side of robot
 	 * @param frontPoller USsensor on the front of robot
 	 * @param navi Navigator class Object
 	 * @param odo Odometer class Object
 	 * @param detector BlockDetector class Object
-	 * @param zoneX wifi x coordinate for opponents zone
-	 * @param zoneY wifi y coordinate for opponents zone
 	 */
-	public BlockZoneSearcher( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor,
-			UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector, double zoneX, double zoneY)
+	public BlockZoneSearcher(UltrasonicPoller sidePoller,UltrasonicPoller frontPoller, Navigation navi, Odometer odo,BlockDetector detector)
 
 	{
         this.odo = odo;
         this.navi= navi;
-        this.leftMotor = leftMotor;
-        this.rightMotor = rightMotor;
+		EV3LargeRegulatedMotor[] motors = odo.getMotors();
+		this.leftMotor = motors[0];
+		this.rightMotor = motors[1];
         this.detector= detector;
         this.frontPoller = frontPoller;
         this.sidePoller = sidePoller;
-        this.x = zoneX;
-        this.y = zoneY;
 	}
 
 	/**
-	 * Run method (overrides Thread Run method). Starts the searching	
+	 * Runs the Search algorithm of searching for the flag along the perimeter of the opponents zone and exiting when flag is found 
 	 */
-	public void run()
-	{
+	public void searchZone(int startX, int startY, int zoneWidth, int zoneHeight, String direction){
+		/*
+		 * we have to figure out if we are going up first (up) or down first (down), and adjust 
+		 * signs accordingly.
+		 */
+		int factor = 1;
+		double heightOfZoneAndBuffer = zoneHeight*30.4+a+b;
+		double widthOfZoneAndBuffer = zoneWidth*30.4 + b;
+		
+		if(direction.equals("down")){
+			factor = 1;
+		}else if(direction.equals("up")){
+			factor = -1;
+		}
 		//turn off front sensor
 		frontPoller.disableSensor();
 		isFlag = detector.isFlag(); //false
 		
 		rightMotor.setSpeed(150);
 		leftMotor.setSpeed(150);
-		searchZone();
-	}
-	/**
-	 * Runs the Search algorithm of searching for the flag along the perimeter of the opponents zone and exiting when flag is found 
-	 */
-	private void searchZone(){
-				//travel side to upper right corner
-				while(odo.getY() >y*30.4 - (3*30.4+a+b))
-				{	
-					if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
-					{
-						checkObject();
-						if (isFlag)
-						{
-							break;
-						}
-					}
-					leftMotor.setSpeed(150);
-					rightMotor.setSpeed(150);
-					rightMotor.forward();
-					leftMotor.forward();
-
-				}
-				
-				if(!isFlag)//didnt find flag in first side
+		//our next Y position is our startY either + or - the height of the zone.
+		double nextYPosition = startY*30.4 - factor*(heightOfZoneAndBuffer);
+		//travel side to upper right corner
+		while((odo.getY() - nextYPosition)*factor > 0)
+		{	
+			if(sidePoller.getUsData() < (b+30.4))//check for objects in first 1x3 section
+			{
+				checkObject();
+				if (isFlag)
 				{
-					//turn 90 degrees ccw
-					rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-					leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-							
-					//travel side 
-						while(odo.getX() < x*30.4+ (b+2*30.5)) 
-						{
-							leftMotor.setSpeed(150);
-							rightMotor.setSpeed(150);
-							rightMotor.forward();
-							leftMotor.forward();
-			
-						}
-					if (!isFlag)
-					{
-							//turn 90 degree ccw
-							rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,85), true);
-							leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-85), false);
-						while (odo.getY() < y*30.4) //object in second 1x3 area
-						{
-							if(sidePoller.getUsData()< (b+30.4))
-							{
-								checkObject();
-								if (isFlag)
-								{
-									break;
-								}
-							}
-							leftMotor.setSpeed(150);
-							rightMotor.setSpeed(150);
-							rightMotor.forward();
-							leftMotor.forward();
-						}
-						leftMotor.stop(true);
-						rightMotor.stop(true);
-					}	
-				
+					break;
 				}
+			}
+			leftMotor.setSpeed(150);
+			rightMotor.setSpeed(150);
+			rightMotor.forward();
+			leftMotor.forward();
+
+		}
+		
+		if(!isFlag)//didnt find flag in first side
+		{
+			//turn 90 degrees ccw
+			rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,90), true);
+			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-90), false);
+					
+			double nextXPosition = startX*30.4 + factor*widthOfZoneAndBuffer;
+			//travel side 
+			while(factor*(odo.getX() - nextXPosition) < 0) 
+			{
+				leftMotor.setSpeed(150);
+				rightMotor.setSpeed(150);
+				rightMotor.forward();
+				leftMotor.forward();
+
+			}
+			//turn 90 degree ccw
+			rightMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,90), true);
+			leftMotor.rotate(convertAngle(Controller.WHEEL_RADIUS,Controller.TRACK,-90), false);
+			
+			while (factor*(odo.getY() - startY*30.4) < 0) //object in second 1x3 area
+			{
+				if(sidePoller.getUsData()< (b+30.4))
+				{
+					checkObject();
+					if (isFlag)
+					{
+						break;
+					}
+				}
+				leftMotor.setSpeed(150);
+				rightMotor.setSpeed(150);
+				rightMotor.forward();
+				leftMotor.forward();
+			}
+			leftMotor.stop(true);
+			rightMotor.stop(true);
+		}
 	}
 	/**
 	 * Gets near the block it found and switches to the front sensor, 
