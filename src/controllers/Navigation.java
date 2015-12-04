@@ -122,7 +122,7 @@ public class Navigation {
 			this.setSpeeds(fast, fast);
 			
 			//if we see a block coming up, RUN wallFollower.avoidWall();
-			if(frontPoller.getUsData() < 13){
+			if(frontPoller.getUsData() < 15){
 				Sound.beep();
 				Sound.beep();
 				this.setSpeeds(0, 0);

@@ -33,7 +33,7 @@ public class Controller {
 	//variables for WiFi module 
 	// *** INSTRUCTIONS ***
 	// SERVER_IP: the IP address of the computer running the server application
-	private static final String SERVER_IP = "192.168.10.200";//"192.168.10.116";//"192.168.10.120";//"192.168.10.116"; //YAN or Rahul: "192.168.43.118";
+	private static final String SERVER_IP ="192.168.10.200"; //"192.168.10.19";//"192.168.10.200";//"192.168.10.116";//"192.168.10.120";//"192.168.10.116"; //YAN or Rahul: "192.168.43.118";
 	private static final int TEAM_NUMBER = 14;	
 
 	//robot dimension constants
@@ -70,53 +70,55 @@ public class Controller {
 		//to see if there is a block.
 		boolean wifiWorked = true;
 		
-		//************************WiFi module********************************//
-//	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
-//		WifiConnection conn = null;
-//		Transmission t = null;
-//		try {
-//			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
-//			} catch (IOException e) {
-//			LCD.drawString("Connection failed", 0, 1);
-//			wifiWorked = false;
-//		}		
-//		if(conn == null){
-//			LCD.drawString("Unable to find Server", 0, 5);
-//			wifiWorked = false;
-//		}else{
-//			//Data received from the server is saved in "t". 
-//			//Pass the data saved in t to the relevant class
-//			t = conn.getTransmission();
-//			//Display the data in t
-//			if (t == null) {
-//				LCD.drawString("Failed to read transmission", 0, 5);
-//				wifiWorked = false;
-//			} else {
-//				conn.printTransmission();
-//			}
-//			LCD.clear();
-//		}
-		//*******************WiFi module ends**********************//
+		//*********************************WiFi module************************************//
+	    //Set up WiFi connection, require data from server, parse data and disconnect from server.
+		WifiConnection conn = null;
+		Transmission t = null;
+		try {
+			conn = new WifiConnection(SERVER_IP, TEAM_NUMBER);
+			} catch (IOException e) {
+			LCD.drawString("Connection failed", 0, 1);
+			wifiWorked = false;
+		}		
+		if(conn == null){
+			LCD.drawString("Unable to find Server", 0, 5);
+			wifiWorked = false;
+		}else{
+			//Data received from the server is saved in "t". 
+			//Pass the data saved in t to the relevant class
+			t = conn.getTransmission();
+			//Display the data in t
+			if (t == null) {
+				LCD.drawString("Failed to read transmission", 0, 5);
+				wifiWorked = false;
+			} else {
+				conn.printTransmission();
+			}
+			//Button.waitForAnyPress();
+			LCD.clear();
+			
+		}
+		//********************************WiFi module ends******************************//
 		
 		if(wifiWorked){	
 			//variables from WIFI
-//			int flagType = t.flagType;
-//			StartCorner startingCorner = t.startingCorner;
-//			int bottomLeftX = t.opponentHomeZoneBL_X;
-//			int bottomLeftY = t.opponentHomeZoneBL_Y;
-//			int topRightX = t.opponentHomeZoneTR_X;
-//			int topRightY = t.opponentHomeZoneTR_Y;
-//			int capturePointX = t.dropZone_X;
-//			int capturePointY = t.dropZone_Y;
+			int flagType = t.flagType;
+			StartCorner startingCorner = t.startingCorner;
+			int bottomLeftX = t.opponentHomeZoneBL_X;
+			int bottomLeftY = t.opponentHomeZoneBL_Y;
+			int topRightX = t.opponentHomeZoneTR_X;
+			int topRightY = t.opponentHomeZoneTR_Y;
+			int capturePointX = t.dropZone_X;
+			int capturePointY = t.dropZone_Y;
 			//variables HARDCODED
-			int flagType = 1;
-			StartCorner startingCorner = StartCorner.TOP_RIGHT;
-			int bottomLeftX = 3;
-			int bottomLeftY = 3;
-			int topRightX = 5;
-			int topRightY = 5;
-			int capturePointX = 1;
-			int capturePointY = 1;
+//			int flagType = 1;
+//			StartCorner startingCorner = StartCorner.TOP_RIGHT;
+//			int bottomLeftX = 3;
+//			int bottomLeftY = 3;
+//			int topRightX = 5;
+//			int topRightY = 5;
+//			int capturePointX = 1;
+//			int capturePointY = 1;
 
 			//***********************Initialization Module******************************//
 			// setup the odometer
@@ -245,7 +247,7 @@ public class Controller {
 			 */
 			if(blockDetector.isFlag()){
 				//we want to travel to the center of the blocks.
-				navi.travelTo(capturePointX*TILE_WIDTH+TILE_WIDTH/2, capturePointY*TILE_WIDTH+TILE_WIDTH/2); //wifi
+				navi.travelToAndAvoid(capturePointX*TILE_WIDTH+TILE_WIDTH/2, capturePointY*TILE_WIDTH+TILE_WIDTH/2); //wifi
 			}
 			
 			while (Button.waitForAnyPress() != Button.ID_ESCAPE);
