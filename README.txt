@@ -1,4 +1,7 @@
 README
 
-Here is where the code should go for the beta demo.
+The final software (brain) for the capture the flag robot.
+Built with Lejos and Java.
+
+Great robot - underrated. 
 
